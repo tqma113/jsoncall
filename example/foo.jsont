@@ -14,7 +14,7 @@ type foo9 = none
 type foo10 = number | string
 type foo11 = { foo: string } & { bar: number }
 
-rpc fooCall = number => string
+fn fooFn: number => string
 
 derive int from number
 
@@ -22,4 +22,4 @@ derive Date from string
 
 # some comments
 
-import { } from './bar.jt'
+import { bar } from './bar.jt'
