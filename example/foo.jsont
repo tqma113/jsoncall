@@ -14,7 +14,9 @@ type foo9 = none
 type foo10 = number | string
 type foo11 = { foo: string } & { bar: number }
 
-fn fooFn: number => string
+type foo12 = (number, string)
+
+call fooFn: number => string
 
 derive int from number
 
