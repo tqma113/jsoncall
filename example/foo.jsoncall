@@ -26,6 +26,13 @@ call fooCall: number => string
 # some comments
 
 import { bar } from "./bar.jt"
+import { foo1, foo2 } from "./foo.jt"
+import { baz1 as baz2 } from "./baz.jt"
+
+export {
+  foo,
+  bar
+}
 
 derive int from number
 
