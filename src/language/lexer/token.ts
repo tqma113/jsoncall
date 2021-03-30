@@ -20,10 +20,12 @@ export enum OperatorEnum {
 // prettier-ignore
 export enum KeywordEnum {
   Type                  =         'type',
-  Import                =         'import',
-  From                  =         'from',
   Call                  =         'call',
   Derive                =         'derive',
+  From                  =         'from',
+  Import                =         'import',
+  Export                =         'export',
+  As                    =         'as',
 }
 
 // prettier-ignore
