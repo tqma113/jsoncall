@@ -15,7 +15,7 @@ import {
   SpecialType,
   SpecialTypeEnum,
 } from './token'
-import { LexicalError } from './LexicalError'
+import { LexicalError } from './error'
 import { Token } from './token'
 
 export type Lexer = {
@@ -45,6 +45,8 @@ export type Lexer = {
   next(): Token
 
   run(): Token
+
+  lookahead(): Token
 }
 
 export const createLexer = (
@@ -81,6 +83,7 @@ export const createLexer = (
     lineStart: 0,
     next,
     run,
+    lookahead,
   }
   const length = source.length
 

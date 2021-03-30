@@ -1,4 +1,4 @@
-import { createRange, Range } from '../range'
+import { createRange, Range } from './range'
 
 // prettier-ignore
 export enum OperatorEnum {
