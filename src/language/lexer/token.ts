@@ -166,7 +166,7 @@ export function createToken (
 ): NumberLiteral
 export function createToken (
   kind: TokenKind.NULL,
-  word: string,
+  word: Null,
   start: number,
   end: number,
   line: number,
@@ -175,7 +175,7 @@ export function createToken (
 ): NullLiteral
 export function createToken (
   kind: TokenKind.BOOLEAN,
-  word: string,
+  word: BooleanEnum,
   start: number,
   end: number,
   line: number,

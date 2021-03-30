@@ -1,4 +1,18 @@
-import { Comment, createToken, TokenKind, OperatorEnum, StringLiteral, NumberLiteral, NullLiteral, BooleanLiteral, Name } from './token'
+import {
+  Comment,
+  createToken,
+  TokenKind,
+  OperatorEnum,
+  StringLiteral,
+  NumberLiteral,
+  NullLiteral,
+  BooleanLiteral,
+  Name,
+  Null,
+  BooleanEnum,
+  KeywordEnum,
+  Keyword
+} from './token'
 import { LexicalError } from './LexicalError'
 import { Token } from './token'
 
@@ -29,13 +43,11 @@ export type Lexer = {
   next(): Token
 }
 
-export const createLexer = (source: Readonly<string>, filename: string): Lexer => {
-  const SOFToken: Token = createToken(
-    TokenKind.SOF,
-    void 0,
-    0, 0, 0, 0,
-    null
-  )
+export const createLexer = (
+  source: Readonly<string>,
+  filename: string
+): Lexer => {
+  const SOFToken: Token = createToken(TokenKind.SOF, void 0, 0, 0, 0, 0, null)
 
   const lookahead = (): Token => {
     let token = lexer.token
@@ -96,31 +108,127 @@ export const createLexer = (source: Readonly<string>, filename: string): Lexer =
         case 35: //  #
           return readComment(pos, line, col, prev)
         case 38: //  &
-          return createToken(TokenKind.OPERATOR, OperatorEnum.Union, pos, pos + 1, line, col, prev)
+          return createToken(
+            TokenKind.OPERATOR,
+            OperatorEnum.Union,
+            pos,
+            pos + 1,
+            line,
+            col,
+            prev
+          )
         case 40: //  (
-          return createToken(TokenKind.OPERATOR, OperatorEnum.OpenParen, pos, pos + 1, line, col, prev)
+          return createToken(
+            TokenKind.OPERATOR,
+            OperatorEnum.OpenParen,
+            pos,
+            pos + 1,
+            line,
+            col,
+            prev
+          )
         case 41: //  )
-          return createToken(TokenKind.OPERATOR, OperatorEnum.CloseParen, pos, pos + 1, line, col, prev)
+          return createToken(
+            TokenKind.OPERATOR,
+            OperatorEnum.CloseParen,
+            pos,
+            pos + 1,
+            line,
+            col,
+            prev
+          )
         case 44: //  ,
-          return createToken(TokenKind.OPERATOR, OperatorEnum.Comma, pos, pos + 1, line, col, prev)
+          return createToken(
+            TokenKind.OPERATOR,
+            OperatorEnum.Comma,
+            pos,
+            pos + 1,
+            line,
+            col,
+            prev
+          )
         case 58: //  :
-          return createToken(TokenKind.OPERATOR, OperatorEnum.Colon, pos, pos + 1, line, col, prev)
+          return createToken(
+            TokenKind.OPERATOR,
+            OperatorEnum.Colon,
+            pos,
+            pos + 1,
+            line,
+            col,
+            prev
+          )
         case 61: //  =
           if (source.charCodeAt(pos + 1) === 62) {
-            return createToken(TokenKind.OPERATOR, OperatorEnum.Output, pos, pos + 2, line, col, prev)
+            return createToken(
+              TokenKind.OPERATOR,
+              OperatorEnum.Output,
+              pos,
+              pos + 2,
+              line,
+              col,
+              prev
+            )
           } else {
-            return createToken(TokenKind.OPERATOR, OperatorEnum.Assign, pos, pos + 1, line, col, prev)
+            return createToken(
+              TokenKind.OPERATOR,
+              OperatorEnum.Assign,
+              pos,
+              pos + 1,
+              line,
+              col,
+              prev
+            )
           }
         case 91: //  [
-          return createToken(TokenKind.OPERATOR, OperatorEnum.OpenBracket, pos, pos + 1, line, col, prev)
+          return createToken(
+            TokenKind.OPERATOR,
+            OperatorEnum.OpenBracket,
+            pos,
+            pos + 1,
+            line,
+            col,
+            prev
+          )
         case 93: //  ]
-          return createToken(TokenKind.OPERATOR, OperatorEnum.CloseBracket, pos, pos + 1, line, col, prev)
+          return createToken(
+            TokenKind.OPERATOR,
+            OperatorEnum.CloseBracket,
+            pos,
+            pos + 1,
+            line,
+            col,
+            prev
+          )
         case 123: // {
-          return createToken(TokenKind.OPERATOR, OperatorEnum.OpenBrace, pos, pos + 1, line, col, prev)
+          return createToken(
+            TokenKind.OPERATOR,
+            OperatorEnum.OpenBrace,
+            pos,
+            pos + 1,
+            line,
+            col,
+            prev
+          )
         case 124: // |
-          return createToken(TokenKind.OPERATOR, OperatorEnum.Intersect, pos, pos + 1, line, col, prev)
+          return createToken(
+            TokenKind.OPERATOR,
+            OperatorEnum.Intersect,
+            pos,
+            pos + 1,
+            line,
+            col,
+            prev
+          )
         case 125: // }
-          return createToken(TokenKind.OPERATOR, OperatorEnum.CloseBrace, pos, pos + 1, line, col, prev)
+          return createToken(
+            TokenKind.OPERATOR,
+            OperatorEnum.CloseBrace,
+            pos,
+            pos + 1,
+            line,
+            col,
+            prev
+          )
         case 34: //  "
           return readString(pos, line, col, prev)
         case 43: //  +
@@ -192,7 +300,12 @@ export const createLexer = (source: Readonly<string>, filename: string): Lexer =
           return readName(pos, line, col, prev)
       }
 
-      throw new LexicalError(`Unknown token:  ${source[pos]}`, line, col, filename);
+      throw new LexicalError(
+        `Unknown token:  ${source[pos]}`,
+        line,
+        col,
+        filename
+      )
     }
 
     const line = lexer.line
@@ -211,14 +324,22 @@ export const createLexer = (source: Readonly<string>, filename: string): Lexer =
     let position = start
 
     do {
-      code = source.charCodeAt(++position);
+      code = source.charCodeAt(++position)
     } while (
       !isNaN(code) &&
       // SourceCharacter but not LineTerminator
       (code > 0x001f || code === 0x0009)
     )
 
-    return createToken(TokenKind.COMMENT, source.slice(start + 1, position), start, position, line, col, prev)
+    return createToken(
+      TokenKind.COMMENT,
+      source.slice(start + 1, position),
+      start,
+      position,
+      line,
+      col,
+      prev
+    )
   }
 
   const readString = (
@@ -226,8 +347,116 @@ export const createLexer = (source: Readonly<string>, filename: string): Lexer =
     line: number,
     col: number,
     prev: Token | null
-  ): StringLiteral | NullLiteral | BooleanLiteral => {
+  ): StringLiteral => {
+    const source = lexer.source
+    let position = start + 1
+    let chunkStart = position
+    let code = 0
+    let value = ''
 
+    while (
+      position < length &&
+      !isNaN((code = source.charCodeAt(position))) &&
+      // not LineTerminator
+      code !== 0x000a &&
+      code !== 0x000d
+    ) {
+      // Closing Quote (")
+      if (code === 34) {
+        value += source.slice(chunkStart, position)
+        return createToken(
+          TokenKind.STRING,
+          value,
+          start,
+          position + 1,
+          line,
+          col,
+          prev
+        )
+      }
+
+      // SourceCharacter
+      if (code < 0x0020 && code !== 0x0009) {
+        throw new LexicalError(
+          `Invalid character within String: ${printCharCode(code)}.`,
+          line,
+          col + (position - start),
+          lexer.filename
+        )
+      }
+
+      ++position
+      if (code === 92) {
+        // \
+        value += source.slice(chunkStart, position - 1)
+        code = source.charCodeAt(position)
+        switch (code) {
+          case 34:
+            value += '"'
+            break
+          case 47:
+            value += '/'
+            break
+          case 92:
+            value += '\\'
+            break
+          case 98:
+            value += '\b'
+            break
+          case 102:
+            value += '\f'
+            break
+          case 110:
+            value += '\n'
+            break
+          case 114:
+            value += '\r'
+            break
+          case 116:
+            value += '\t'
+            break
+          case 117: {
+            // uXXXX
+            const charCode = uniCharCode(
+              source.charCodeAt(position + 1),
+              source.charCodeAt(position + 2),
+              source.charCodeAt(position + 3),
+              source.charCodeAt(position + 4)
+            )
+            if (charCode < 0) {
+              const invalidSequence = source.slice(position + 1, position + 5)
+              throw new LexicalError(
+                `Invalid character escape sequence: \\u${invalidSequence}.`,
+                line,
+                col + (position - start),
+                lexer.filename
+              )
+            }
+            value += String.fromCharCode(charCode)
+            position += 4
+            break
+          }
+          default:
+            throw new LexicalError(
+              `Invalid character escape sequence: \\${String.fromCharCode(
+                code
+              )}.`,
+              line,
+              col + (position - start),
+              lexer.filename
+            )
+        }
+        ++position
+        chunkStart = position
+      }
+    }
+
+    throw new LexicalError(
+      'Unterminated string.',
+      line,
+      col + (position - start),
+      lexer.filename
+    )
   }
 
   const readNumber = (
@@ -235,19 +464,202 @@ export const createLexer = (source: Readonly<string>, filename: string): Lexer =
     firstCode: number,
     line: number,
     col: number,
-    prev: Token | null,
+    prev: Token | null
   ): NumberLiteral => {
+    const source = lexer.source
+    let code = firstCode
+    let position = start
 
+    if (code === 45) {
+      // -
+      code = source.charCodeAt(++position)
+    }
+
+    if (code === 48) {
+      // 0
+      code = source.charCodeAt(++position)
+      if (code >= 48 && code <= 57) {
+        throw new LexicalError(
+          `Invalid number, unexpected digit after 0: ${printCharCode(code)}.`,
+          line,
+          col + (position - start),
+          lexer.filename
+        )
+      }
+    } else {
+      position = readDigits(position, code)
+      code = source.charCodeAt(position)
+    }
+
+    if (code === 46) {
+      // .
+      code = source.charCodeAt(++position)
+      position = readDigits(position, code)
+      code = source.charCodeAt(position)
+    }
+
+    if (code === 69 || code === 101) {
+      // E e
+      code = source.charCodeAt(++position)
+      if (code === 43 || code === 45) {
+        // + -
+        code = source.charCodeAt(++position)
+      }
+      position = readDigits(position, code)
+      code = source.charCodeAt(position)
+    }
+
+    if (code === 46 || isNameStart(code)) {
+      throw new LexicalError(
+        `Invalid number, expected digit but got: ${printCharCode(code)}.`,
+        lexer.line,
+        lexer.offset + (position - start),
+        lexer.filename
+      )
+    }
+
+    return createToken(
+      TokenKind.NUMBER,
+      source.slice(start, position),
+      start,
+      position,
+      line,
+      col,
+      prev
+    )
+  }
+
+  const readDigits = (start: number, firstCode: number): number => {
+    const source = lexer.source
+    let position = start
+    let code = firstCode
+    if (code >= 48 && code <= 57) {
+      // 0 - 9
+      do {
+        code = source.charCodeAt(++position)
+      } while (code >= 48 && code <= 57) // 0 - 9
+      return position
+    }
+    throw new LexicalError(
+      `Invalid number, expected digit but got: ${printCharCode(code)}.`,
+      lexer.line,
+      lexer.offset + (position - start),
+      lexer.filename
+    )
   }
 
   const readName = (
     start: number,
     line: number,
     col: number,
-    prev: Token | null,
-  ): Name => {
+    prev: Token | null
+  ): Name | NullLiteral | BooleanLiteral | Keyword => {
+    const source = lexer.source
 
+    // null
+    if (source.slice(start, start + Null.length) === Null) {
+      return createToken(
+        TokenKind.NULL,
+        Null,
+        start,
+        start + Null.length,
+        line,
+        col,
+        prev
+      )
+    }
+
+    // boolean 
+    for (let value of Object.values(BooleanEnum)) {
+      if (
+        source.slice(start, start + value.length) === value
+      ) {
+        return createToken(
+          TokenKind.BOOLEAN,
+          value,
+          start,
+          start + value.length,
+          line,
+          col,
+          prev
+        )
+      }
+    }
+
+    // keyword 
+    for (let value of Object.values(KeywordEnum)) {
+      if (
+        source.slice(start, start + value.length) === value
+      ) {
+        return createToken(
+          TokenKind.KEYWORD,
+          value,
+          start,
+          start + value.length,
+          line,
+          col,
+          prev
+        )
+      }
+    }
+    let position = start + 1
+    let code = 0
+    while (
+      position !== length &&
+      !isNaN((code = source.charCodeAt(position))) &&
+      (code === 95 || // _
+      (code >= 48 && code <= 57) || // 0-9
+      (code >= 65 && code <= 90) || // A-Z
+        (code >= 97 && code <= 122)) // a-z
+    ) {
+      ++position
+    }
+    return createToken(
+      TokenKind.NAME,
+      source.slice(start, position),
+      start,
+      position,
+      line,
+      col,
+      prev
+    )
   }
 
   return lexer
+}
+
+function printCharCode (code: number): string {
+  return (
+    // NaN/undefined represents access beyond the end of the file.
+    isNaN(code)
+      ? TokenKind.EOF
+      : // Trust JSON for ASCII.
+      code < 0x007f
+      ? JSON.stringify(String.fromCharCode(code))
+      : // Otherwise print the escaped form.
+        `"\\u${('00' + code.toString(16).toUpperCase()).slice(-4)}"`
+  )
+}
+
+// _ A-Z a-z
+function isNameStart (code: number): boolean {
+  return (
+    code === 95 || (code >= 65 && code <= 90) || (code >= 97 && code <= 122)
+  )
+}
+
+function uniCharCode (a: number, b: number, c: number, d: number): number {
+  return (
+    (char2hex(a) << 12) | (char2hex(b) << 8) | (char2hex(c) << 4) | char2hex(d)
+  )
+}
+
+function char2hex (a: number): number {
+  return a >= 48 && a <= 57
+    ? a - 48 // 0-9
+    : a >= 65 && a <= 70
+    ? a - 55 // A-F
+    : a >= 97 && a <= 102
+    ? a - 87 // a-f
+    : -1
 }
