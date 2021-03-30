@@ -243,12 +243,18 @@ export function createToken(
   column: number,
   prev: Token | null
 ): Token {
+  const range = createRange(start, end, line, column)
   const token = {
     kind,
     word,
-    range: createRange(start, end, line, column),
+    range,
     prev,
     next: null,
+    toJSON: () => ({
+      kind,
+      word,
+      range,
+    })
   } as Token
 
   if (prev) {
