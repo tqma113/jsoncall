@@ -40,7 +40,7 @@ export type Lexer = {
   /**
    * The character offset at which the current line begins.
    */
-   lineStart: number
+  lineStart: number
 
   next(): Token
 
@@ -70,7 +70,7 @@ export const createLexer = (
   }
 
   const run = (): Token => {
-    while(next().kind !== TokenKind.EOF);
+    while (next().kind !== TokenKind.EOF);
     return SOFToken
   }
 

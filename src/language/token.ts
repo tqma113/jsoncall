@@ -256,7 +256,7 @@ export function createToken(
       kind,
       word,
       range,
-    })
+    }),
   } as Token
 
   if (prev) {

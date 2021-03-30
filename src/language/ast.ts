@@ -4,7 +4,7 @@ import {
   SpecialType,
   StringLiteral,
   NumberLiteral,
-  BooleanLiteral
+  BooleanLiteral,
 } from './token'
 
 // prettier-ignore
@@ -139,112 +139,137 @@ export type Document = {
   statements: Statement[]
 }
 
-export const createPrimitiveTypeNode = (primitiveType: PrimitiveType): PrimitiveTypeNode => {
+export const createPrimitiveTypeNode = (
+  primitiveType: PrimitiveType
+): PrimitiveTypeNode => {
   return {
     kind: ASTNodeKind.PrimitiveTypeNode,
-    primitiveType
+    primitiveType,
   }
 }
 
-export const createSpecialTypeNode = (specialType: SpecialType): SpecialTypeNode => {
+export const createSpecialTypeNode = (
+  specialType: SpecialType
+): SpecialTypeNode => {
   return {
     kind: ASTNodeKind.SpecialTypeNode,
-    specialType
+    specialType,
   }
 }
 
 export const createListTypeNode = (type: TypeNode): ListTypeNode => {
   return {
     kind: ASTNodeKind.ListTypeNode,
-    type
+    type,
   }
 }
 
-export const createObjectTypeNode = (fields: Map<Name, TypeNode>): ObjectTypeNode => {
+export const createObjectTypeNode = (
+  fields: Map<Name, TypeNode>
+): ObjectTypeNode => {
   return {
     kind: ASTNodeKind.ObjectTypeNode,
-    fields
+    fields,
   }
 }
 
-export const createStringLiteralNode = (stringLiteral: StringLiteral): StringLiteralNode => {
+export const createStringLiteralNode = (
+  stringLiteral: StringLiteral
+): StringLiteralNode => {
   return {
     kind: ASTNodeKind.StringLiteralNode,
-    stringLiteral
+    stringLiteral,
   }
 }
 
-export const createNumberLiteralNode = (numberLiteral: NumberLiteral): NumberLiteralNode => {
+export const createNumberLiteralNode = (
+  numberLiteral: NumberLiteral
+): NumberLiteralNode => {
   return {
     kind: ASTNodeKind.NumberLiteralNode,
-    numberLiteral
+    numberLiteral,
   }
 }
 
-export const createBooleanLiteralNode = (booleanLiteral: BooleanLiteral): BooleanLiteralNode => {
+export const createBooleanLiteralNode = (
+  booleanLiteral: BooleanLiteral
+): BooleanLiteralNode => {
   return {
     kind: ASTNodeKind.BooleanLiteralNode,
-    booleanLiteral
+    booleanLiteral,
   }
 }
 
 export const createUnionNode = (types: TypeNode[]): UnionNode => {
   return {
     kind: ASTNodeKind.UnionNode,
-    types
+    types,
   }
 }
 
 export const createIntersectionNode = (types: TypeNode[]): IntersectionNode => {
   return {
     kind: ASTNodeKind.IntersectionNode,
-    types
+    types,
   }
 }
 
 export const createNameNode = (name: Name): NameNode => {
   return {
     kind: ASTNodeKind.NameNode,
-    name
+    name,
   }
 }
 
-export const createTypeDeclaration = (name: Name, type: TypeNode): TypeDeclaration => {
+export const createTypeDeclaration = (
+  name: Name,
+  type: TypeNode
+): TypeDeclaration => {
   return {
     kind: ASTNodeKind.TypeDeclaration,
     name,
-    type
+    type,
   }
 }
 
-export const createDeriveDeclaration = (name: Name, type: TypeNode): DeriveDeclaration => {
+export const createDeriveDeclaration = (
+  name: Name,
+  type: TypeNode
+): DeriveDeclaration => {
   return {
     kind: ASTNodeKind.DeriveDeclaration,
     name,
-    type
+    type,
   }
 }
 
-export const createCallDeclaration = (name: Name, input: TypeNode, output: TypeNode): CallDeclaration => {
+export const createCallDeclaration = (
+  name: Name,
+  input: TypeNode,
+  output: TypeNode
+): CallDeclaration => {
   return {
     kind: ASTNodeKind.CallDeclaration,
     name,
     input,
-    output
+    output,
   }
 }
 
-export const createImportStatement = (path: StringLiteral, names: Map<Name, Name>): ImportStatement => {
+export const createImportStatement = (
+  path: StringLiteral,
+  names: Map<Name, Name>
+): ImportStatement => {
   return {
     kind: ASTNodeKind.ImportStatement,
     path,
-    names
+    names,
   }
 }
 
 export const createExportStatement = (names: Name[]): ExportStatement => {
   return {
     kind: ASTNodeKind.ExportStatement,
-    names
+    names,
   }
 }
