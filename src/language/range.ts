@@ -29,12 +29,12 @@ export const createRange = (
   start: number,
   end: number,
   line: number,
-  column: number,
+  column: number
 ): Range => {
   return {
     start,
     end,
     line,
-    column
+    column,
   }
 }

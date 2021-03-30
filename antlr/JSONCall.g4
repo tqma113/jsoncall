@@ -9,7 +9,7 @@ defiveDefinition: 'derive' typeName 'from' name;
 
 importStatement: 'import' moduleItems 'from' path;
 
-path: stringType;
+path: STRING;
 
 moduleItems
     : '{' (typeName ',')* (typeName ','?)? '}'
@@ -23,24 +23,22 @@ typeName: name;
 type: typeName | unionOrIntersectionOrPrimaryType;
 
 primaryType: 
-	stringType
+    numberType
+	| stringType
 	| booleanType
 	| nullType
 	| listType
 	| objectType
     | tupleType
+    | numberLiteral
+    | booleanLiteral
+    | stringLiteral
    ;
 
-numberType: NUMBER;
-
-booleanType
-	:	'true'
-	|	'false'
-	;
-
+numberType: 'number';
+stringType: 'string';
+booleanType: 'boolean';
 nullType: 'null';
-
-stringType : STRING;
 
 listType: '[' ']'
     | '[' type+ ']'
@@ -53,6 +51,15 @@ tupleType: '(' ')'
 objectType: '{' objectField* '}';
 
 objectField: name ':' type;
+
+numberLiteral: NUMBER;
+
+booleanLiteral
+	:	'true'
+	|	'false'
+	;
+
+stringLiteral : STRING;
 
 unionOrIntersectionOrPrimaryType:
     unionOrIntersectionOrPrimaryType '|' unionOrIntersectionOrPrimaryType
