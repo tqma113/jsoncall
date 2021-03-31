@@ -1,5 +1,5 @@
 import { createJSONType } from './base'
-import type { Validator, Converter, JSONType } from './base'
+import { Validator, Converter, JSONType } from './base'
 
 const identify = <I>(input: I) => input
 
@@ -57,41 +57,22 @@ export const NoneType = createJSONType(
   identify as Converter<undefined, undefined>,
   identify
 )
-
-export const createListType = <I, T, K extends string, CK extends string>(
-  kind: CK,
-  type: JSONType<I, T, K>
-) => {
-  const validate: Validator = (input) => {
-    if (Array.isArray(input)) {
-      let result: true | string = true
-      for (let value of input) {
-        result = type.validate(value)
-        if (typeof result === 'string') {
-          return `${result} in list`
-        }
-      }
-      return true
-    } else {
-      return `expected list, accepted: ${input}`
-    }
-  }
-
-  const convert: Converter<I[], T[]> = (input) => {
-    return input.map(type.convert)
-  }
-
-  const reverseConverter: Converter<T[], I[]> = (input) => {
-    return input.map(type.reverseConverter)
-  }
-
-  return createJSONType(
-    `${kind}: ListType<${type.kind}>` as const,
-    validate,
-    convert,
-    reverseConverter
-  )
-}
+export const AnyObjectType = createJSONType(
+  'AnyObjectType' as const,
+  (input) => {
+    return (typeof input === 'object' && input !== null) ? true : `expected object, accepted: ${input}`
+  },
+  identify as Converter<object, object>,
+  identify
+)
+export const AnyListType = createJSONType(
+  'AnyListType' as const,
+  (input) => {
+    return Array.isArray(input) ? true : `expected array, accepted: ${input}`
+  },
+  identify as Converter<any[], any[]>,
+  identify
+)
 
 export type InputType<
   J extends JSONType<any, any, string>
@@ -129,56 +110,6 @@ export type KindObjectType<
   [key in keyof Obj]: KindType<Obj[key]>
 }
 
-export const createObjectType = <
-  Obj extends Record<string, JSONType<any, any, string>>,
-  CK extends string,
-  I = InputObjectType<Obj>,
-  T = ToObjectType<Obj>
->(
-  kind: CK,
-  objectType: Obj
-) => {
-  const validate: Validator = (input) => {
-    if (typeof input === 'object' && input !== null) {
-      let result: true | string = true
-      for (let key in input) {
-        result = objectType[key].validate(input[key])
-        if (typeof result === 'string') {
-          return `${result} in object`
-        }
-      }
-      return true
-    } else {
-      return `expected object, accepted: ${input}`
-    }
-  }
-
-  const convert: Converter<I, T> = (input) => {
-    let result: T = {} as T
-    for (let key in objectType) {
-      // @ts-ignore
-      result[key] = objectType[key].convert(input[key])
-    }
-    return result
-  }
-
-  const reverseConverter: Converter<T, I> = (input) => {
-    let result: I = {} as I
-    for (let key in objectType) {
-      // @ts-ignore
-      result[key] = objectType[key].reverseConverter(input[key])
-    }
-    return result
-  }
-
-  return createJSONType(
-    `${kind}: ObjectType` as const,
-    validate,
-    convert,
-    reverseConverter
-  )
-}
-
 export type InputUnionType<
   TS extends JSONType<any, any, string>[]
 > = TS extends [infer Head, ...infer Tail]
@@ -202,11 +133,9 @@ export type ToUnionType<TS extends JSONType<any, any, string>[]> = TS extends [
 
 export const createUnionType = <
   TS extends JSONType<any, any, string>[],
-  CK extends string,
   I = InputUnionType<TS>,
   T = ToUnionType<TS>
 >(
-  kind: CK,
   ...unionTypes: TS
 ) => {
   const validate: Validator<I> = (input) => {
@@ -237,12 +166,16 @@ export const createUnionType = <
   }
 
   return createJSONType(
-    `Union: ${kind}` as const,
+    `Union(${unionTypes
+      .map((unionType) => unionType.kind)
+      .join(', ')})` as const,
     validate,
     convert,
     reverseConverter
   )
 }
+
+export const Union = createUnionType
 
 export type InputIntersectionType<
   TS extends JSONType<any, any, string>[]
@@ -266,11 +199,9 @@ export type ToIntersectionType<
 
 export const createIntersectionType = <
   TS extends JSONType<object, object, string>[],
-  CK extends string,
   I extends object = InputIntersectionType<TS>,
   T extends object = ToIntersectionType<TS>
 >(
-  kind: CK,
   ...intersectionTypes: TS
 ) => {
   const validate: Validator<I> = (input) => {
@@ -305,12 +236,16 @@ export const createIntersectionType = <
   }
 
   return createJSONType(
-    `Intersection: ${kind}` as const,
+    `Intersection(${intersectionTypes
+      .map((intersectionType) => intersectionType.kind)
+      .join(', ')})` as const,
     validate,
     convert,
     reverseConverter
   )
 }
+
+export const Intersection = createIntersectionType
 
 export const createDeriveType = <FI, FT, FK extends string>(
   from: JSONType<FI, FT, FK>
@@ -345,9 +280,39 @@ export const createDeriveType = <FI, FT, FK extends string>(
   )
 }
 
-const createTypeFromAnyList = createDeriveType(
-  createListType('AnyList', AnyType)
-)
+const createTypeFromAnyList = createDeriveType(AnyListType)
+
+export const createListType = <Type extends JSONType<any, any, string>, FT = ToType<Type>>(
+  type: Type
+) => {
+  const validate: Validator = (input: any[]) => {
+    let result: true | string = true
+    for (let value of input) {
+      result = type.validate(value)
+      if (typeof result === 'string') {
+        return `${result} in list`
+      }
+    }
+    return true
+  }
+
+  const convert: Converter<any[], FT[]> = (input) => {
+    return input.map(type.convert)
+  }
+
+  const reverseConverter: Converter<FT[], any[]> = (input) => {
+    return input.map(type.reverseConverter)
+  }
+
+  return createTypeFromAnyList(
+    `List[${type.kind}]` as const,
+    validate,
+    convert,
+    reverseConverter
+  )
+}
+
+export const ListType = createListType
 
 export type ToTupleType<TS extends JSONType<any, any, string>[]> = TS extends [
   infer Head,
@@ -362,15 +327,10 @@ export type ToTupleType<TS extends JSONType<any, any, string>[]> = TS extends [
 
 export const createTupleType = <
   TS extends JSONType<any, any, string>[],
-  CK extends string,
-  T extends any[] = ToTupleType<TS>
 >(
-  kind: CK,
   ...tupleTypes: TS
 ) => {
-  type I = any[]
-
-  const validate: Validator<I> = (input) => {
+  const validate: Validator = (input: any[]) => {
     if (input.length !== tupleTypes.length) {
       return `expected [${tupleTypes
         .map((tupleType) => tupleType.kind)
@@ -386,43 +346,136 @@ export const createTupleType = <
     }
   }
 
-  const convert: Converter<I, T> = (input) => {
-    let result: T = ([] as any) as T
+  const convert: Converter<any[], ToTupleType<TS>> = (input) => {
+    let result: ToTupleType<TS> = ([] as any) as ToTupleType<TS>
     for (let index = 0; index < tupleTypes.length; index++) {
+      // @ts-ignore
       result[index] = tupleTypes[index].convert(input[index])
     }
     return result
   }
 
-  const reverseConverter: Converter<T, I> = (input) => {
-    let result: I = ([] as any) as I
+  const reverseConverter: Converter<ToTupleType<TS>, any[]> = (input) => {
+    let result: any[] = []
     for (let index = 0; index < tupleTypes.length; index++) {
       result[index] = tupleTypes[index].reverseConverter(input[index])
     }
     return result
   }
 
-  return createTypeFromAnyList(`${kind}`, validate, convert, reverseConverter)
+  return createTypeFromAnyList(
+    `Tuple(${tupleTypes.map((tupleType) => tupleType.kind).join(', ')})` as const,
+    validate,
+    convert,
+    reverseConverter
+  )
 }
 
-// export const createTupleType = <TS extends JSONType<any, any, string>[], CK extends string, I = >(kind: CK, ...objectTypes: TS) => {
-//   const validate: Validator = (input) => {
+export const Tuple = createTupleType
 
-//   }
+export const createTypeFromAnyObject = createDeriveType(AnyObjectType)
 
-//   const convert: Converter<I, T> = (input) => {}
+export const createObjectType = <
+  Obj extends Record<string, JSONType<any, any, string>>,
+  T extends object = ToObjectType<Obj>
+>(
+  objectType: Obj
+) => {
+  type I = object
+  const validate: Validator = <I extends object>(input: I) => {
+    if (typeof input === 'object' && input !== null) {
+      let result: true | string = true
+      for (let key in input) {
+        result = objectType[key].validate(input[key])
+        if (typeof result === 'string') {
+          return `${result} in object`
+        }
+      }
+      return true
+    } else {
+      return `expected object, accepted: ${input}`
+    }
+  }
 
-//   const reverseConverter: Converter<T, I> = (input) => {}
+  const convert: Converter<I, T> = (input) => {
+    let result: T = {} as T
+    for (let key in objectType) {
+      // @ts-ignore
+      result[key] = objectType[key].convert(input[key])
+    }
+    return result
+  }
 
-//   return createJSONType(
-//     `${kind}: TupleType` as const,
-//     validate,
-//     convert,
-//     reverseConverter
-//   )
-// }
+  const reverseConverter: Converter<T, I> = (input) => {
+    let result: I = {} as I
+    for (let key in objectType) {
+      // @ts-ignore
+      result[key] = objectType[key].reverseConverter(input[key])
+    }
+    return result
+  }
 
-// const a = createTupleType('[number, string]', NumberType, StringType)
+  return createTypeFromAnyObject(
+    `ObjectType {\n ${getKeys(objectType).map(key => `${key}: ${objectType[key].kind}`).join(',\n')} \n}` as const,
+    validate,
+    convert,
+    reverseConverter
+  )
+}
+
+export const ObjectType = createObjectType
+
+export const createRecordType = <Type extends JSONType<any, any, string>, FT = ToType<Type>, T = Record<string , FT>>(
+  type: Type
+) => {
+  type I = object
+  const validate: Validator = <I extends object>(input: I) => {
+    let result: true | string = true
+    for (let key in input) {
+      result = type.validate(input[key])
+      if (typeof result === 'string') {
+        return `${result} in record`
+      }
+    }
+    return true
+  }
+
+  const convert: Converter<I, T> = (input) => {
+    let result: T = {} as T
+    for (let key of getKeys(input)) {
+      // @ts-ignore
+      result[key] = type.convert(input[key])
+    }
+    return result
+  }
+
+  const reverseConverter: Converter<T, I> = (input) => {
+    let result: I = {}
+    for (let key in input) {
+      // @ts-ignore
+      result[key] = type.reverseConverter(input[key])
+    }
+    return result
+  }
+
+  return createTypeFromAnyObject(
+    `Record(${type.kind})` as const,
+    validate,
+    convert,
+    reverseConverter
+  )
+}
+
+export const RecordType = createRecordType
+
+function getKeys<T extends {}>(o: T): Array<keyof T> {
+  return Object.keys(o) as Array<keyof T>
+}
+
+// const a = Tuple(NumberType, StringType)
+// const b = ListType(NumberType)
+// const c = ObjectType({ foo: NumberType, bar: StringType })
+// const d = RecordType(NumberType)
 
 // const validate: Validator<string> = (input) => {
 
