@@ -14,13 +14,13 @@ import {
   PrimitiveType,
   SpecialType,
   SpecialTypeEnum,
+  Token,
 } from './token'
+import { Source } from './source'
 import { LexicalError } from './error'
-import { Token } from './token'
 
 export type Lexer = {
-  source: Readonly<string>
-  filename: Readonly<string>
+  source: Readonly<Source>
 
   /**
    * The previously focused non-ignored token.
@@ -50,8 +50,7 @@ export type Lexer = {
 }
 
 export const createLexer = (
-  source: Readonly<string>,
-  filename: string
+  source: Readonly<Source>,
 ): Lexer => {
   const SOFToken: Token = createToken(TokenKind.SOF, void 0, 0, 0, 0, 0, null)
 
@@ -76,7 +75,6 @@ export const createLexer = (
 
   const lexer: Lexer = {
     source,
-    filename,
     lastToken: SOFToken,
     token: SOFToken,
     line: 1,
@@ -85,14 +83,14 @@ export const createLexer = (
     run,
     lookahead,
   }
-  const length = source.length
+  const length = source.content.length
 
   const readToken = (prev: Token): Token => {
-    const source = lexer.source
+    const content = lexer.source.content
 
     let pos = prev.range.end
     while (pos < length) {
-      const code = source.charCodeAt(pos)
+      const code = content.charCodeAt(pos)
 
       const line = lexer.line
       const col = 1 + pos - lexer.lineStart
@@ -109,7 +107,7 @@ export const createLexer = (
           lexer.lineStart = pos
           continue
         case 13: //  \r
-          if (source.charCodeAt(pos + 1) === 10) {
+          if (content.charCodeAt(pos + 1) === 10) {
             pos += 2
           } else {
             ++pos
@@ -170,7 +168,7 @@ export const createLexer = (
             prev
           )
         case 61: //  =
-          if (source.charCodeAt(pos + 1) === 62) {
+          if (content.charCodeAt(pos + 1) === 62) {
             return createToken(
               TokenKind.OPERATOR,
               OperatorEnum.Output,
@@ -313,10 +311,10 @@ export const createLexer = (
       }
 
       throw new LexicalError(
-        `Unknown token:  ${source[pos]}`,
+        `Unknown token:  ${content[pos]}`,
         line,
         col,
-        filename
+        source
       )
     }
 
@@ -331,12 +329,12 @@ export const createLexer = (
     col: number,
     prev: Token | null
   ): Comment => {
-    const source = lexer.source
+    const content = lexer.source.content
     let code = 0
     let position = start
 
     do {
-      code = source.charCodeAt(++position)
+      code = content.charCodeAt(++position)
     } while (
       !isNaN(code) &&
       // SourceCharacter but not LineTerminator
@@ -345,7 +343,7 @@ export const createLexer = (
 
     return createToken(
       TokenKind.COMMENT,
-      source.slice(start + 1, position),
+      content.slice(start + 1, position),
       start,
       position,
       line,
@@ -360,7 +358,7 @@ export const createLexer = (
     col: number,
     prev: Token | null
   ): StringLiteral => {
-    const source = lexer.source
+    const content = lexer.source.content
     let position = start + 1
     let chunkStart = position
     let code = 0
@@ -368,14 +366,14 @@ export const createLexer = (
 
     while (
       position < length &&
-      !isNaN((code = source.charCodeAt(position))) &&
+      !isNaN((code = content.charCodeAt(position))) &&
       // not LineTerminator
       code !== 0x000a &&
       code !== 0x000d
     ) {
       // Closing Quote (")
       if (code === 34) {
-        value += source.slice(chunkStart, position)
+        value += content.slice(chunkStart, position)
         return createToken(
           TokenKind.STRING,
           value,
@@ -393,15 +391,15 @@ export const createLexer = (
           `Invalid character within String: ${printCharCode(code)}.`,
           line,
           col + (position - start),
-          lexer.filename
+          lexer.source
         )
       }
 
       ++position
       if (code === 92) {
         // \
-        value += source.slice(chunkStart, position - 1)
-        code = source.charCodeAt(position)
+        value += content.slice(chunkStart, position - 1)
+        code = content.charCodeAt(position)
         switch (code) {
           case 34:
             value += '"'
@@ -430,18 +428,18 @@ export const createLexer = (
           case 117: {
             // uXXXX
             const charCode = uniCharCode(
-              source.charCodeAt(position + 1),
-              source.charCodeAt(position + 2),
-              source.charCodeAt(position + 3),
-              source.charCodeAt(position + 4)
+              content.charCodeAt(position + 1),
+              content.charCodeAt(position + 2),
+              content.charCodeAt(position + 3),
+              content.charCodeAt(position + 4)
             )
             if (charCode < 0) {
-              const invalidSequence = source.slice(position + 1, position + 5)
+              const invalidSequence = content.slice(position + 1, position + 5)
               throw new LexicalError(
                 `Invalid character escape sequence: \\u${invalidSequence}.`,
                 line,
                 col + (position - start),
-                lexer.filename
+                lexer.source
               )
             }
             value += String.fromCharCode(charCode)
@@ -455,7 +453,7 @@ export const createLexer = (
               )}.`,
               line,
               col + (position - start),
-              lexer.filename
+              lexer.source
             )
         }
         ++position
@@ -467,7 +465,7 @@ export const createLexer = (
       'Unterminated string.',
       line,
       col + (position - start),
-      lexer.filename
+      lexer.source
     )
   }
 
@@ -478,47 +476,47 @@ export const createLexer = (
     col: number,
     prev: Token | null
   ): NumberLiteral => {
-    const source = lexer.source
+    const content = lexer.source.content
     let code = firstCode
     let position = start
 
     if (code === 45) {
       // -
-      code = source.charCodeAt(++position)
+      code = content.charCodeAt(++position)
     }
 
     if (code === 48) {
       // 0
-      code = source.charCodeAt(++position)
+      code = content.charCodeAt(++position)
       if (code >= 48 && code <= 57) {
         throw new LexicalError(
           `Invalid number, unexpected digit after 0: ${printCharCode(code)}.`,
           line,
           col + (position - start),
-          lexer.filename
+          lexer.source
         )
       }
     } else {
       position = readDigits(position, code)
-      code = source.charCodeAt(position)
+      code = content.charCodeAt(position)
     }
 
     if (code === 46) {
       // .
-      code = source.charCodeAt(++position)
+      code = content.charCodeAt(++position)
       position = readDigits(position, code)
-      code = source.charCodeAt(position)
+      code = content.charCodeAt(position)
     }
 
     if (code === 69 || code === 101) {
       // E e
-      code = source.charCodeAt(++position)
+      code = content.charCodeAt(++position)
       if (code === 43 || code === 45) {
         // + -
-        code = source.charCodeAt(++position)
+        code = content.charCodeAt(++position)
       }
       position = readDigits(position, code)
-      code = source.charCodeAt(position)
+      code = content.charCodeAt(position)
     }
 
     if (code === 46 || isNameStart(code)) {
@@ -526,13 +524,13 @@ export const createLexer = (
         `Invalid number, expected digit but got: ${printCharCode(code)}.`,
         lexer.line,
         position - lexer.lineStart,
-        lexer.filename
+        lexer.source
       )
     }
 
     return createToken(
       TokenKind.NUMBER,
-      source.slice(start, position),
+      content.slice(start, position),
       start,
       position,
       line,
@@ -542,13 +540,13 @@ export const createLexer = (
   }
 
   const readDigits = (start: number, firstCode: number): number => {
-    const source = lexer.source
+    const content = lexer.source.content
     let position = start
     let code = firstCode
     if (code >= 48 && code <= 57) {
       // 0 - 9
       do {
-        code = source.charCodeAt(++position)
+        code = content.charCodeAt(++position)
       } while (code >= 48 && code <= 57) // 0 - 9
       return position
     }
@@ -556,7 +554,7 @@ export const createLexer = (
       `Invalid number, expected digit but got: ${printCharCode(code)}.`,
       lexer.line,
       position - lexer.lineStart,
-      lexer.filename
+      lexer.source
     )
   }
 
@@ -566,11 +564,11 @@ export const createLexer = (
     col: number,
     prev: Token | null
   ): Name | PrimitiveType | SpecialType | BooleanLiteral | Keyword => {
-    const source = lexer.source
+    const content = lexer.source.content
 
     // keyword
     for (let value of Object.values(KeywordEnum)) {
-      if (source.slice(start, start + value.length) === value) {
+      if (content.slice(start, start + value.length) === value) {
         return createToken(
           TokenKind.KEYWORD,
           value,
@@ -585,7 +583,7 @@ export const createLexer = (
 
     // primitive
     for (let value of Object.values(PrimitiveTypeEnum)) {
-      if (source.slice(start, start + value.length) === value) {
+      if (content.slice(start, start + value.length) === value) {
         return createToken(
           TokenKind.PRIMITIVETYPE,
           value,
@@ -600,7 +598,7 @@ export const createLexer = (
 
     // primitive
     for (let value of Object.values(SpecialTypeEnum)) {
-      if (source.slice(start, start + value.length) === value) {
+      if (content.slice(start, start + value.length) === value) {
         return createToken(
           TokenKind.SPECIALTYPE,
           value,
@@ -615,7 +613,7 @@ export const createLexer = (
 
     // boolean
     for (let value of Object.values(BooleanEnum)) {
-      if (source.slice(start, start + value.length) === value) {
+      if (content.slice(start, start + value.length) === value) {
         return createToken(
           TokenKind.BOOLEAN,
           value,
@@ -632,7 +630,7 @@ export const createLexer = (
     let code = 0
     while (
       position !== length &&
-      !isNaN((code = source.charCodeAt(position))) &&
+      !isNaN((code = content.charCodeAt(position))) &&
       (code === 95 || // _
         (code >= 48 && code <= 57) || // 0-9
         (code >= 65 && code <= 90) || // A-Z
@@ -642,7 +640,7 @@ export const createLexer = (
     }
     return createToken(
       TokenKind.NAME,
-      source.slice(start, position),
+      content.slice(start, position),
       start,
       position,
       line,
