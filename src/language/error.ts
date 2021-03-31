@@ -1,5 +1,6 @@
 import type { Source } from './source'
 import type { Token } from './token'
+import type { Fragment } from './ast'
 
 export class LexicalError extends Error {
   kind = 'LexicalError' as const
@@ -22,5 +23,17 @@ export class SyntaxError extends Error {
     this.name = 'SyntaxError'
     this.message = message
     this.stack = `${message} at line: ${token.range.line}, column: ${token.range.column} in ${source.filepath}`
+  }
+}
+
+export class SemanticError extends Error {
+  kind = 'SemanticError' as const
+
+  constructor(message: string, fragment: Fragment, source: Source) {
+    super(message)
+
+    this.name = 'SemanticError'
+    this.message = message
+    this.stack = `${message} start at line: ${fragment.location.startToken.range.line}, column: ${fragment.location.startToken.range.column}, end at line: ${fragment.location.endToken.range.line}, column: ${fragment.location.endToken.range.column} in ${source.filepath}`
   }
 }

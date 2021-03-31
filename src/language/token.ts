@@ -72,6 +72,7 @@ export interface BaseToken {
 
 export interface Comment extends BaseToken {
   kind: TokenKind.COMMENT
+  word: string
 }
 
 export interface Keyword extends BaseToken {
@@ -86,10 +87,12 @@ export interface Operator extends BaseToken {
 
 export interface StringLiteral extends BaseToken {
   kind: TokenKind.STRING
+  word: string
 }
 
 export interface NumberLiteral extends BaseToken {
   kind: TokenKind.NUMBER
+  word: string
 }
 
 export interface PrimitiveType extends BaseToken {

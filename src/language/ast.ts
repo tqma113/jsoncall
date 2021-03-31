@@ -159,6 +159,8 @@ export type Document = BaseNode & {
   statements: Statement[]
 }
 
+export type Fragment = Document | Statement
+
 export const createPrimitiveTypeNode = (
   primitiveType: PrimitiveType,
   location: Location

@@ -113,6 +113,15 @@ export const createParser = (source: Source): Parser => {
     }
   }
 
+  const expectOptionalKeyword = (word: KeywordEnum): boolean => {
+    const token = lexer.token
+    if (token.kind === TokenKind.KEYWORD && token.word === word) {
+      lexer.next()
+      return true
+    }
+    return false
+  }
+
   const expectOperator = (word: OperatorEnum) => {
     const token = lexer.token
     if (token.kind === TokenKind.OPERATOR && token.word === word) {
@@ -279,12 +288,12 @@ export const createParser = (source: Source): Parser => {
   }
 
   const parseImportName = (): [NameNode, NameNode] => {
-    const field = parseNameNode()
-    const asField = expectOptionalToken(TokenKind.NAME)
-    if (asField === null) {
-      return [field, field]
+    const name = parseNameNode()
+    if (expectOptionalKeyword(KeywordEnum.As)) {
+      const asName = expectToken(TokenKind.NAME)
+      return [name, createNameNode(asName, loc(asName))]
     } else {
-      return [field, createNameNode(asField, loc(asField))]
+      return [name, name]
     }
   }
 
