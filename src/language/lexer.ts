@@ -49,9 +49,7 @@ export type Lexer = {
   lookahead(): Token
 }
 
-export const createLexer = (
-  source: Readonly<Source>,
-): Lexer => {
+export const createLexer = (source: Readonly<Source>): Lexer => {
   const SOFToken: Token = createToken(TokenKind.SOF, void 0, 0, 0, 0, 0, null)
 
   const lookahead = (): Token => {

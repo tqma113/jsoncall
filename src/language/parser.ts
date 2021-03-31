@@ -11,14 +11,8 @@ import {
   CallDeclaration,
   ImportStatement,
   ExportStatement,
-  createTypeDeclaration,
   TypeNode,
-  createDeriveDeclaration,
-  createCallDeclaration,
-  createImportStatement,
   PathNode,
-  createPathNode,
-  createExportStatement,
   ListTypeNode,
   ObjectTypeNode,
   TupleTypeNode,
@@ -26,7 +20,23 @@ import {
   SpecialTypeNode,
   StringLiteralNode,
   NumberLiteralNode,
-  BooleanLiteralNode
+  BooleanLiteralNode,
+  createTypeDeclaration,
+  createDeriveDeclaration,
+  createCallDeclaration,
+  createImportStatement,
+  createExportStatement,
+  createUnionNode,
+  createIntersectionNode,
+  createListTypeNode,
+  createTupleTypeNode,
+  createPrimitiveTypeNode,
+  createSpecialTypeNode,
+  createStringLiteralNode,
+  createNumberLiteralNode,
+  createBooleanLiteralNode,
+  createObjectTypeNode,
+  createPathNode,
 } from './ast'
 import { Lexer, createLexer } from './lexer'
 import { SyntaxError } from './error'
@@ -37,7 +47,7 @@ import {
   TokenKind,
   Keyword,
   OperatorEnum,
-  Operator
+  Operator,
 } from './token'
 
 export type Parser = {
@@ -134,31 +144,16 @@ export const createParser = (source: Source): Parser => {
   }
 
   const any = <T>(
-    openKind: TokenKind,
-    parseFn: () => T,
-    closeKind: TokenKind
-  ): Array<T> => {
-    expectToken(openKind)
-    const nodes = []
-    while (!expectOptionalToken(closeKind)) {
-      nodes.push(parseFn.call(this))
-    }
-    return nodes
-  }
-
-  const optionalMany = <T>(
-    shouldStart: () => boolean,
+    shouldStart: () => any,
     parseFn: () => T,
     shouldStop: () => boolean
   ): Array<T> => {
-    if (shouldStart()) {
-      const nodes = []
-      do {
-        nodes.push(parseFn.call(this))
-      } while (!shouldStop())
-      return nodes
+    shouldStart()
+    const nodes = []
+    while (!shouldStop()) {
+      nodes.push(parseFn.call(this))
     }
-    return []
+    return nodes
   }
 
   const many = <T>(
@@ -179,7 +174,6 @@ export const createParser = (source: Source): Parser => {
     parseFn: () => T
   ): Array<T> => {
     shouldDelimit()
-
     const nodes = []
     do {
       nodes.push(parseFn.call(this))
@@ -206,7 +200,7 @@ export const createParser = (source: Source): Parser => {
   const parseDocument = (): Document => {
     const start = lexer.token
     return createDocument(
-      many(
+      any(
         shouldToken(TokenKind.SOF),
         parseStatement,
         shouldOptionalToken(TokenKind.EOF)
@@ -269,10 +263,10 @@ export const createParser = (source: Source): Parser => {
 
     expectKeyword(KeywordEnum.Import)
 
-    const names = many(
+    const names = any(
       shouldOperator(OperatorEnum.OpenBrace),
       parseImportName,
-      shouldOptionalOperator(OperatorEnum.CloseBrace),
+      shouldOptionalOperator(OperatorEnum.CloseBrace)
     )
 
     expectKeyword(KeywordEnum.From)
@@ -288,7 +282,7 @@ export const createParser = (source: Source): Parser => {
     const field = parseNameNode()
     const asField = expectOptionalToken(TokenKind.NAME)
     if (asField === null) {
-        return [field, field]
+      return [field, field]
     } else {
       return [field, createNameNode(asField, loc(asField))]
     }
@@ -300,8 +294,8 @@ export const createParser = (source: Source): Parser => {
     expectKeyword(KeywordEnum.Export)
 
     return createExportStatement(
-      optionalMany(
-        shouldOptionalOperator(OperatorEnum.OpenBrace),
+      any(
+        shouldOperator(OperatorEnum.OpenBrace),
         parseExportField,
         shouldOptionalOperator(OperatorEnum.CloseBrace)
       ),
@@ -321,21 +315,60 @@ export const createParser = (source: Source): Parser => {
   }
 
   const parseTypeNode = (): TypeNode => {
+    const start = lexer.token
     let node = parseSimpleTypeNode()
 
-    
+    if (node === null) {
+      throw unexpected()
+    } else {
+      const token = lexer.token
+      if (token.kind === TokenKind.OPERATOR) {
+        if (token.word === OperatorEnum.Union) {
+          return createUnionNode([node, ...parseUnionRest()], loc(start))
+        } else if (token.word === OperatorEnum.Intersect) {
+          return createIntersectionNode(
+            [node, ...parseIntersectRest()],
+            loc(start)
+          )
+        }
+      }
+
+      return node
+    }
+  }
+
+  const parseUnionRest = (): TypeNode[] => {
+    expectOperator(OperatorEnum.Union)
+
+    return [
+      parseTypeNode(),
+      ...delimitedMany(
+        shouldOptionalOperator(OperatorEnum.Union),
+        parseTypeNode
+      ),
+    ]
+  }
+
+  const parseIntersectRest = (): TypeNode[] => {
+    expectOperator(OperatorEnum.Intersect)
+
+    return [
+      parseTypeNode(),
+      ...delimitedMany(
+        shouldOptionalOperator(OperatorEnum.Intersect),
+        parseTypeNode
+      ),
+    ]
   }
 
   // PrimitiveTypeNode SpecialTypeNode ListTypeNode ObjectTypeNode TupleTypeNode
   // StringLiteralNode NumberLiteralNode BooleanLiteralNode NameNode
-  const parseSimpleTypeNode = (): TypeNode => {
-    const start = lexer.token
-
-    switch(start.kind) {
+  const parseSimpleTypeNode = (): TypeNode | null => {
+    switch (lexer.token.kind) {
       case TokenKind.OPERATOR: {
         const token = lexer.token as Operator
 
-        switch(token.word) {
+        switch (token.word) {
           case OperatorEnum.OpenBracket:
             return parseListTypeNode()
           case OperatorEnum.OpenBrace:
@@ -366,45 +399,94 @@ export const createParser = (source: Source): Parser => {
       }
     }
 
-    throw unexpected()
+    return null
   }
 
   const parseListTypeNode = (): ListTypeNode => {
+    const start = lexer.token
 
+    expectOperator(OperatorEnum.OpenBracket)
+    const node = parseTypeNode()
+    expectOperator(OperatorEnum.CloseBracket)
+
+    return createListTypeNode(node, loc(start))
   }
 
   const parseObjectTypeNode = (): ObjectTypeNode => {
+    const start = lexer.token
 
+    return createObjectTypeNode(
+      many(
+        shouldOperator(OperatorEnum.OpenBrace),
+        parseObjectTypeField,
+        shouldOptionalOperator(OperatorEnum.CloseBrace)
+      ),
+      loc(start)
+    )
+  }
+
+  const parseObjectTypeField = (): [NameNode, TypeNode] => {
+    const name = parseNameNode()
+
+    expectOperator(OperatorEnum.Colon)
+
+    const node = parseTypeNode()
+
+    expectOptionalOperator(OperatorEnum.Comma)
+
+    return [name, node]
   }
 
   const parseTupleTypeNode = (): TupleTypeNode => {
+    const start = lexer.token
 
+    return createTupleTypeNode(
+      many(
+        shouldOperator(OperatorEnum.OpenParen),
+        parseTupleItem,
+        shouldOptionalOperator(OperatorEnum.CloseParen)
+      ),
+      loc(start)
+    )
+  }
+
+  const parseTupleItem = (): TypeNode => {
+    const node = parseTypeNode()
+
+    expectOptionalOperator(OperatorEnum.Comma)
+
+    return node
   }
 
   const parsePrimitiveTypeNode = (): PrimitiveTypeNode => {
-
+    const token = expectToken(TokenKind.PRIMITIVETYPE)
+    return createPrimitiveTypeNode(token, loc(token))
   }
 
   const parseSpecialTypeNode = (): SpecialTypeNode => {
-
+    const token = expectToken(TokenKind.SPECIALTYPE)
+    return createSpecialTypeNode(token, loc(token))
   }
 
   const parseStringLiteralNode = (): StringLiteralNode => {
-
+    const token = expectToken(TokenKind.STRING)
+    return createStringLiteralNode(token, loc(token))
   }
 
   const parseNumberLiteralNode = (): NumberLiteralNode => {
-
+    const token = expectToken(TokenKind.NUMBER)
+    return createNumberLiteralNode(token, loc(token))
   }
 
   const parseBooleanLiteralNode = (): BooleanLiteralNode => {
-
+    const token = expectToken(TokenKind.BOOLEAN)
+    return createBooleanLiteralNode(token, loc(token))
   }
 
   const parser: Parser = {
     source,
     lexer,
-    parseDocument
+    parseDocument,
   }
 
   return parser
@@ -415,7 +497,7 @@ export const parse = (source: Source): Document => {
   return parser.parseDocument()
 }
 
-function getTokenDesc (token: Token): string {
+function getTokenDesc(token: Token): string {
   const value = token.word
   return token.kind + (value != null ? ` "${value}"` : '')
 }

@@ -5,7 +5,7 @@ import {
   SpecialType,
   StringLiteral,
   NumberLiteral,
-  BooleanLiteral
+  BooleanLiteral,
 } from './token'
 import { Source } from './source'
 
@@ -61,7 +61,7 @@ export type ListTypeNode = BaseNode & {
 
 export type ObjectTypeNode = BaseNode & {
   kind: ASTNodeKind.ObjectTypeNode
-  fields: [Name, TypeNode][]
+  fields: [NameNode, TypeNode][]
 }
 
 export type TupleTypeNode = BaseNode & {
@@ -166,7 +166,7 @@ export const createPrimitiveTypeNode = (
   return {
     kind: ASTNodeKind.PrimitiveTypeNode,
     primitiveType,
-    location
+    location,
   }
 }
 
@@ -177,7 +177,7 @@ export const createSpecialTypeNode = (
   return {
     kind: ASTNodeKind.SpecialTypeNode,
     specialType,
-    location
+    location,
   }
 }
 
@@ -188,18 +188,18 @@ export const createListTypeNode = (
   return {
     kind: ASTNodeKind.ListTypeNode,
     type,
-    location
+    location,
   }
 }
 
 export const createObjectTypeNode = (
-  fields: [Name, TypeNode][],
+  fields: [NameNode, TypeNode][],
   location: Location
 ): ObjectTypeNode => {
   return {
     kind: ASTNodeKind.ObjectTypeNode,
     fields,
-    location
+    location,
   }
 }
 
@@ -210,7 +210,7 @@ export const createTupleTypeNode = (
   return {
     kind: ASTNodeKind.TupleTypeNode,
     fields,
-    location
+    location,
   }
 }
 
@@ -221,7 +221,7 @@ export const createStringLiteralNode = (
   return {
     kind: ASTNodeKind.StringLiteralNode,
     stringLiteral,
-    location
+    location,
   }
 }
 
@@ -232,7 +232,7 @@ export const createNumberLiteralNode = (
   return {
     kind: ASTNodeKind.NumberLiteralNode,
     numberLiteral,
-    location
+    location,
   }
 }
 
@@ -243,7 +243,7 @@ export const createBooleanLiteralNode = (
   return {
     kind: ASTNodeKind.BooleanLiteralNode,
     booleanLiteral,
-    location
+    location,
   }
 }
 
@@ -254,7 +254,7 @@ export const createUnionNode = (
   return {
     kind: ASTNodeKind.UnionNode,
     types,
-    location
+    location,
   }
 }
 
@@ -265,7 +265,7 @@ export const createIntersectionNode = (
   return {
     kind: ASTNodeKind.IntersectionNode,
     types,
-    location
+    location,
   }
 }
 
@@ -273,15 +273,18 @@ export const createNameNode = (name: Name, location: Location): NameNode => {
   return {
     kind: ASTNodeKind.NameNode,
     name,
-    location
+    location,
   }
 }
 
-export const createPathNode = (path: StringLiteral, location: Location): PathNode => {
+export const createPathNode = (
+  path: StringLiteral,
+  location: Location
+): PathNode => {
   return {
     kind: ASTNodeKind.NameNode,
     path,
-    location
+    location,
   }
 }
 
@@ -294,7 +297,7 @@ export const createTypeDeclaration = (
     kind: ASTNodeKind.TypeDeclaration,
     name,
     type,
-    location
+    location,
   }
 }
 
@@ -307,7 +310,7 @@ export const createDeriveDeclaration = (
     kind: ASTNodeKind.DeriveDeclaration,
     name,
     type,
-    location
+    location,
   }
 }
 
@@ -322,7 +325,7 @@ export const createCallDeclaration = (
     name,
     input,
     output,
-    location
+    location,
   }
 }
 
@@ -335,7 +338,7 @@ export const createImportStatement = (
     kind: ASTNodeKind.ImportStatement,
     names,
     path,
-    location
+    location,
   }
 }
 
@@ -346,7 +349,7 @@ export const createExportStatement = (
   return {
     kind: ASTNodeKind.ExportStatement,
     names,
-    location
+    location,
   }
 }
 
@@ -357,7 +360,7 @@ export const createDocument = (
   return {
     kind: ASTNodeKind.Document,
     statements,
-    location
+    location,
   }
 }
 
@@ -398,6 +401,6 @@ export const createLocation = (
     end: endToken.range.end,
     startToken,
     endToken,
-    source
+    source,
   }
 }

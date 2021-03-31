@@ -303,7 +303,7 @@ export const createRange = (
     line,
     column,
     toJSON() {
-      return { start: start, end: end };
-    }
+      return { start: start, end: end }
+    },
   } as Range
 }
