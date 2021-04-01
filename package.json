@@ -8,7 +8,7 @@
   "license": "MIT",
   "scripts": {
     "test": "jest",
-    "build": "tsc -b ./tsconfig.cmj.json",
+    "build": "tsc -b ./tsconfig.build.json",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
     "format": "prettier --write .",
     "precommit": "pretty-quick --staged",
