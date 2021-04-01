@@ -1,3 +1,3 @@
 # json
 
-A schema for description of json.
+A schema for description of json call.
