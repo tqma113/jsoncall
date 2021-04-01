@@ -1,4 +1,4 @@
-import { createJSONType } from '../index'
+import { createJSONType } from '../src/index'
 
 describe('constructor>base', () => {
   it('simple', () => {

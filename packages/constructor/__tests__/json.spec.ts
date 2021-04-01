@@ -12,7 +12,7 @@ import {
   ObjectType,
   Literal,
   Union,
-} from '../index'
+} from '../src/index'
 
 describe('constructor>json', () => {
   describe('primitive', () => {

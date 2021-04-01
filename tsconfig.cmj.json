@@ -1,0 +1,21 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "references": [
+    {
+      "path": "./packages/language/tsconfig.json"
+    },
+    {
+      "path": "./packages/constructor/tsconfig.json"
+    },
+    {
+      "path": "./packages/server/tsconfig.json"
+    },
+    {
+      "path": "./packages/client/tsconfig.json"
+    }
+  ],
+  "exclude": ["./examples/*"]
+}
