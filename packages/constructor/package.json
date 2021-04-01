@@ -1,0 +1,8 @@
+{
+  "name": "jc-ctor",
+  "version": "0.0.1",
+  "description": "A constructor to construct json call schema in typescript.",
+  "main": "index.js",
+  "author": "Ma Tianqi <mtq1997@126.com>",
+  "license": "MIT"
+}

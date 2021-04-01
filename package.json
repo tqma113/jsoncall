@@ -1,8 +1,8 @@
 {
-  "name": "json",
-  "version": "0.0.1",
-  "description": "A schema for description of json.",
-  "main": "index.js",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "repository": "git@github.com:tqma113/json.git",
   "author": "Ma Tianqi <mtq1997@126.com>",
   "license": "MIT",

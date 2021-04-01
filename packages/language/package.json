@@ -1,0 +1,8 @@
+{
+  "name": "jc-lang",
+  "version": "0.0.1",
+  "description": "A parser for json call schema.",
+  "main": "index.js",
+  "author": "Ma Tianqi <mtq1997@126.com>",
+  "license": "MIT"
+}

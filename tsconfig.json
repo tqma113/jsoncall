@@ -20,5 +20,5 @@
     "jsx": "react",
     "lib": ["ESNext"]
   },
-  "include": ["src"]
+  "include": ["packages"]
 }

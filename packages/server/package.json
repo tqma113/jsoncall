@@ -1,0 +1,8 @@
+{
+  "name": "jc-server",
+  "version": "0.0.1",
+  "description": "Infrastructure at server for json call.",
+  "main": "index.js",
+  "author": "Ma Tianqi",
+  "license": "MIT"
+}

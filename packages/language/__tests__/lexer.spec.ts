@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import { createLexer } from '../src/language/lexer'
+import { createLexer } from '..//lexer'
 
 describe('lexer', () => {
   it('sample', () => {

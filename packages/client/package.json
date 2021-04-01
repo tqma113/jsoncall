@@ -1,0 +1,8 @@
+{
+  "name": "js-client",
+  "version": "0.0.1",
+  "description": "Infrastructure at client for json call.",
+  "main": "index.js",
+  "author": "Ma Tianqi <mtq1997@126.com>",
+  "license": "MIT"
+}
