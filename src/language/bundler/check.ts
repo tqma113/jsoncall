@@ -1,6 +1,6 @@
 import type { Schema } from '../schema'
 import { SemanticError } from '../error'
 
-export const checkSchema = (schema: Schema): SemanticError | null => {
+export const check = (schema: Schema): SemanticError | null => {
   return null
 }

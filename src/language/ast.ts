@@ -1,4 +1,4 @@
-import {
+import type {
   Name,
   Token,
   PrimitiveType,
@@ -7,7 +7,7 @@ import {
   NumberLiteral,
   BooleanLiteral,
 } from './token'
-import { Source } from './source'
+import type { Source } from './source'
 
 // prettier-ignore
 export enum ASTNodeKind {

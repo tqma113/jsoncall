@@ -1,7 +1,8 @@
 import fs from 'fs'
 import path from 'path'
+
 import { parse } from '../parser'
-import { Source } from '../source'
+import { format } from '../formater'
 import {
   SchemaModule,
   Link,
@@ -53,7 +54,8 @@ import {
   NameNode,
 } from '../ast'
 import { SemanticError, BundleError } from '../error'
-import type { Bundler, Module } from '.'
+import type { Bundler, Module } from './index'
+import type { Source } from '../source'
 
 export type ModuleAccessor = {
   bundler: Bundler
@@ -88,7 +90,7 @@ export const createModuleAccessor = (bundler: Bundler): ModuleAccessor => {
           filepath,
           content,
         }
-        const document = parse(source)
+        const document = format(parse(source))
         const module: Module = {
           source,
           document,
@@ -342,7 +344,7 @@ export const createModuleAccessor = (bundler: Bundler): ModuleAccessor => {
   return accessor
 }
 
-export const accessModule = (bundler: Bundler, module: Module) => {
+export const access = (bundler: Bundler, module: Module) => {
   const accessor = createModuleAccessor(bundler)
   accessor.access(module)
 }

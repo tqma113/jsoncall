@@ -37,11 +37,9 @@ import {
   createBooleanLiteralNode,
   createObjectTypeNode,
   createPathNode,
-  ASTNodeKind,
 } from './ast'
 import { Lexer, createLexer } from './lexer'
 import { SyntaxError } from './error'
-import { Source } from './source'
 import {
   KeywordEnum,
   Token,
@@ -50,6 +48,7 @@ import {
   OperatorEnum,
   Operator,
 } from './token'
+import type { Source } from './source'
 
 export type Parser = {
   source: Source
@@ -214,7 +213,7 @@ export const createParser = (source: Source): Parser => {
         shouldToken(TokenKind.SOF),
         parseStatement,
         shouldOptionalToken(TokenKind.EOF)
-      ).sort((a, b) => getStatementValue(a) - getStatementValue(b)),
+      ),
       loc(start)
     )
   }
@@ -510,19 +509,4 @@ export const parse = (source: Source): Document => {
 function getTokenDesc(token: Token): string {
   const value = token.word
   return token.kind + (value != null ? ` "${value}"` : '')
-}
-
-function getStatementValue(statement: Statement) {
-  switch (statement.kind) {
-    case ASTNodeKind.TypeDeclaration:
-      return 2
-    case ASTNodeKind.DeriveDeclaration:
-      return 1
-    case ASTNodeKind.CallDeclaration:
-      return 0
-    case ASTNodeKind.ExportStatement:
-      return -1
-    case ASTNodeKind.ImportStatement:
-      return 3
-  }
 }

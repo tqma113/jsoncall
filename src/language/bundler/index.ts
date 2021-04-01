@@ -1,10 +1,12 @@
 import fs from 'fs'
 import { parse } from '../parser'
-import { Source } from '../source'
+import { format } from '../formater'
 import { Schema, createSchema } from '../schema'
-import { Document } from '../ast'
 import { BundleError } from '../error'
-import { accessModule } from './accessor'
+import { access } from './accessor'
+import { check } from './check'
+import type { Document } from '../ast'
+import type { Source } from '../source'
 
 export type Module = {
   source: Source
@@ -26,11 +28,12 @@ export const createBundler = (entry: string): Bundler => {
         filepath,
         content,
       }
-      const document = parse(source)
+      const document = format(parse(source))
       const module: Module = {
         source,
         document,
       }
+      bundler.modules.set(filepath, module)
       return module
     } catch (err) {
       throw new BundleError(`Can't access entry file`, filepath)
@@ -40,7 +43,9 @@ export const createBundler = (entry: string): Bundler => {
   const bundle = (): Schema => {
     const entryModule = loadEntry(bundler.entry)
 
-    accessModule(bundler, entryModule)
+    access(bundler, entryModule)
+
+    check(bundler.schema)
 
     return bundler.schema
   }
