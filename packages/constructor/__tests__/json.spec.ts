@@ -305,6 +305,10 @@ describe('constructor>json', () => {
 
         expect(FooAndBar.validate({ foo: 0, bar: 'bar' })).toBeTruthy()
 
+        expect(FooAndBar.validate({ foo: 0, bar: 1 })).toBe(
+          'expected string, accept: 1 in object.bar'
+        )
+
         expect(FooAndBar.validate('foo')).toBe('expected object, accept: "foo"')
         expect(FooAndBar.validate(0)).toBe('expected object, accept: 0')
         expect(FooAndBar.validate(true)).toBe('expected object, accept: true')

@@ -418,7 +418,7 @@ export const createObjectType = <
       for (let key in input) {
         result = objectType[key].validate(input[key])
         if (typeof result === 'string') {
-          return `${result} in object`
+          return `${result} in object.${key}`
         }
       }
       return true
