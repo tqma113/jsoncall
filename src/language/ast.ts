@@ -71,17 +71,17 @@ export type TupleTypeNode = BaseNode & {
 
 export type StringLiteralNode = BaseNode & {
   kind: ASTNodeKind.StringLiteralNode
-  stringLiteral: StringLiteral
+  value: StringLiteral
 }
 
 export type NumberLiteralNode = BaseNode & {
   kind: ASTNodeKind.NumberLiteralNode
-  numberLiteral: NumberLiteral
+  value: NumberLiteral
 }
 
 export type BooleanLiteralNode = BaseNode & {
   kind: ASTNodeKind.BooleanLiteralNode
-  booleanLiteral: BooleanLiteral
+  value: BooleanLiteral
 }
 
 export type UnionNode = BaseNode & {
@@ -217,34 +217,34 @@ export const createTupleTypeNode = (
 }
 
 export const createStringLiteralNode = (
-  stringLiteral: StringLiteral,
+  value: StringLiteral,
   location: Location
 ): StringLiteralNode => {
   return {
     kind: ASTNodeKind.StringLiteralNode,
-    stringLiteral,
+    value,
     location,
   }
 }
 
 export const createNumberLiteralNode = (
-  numberLiteral: NumberLiteral,
+  value: NumberLiteral,
   location: Location
 ): NumberLiteralNode => {
   return {
     kind: ASTNodeKind.NumberLiteralNode,
-    numberLiteral,
+    value,
     location,
   }
 }
 
 export const createBooleanLiteralNode = (
-  booleanLiteral: BooleanLiteral,
+  value: BooleanLiteral,
   location: Location
 ): BooleanLiteralNode => {
   return {
     kind: ASTNodeKind.BooleanLiteralNode,
-    booleanLiteral,
+    value,
     location,
   }
 }
