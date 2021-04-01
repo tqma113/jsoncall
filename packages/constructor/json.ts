@@ -4,41 +4,63 @@ import { Validator, Converter, JSONType } from './base'
 const identify = (input: any) => input
 
 export const StringType = createJSONType(
-  'StringType' as const,
+  'string' as const,
   (input) => {
     return typeof input === 'string'
       ? true
-      : `expected string, accepted: ${input}`
+      : `expected string, accept: ${JSON.stringify(input)}`
   },
   identify as Converter<any, string>,
   identify
 )
 export const NumberType = createJSONType(
-  'NumberType' as const,
+  'number' as const,
   (input) => {
     return typeof input === 'number'
       ? true
-      : `expected number, accepted: ${input}`
+      : `expected number, accept: ${JSON.stringify(input)}`
   },
   identify as Converter<any, number>,
   identify
 )
 export const BooleanType = createJSONType(
-  'BooleanType' as const,
+  'boolean' as const,
   (input) => {
     return typeof input === 'boolean'
       ? true
-      : `expected boolean, accepted: ${input}`
+      : `expected boolean, accept: ${JSON.stringify(input)}`
   },
   identify as Converter<any, boolean>,
   identify
 )
 export const NullType = createJSONType(
-  'NullType' as const,
+  'null' as const,
   (input) => {
-    return input === null ? true : `expected null, accepted: ${input}`
+    return input === null
+      ? true
+      : `expected null, accept: ${JSON.stringify(input)}`
   },
   identify as Converter<any, null>,
+  identify
+)
+export const AnyObjectType = createJSONType(
+  'object' as const,
+  (input) => {
+    return typeof input === 'object' && input !== null && !Array.isArray(input)
+      ? true
+      : `expected object, accept: ${JSON.stringify(input)}`
+  },
+  identify as Converter<any, object>,
+  identify
+)
+export const AnyListType = createJSONType(
+  'list' as const,
+  (input) => {
+    return Array.isArray(input)
+      ? true
+      : `expected list, accept: ${JSON.stringify(input)}`
+  },
+  identify as Converter<any, any[]>,
   identify
 )
 export const AnyType = createJSONType(
@@ -52,37 +74,21 @@ export const AnyType = createJSONType(
 export const NoneType = createJSONType(
   'NoneType' as const,
   (input) => {
-    return input === undefined ? true : `expected undefined, accepted: ${input}`
+    return input === undefined
+      ? true
+      : `expected undefined, accept: ${JSON.stringify(input)}`
   },
   identify as Converter<any, undefined>,
   identify
 )
-export const AnyObjectType = createJSONType(
-  'AnyObjectType' as const,
-  (input) => {
-    return typeof input === 'object' && input !== null
-      ? true
-      : `expected object, accepted: ${input}`
-  },
-  identify as Converter<any, object>,
-  identify
-)
-export const AnyListType = createJSONType(
-  'AnyListType' as const,
-  (input) => {
-    return Array.isArray(input) ? true : `expected array, accepted: ${input}`
-  },
-  identify as Converter<any, any[]>,
-  identify
-)
 
-export const createLiteralType = <T extends string | number | boolean>(
-  to: T
-) => {
+export const createLiteralType = <T>(to: T) => {
   return createJSONType(
     `Literal(${to})` as const,
     (input) => {
-      return input === to ? true : `expected array, accepted: ${input}`
+      return input === to
+        ? true
+        : `expected ${JSON.stringify(to)}, accept: ${JSON.stringify(input)}`
     },
     identify as Converter<any, T>,
     identify
@@ -157,13 +163,14 @@ export const createUnionType = <
 ): JSONType<I, T, `Union(${string})`> => {
   const validate: Validator<I> = (input) => {
     for (let unionType of unionTypes.reverse()) {
-      if (unionType.validate(input)) {
+      if (unionType.validate(input) === true) {
         return true
       }
     }
     return `expected ${unionTypes
+      .reverse()
       .map((unionType) => unionType.kind)
-      .join(' | ')}, accepted: ${input}`
+      .join(' | ')}, accept: ${JSON.stringify(input)}`
   }
 
   const convert: Converter<I, T> = (input) => {
@@ -222,15 +229,16 @@ export const createIntersectionType = <
   ...intersectionTypes: TS
 ): JSONType<I, T, `Intersection(${string})`> => {
   const validate: Validator<I> = (input) => {
-    const result = intersectionTypes.every((intersectionType) => {
-      return intersectionType.validate(input) === true
-    })
-    if (result) {
+    if (
+      intersectionTypes.every((intersectionType) => {
+        return intersectionType.validate(input) === true
+      })
+    ) {
       return true
     } else {
       return `expected ${intersectionTypes
         .map((intersectionType) => intersectionType.kind)
-        .join(' & ')}, accepted: ${input}`
+        .join(' & ')}, accept: ${JSON.stringify(input)}`
     }
   }
 
@@ -304,7 +312,7 @@ export const createListType = <
   FT = ToType<Type>
 >(
   type: Type
-): JSONType<any, FT[], `List[${string}] <= AnyListType`> => {
+): JSONType<any, FT[], `List[${string}] <= list`> => {
   const validate: Validator = (input: any[]) => {
     let result: true | string = true
     for (let value of input) {
@@ -347,17 +355,19 @@ export type ToTupleType<TS extends JSONType<any, any, string>[]> = TS extends [
 
 export const createTupleType = <TS extends JSONType<any, any, string>[]>(
   ...tupleTypes: TS
-): JSONType<any, ToTupleType<TS>, `Tuple(${string}) <= AnyListType`> => {
+): JSONType<any, ToTupleType<TS>, `Tuple(${string}) <= list`> => {
   const validate: Validator = (input: any[]) => {
     if (input.length !== tupleTypes.length) {
       return `expected [${tupleTypes
         .map((tupleType) => tupleType.kind)
-        .join(', ')}], accepted: ${input}`
+        .join(', ')}], accept: ${JSON.stringify(input)}`
     } else {
       for (let index = 0; index < tupleTypes.length; index++) {
         const result = tupleTypes[index].validate(input[index])
         if (typeof result === 'string') {
-          return result
+          return `expected [${tupleTypes
+            .map((tupleType) => tupleType.kind)
+            .join(', ')}], accept: ${JSON.stringify(input)}`
         }
       }
       return true
@@ -400,7 +410,7 @@ export const createObjectType = <
   T extends object = ToObjectType<Obj>
 >(
   objectType: Obj
-): JSONType<any, T, `ObjectType {\n ${string} \n} <= AnyObjectType`> => {
+): JSONType<any, T, `ObjectType {\n ${string} \n} <= object`> => {
   type I = object
   const validate: Validator = <I extends object>(input: I) => {
     if (typeof input === 'object' && input !== null) {
@@ -413,7 +423,7 @@ export const createObjectType = <
       }
       return true
     } else {
-      return `expected object, accepted: ${input}`
+      return `expected object, accept: ${JSON.stringify(input)}`
     }
   }
 
@@ -453,7 +463,7 @@ export const createRecordType = <
   T = Record<string, FT>
 >(
   type: Type
-): JSONType<any, T, `Record(${string}) <= AnyObjectType`> => {
+): JSONType<any, T, `Record(${string}) <= object`> => {
   type I = object
   const validate: Validator = <I extends object>(input: I) => {
     let result: true | string = true
