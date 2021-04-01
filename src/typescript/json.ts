@@ -76,6 +76,21 @@ export const AnyListType = createJSONType(
   identify
 )
 
+export const createLiteralType = <T extends string | number | boolean>(
+  to: T
+) => {
+  return createJSONType(
+    `Literal(${to})` as const,
+    (input) => {
+      return input === to ? true : `expected array, accepted: ${input}`
+    },
+    identify as Converter<any, T>,
+    identify
+  )
+}
+
+export const Literal = createLiteralType
+
 export type InputType<
   J extends JSONType<any, any, string>
 > = J extends JSONType<infer I, any, string> ? I : never
@@ -483,6 +498,9 @@ function getKeys<T extends {}>(o: T): Array<keyof T> {
   return Object.keys(o) as Array<keyof T>
 }
 
+// const zero = Literal(0)
+// const name = Literal('name')
+// const trueValue = Literal(true)
 // const a = Tuple(NumberType, StringType)
 // const b = ListType(NumberType)
 // const c = ObjectType({ foo: NumberType, bar: StringType })

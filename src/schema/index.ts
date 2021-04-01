@@ -1,8 +1,8 @@
 export type Schema = {
   kind: 'Schema'
-  typeDefination: TypeDefination[]
-  deriveDefination: DeriveDefination[]
-  callDefination: CallDefination[]
+  typeDefinations: TypeDefination[]
+  deriveDefinations: DeriveDefination[]
+  callDefinations: CallDefination[]
 }
 
 export type TypeDefination = {
@@ -14,9 +14,7 @@ export type TypeDefination = {
 export type Type =
   | PrimitiveType
   | SpecialType
-  | BooleanLiteral
-  | StringLiteral
-  | NumberLiteral
+  | LiteralType
   | ListType
   | ObjectType
   | TupleType
@@ -38,19 +36,9 @@ export enum SpecialType {
 }
 
 // prettier-ignore
-export enum BooleanLiteral {
-  True                  =         'true',
-  False                 =         'false',
-}
-
-export type StringLiteral = {
-  kind: 'StringLiteral'
-  value: string
-}
-
-export type NumberLiteral = {
-  kind: 'NumberLiteral'
-  value: number
+export type LiteralType = {
+  kind: 'Literal',
+  value: boolean | number | string
 }
 
 export type ListType = {
@@ -93,4 +81,97 @@ export type CallDefination = {
   kind: 'CallDefination'
   input: Type
   output: Type
+}
+
+export const createSchema = (): Schema => {
+  return {
+    kind: 'Schema',
+    typeDefinations: [],
+    deriveDefinations: [],
+    callDefinations: [],
+  }
+}
+
+export const createTypeDefination = (
+  name: string,
+  type: Type
+): TypeDefination => {
+  return {
+    kind: 'TypeDefination',
+    name,
+    type,
+  }
+}
+
+export const createLiteralType = (
+  value: boolean | number | string
+): LiteralType => {
+  return {
+    kind: 'Literal',
+    value,
+  }
+}
+
+export const createListType = (type: Type): ListType => {
+  return {
+    kind: 'ListType',
+    type,
+  }
+}
+
+export const createObjectType = (type: Record<string, Type>): ObjectType => {
+  return {
+    kind: 'ObjectType',
+    type,
+  }
+}
+
+export const createTupleType = (types: Type[]): TupleType => {
+  return {
+    kind: 'TupleType',
+    types,
+  }
+}
+
+export const createUnionType = (types: Type[]): UnionType => {
+  return {
+    kind: 'UnionType',
+    types,
+  }
+}
+
+export const createIntersectType = (types: Type[]): IntersectType => {
+  return {
+    kind: 'IntersectType',
+    types,
+  }
+}
+
+export const createNameType = (name: string): NameType => {
+  return {
+    kind: 'NameType',
+    name,
+  }
+}
+
+export const createDeriveDefination = (
+  name: string,
+  type: Type
+): DeriveDefination => {
+  return {
+    kind: 'DeriveDefination',
+    name,
+    type,
+  }
+}
+
+export const createCallDefination = (
+  input: Type,
+  output: Type
+): CallDefination => {
+  return {
+    kind: 'CallDefination',
+    input,
+    output,
+  }
 }

@@ -9,8 +9,7 @@ export class LexicalError extends Error {
     super(message)
 
     this.name = 'LexicalError'
-    this.message = message
-    this.stack = `${message} at line: ${line}, column: ${column} in ${source.filepath}`
+    this.message = `${message} at line: ${line}, column: ${column} in ${source.filepath}`
   }
 }
 
@@ -21,8 +20,7 @@ export class SyntaxError extends Error {
     super(message)
 
     this.name = 'SyntaxError'
-    this.message = message
-    this.stack = `${message} at line: ${token.range.line}, column: ${token.range.column} in ${source.filepath}`
+    this.message = `${message} at line: ${token.range.line}, column: ${token.range.column} in ${source.filepath}`
   }
 }
 
@@ -33,7 +31,17 @@ export class SemanticError extends Error {
     super(message)
 
     this.name = 'SemanticError'
-    this.message = message
-    this.stack = `${message} start at line: ${fragment.location.startToken.range.line}, column: ${fragment.location.startToken.range.column}, end at line: ${fragment.location.endToken.range.line}, column: ${fragment.location.endToken.range.column} in ${source.filepath}`
+    this.message = `${message} start at line: ${fragment.location.startToken.range.line}, column: ${fragment.location.startToken.range.column}, end at line: ${fragment.location.endToken.range.line}, column: ${fragment.location.endToken.range.column} in ${source.filepath}`
+  }
+}
+
+export class BundleError extends Error {
+  kind = 'BundleError' as const
+
+  constructor(message: string, entry: string) {
+    super(message)
+
+    this.name = 'BundleError'
+    this.message = `${message}, entry path: ${entry}`
   }
 }
