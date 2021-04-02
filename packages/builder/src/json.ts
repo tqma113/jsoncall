@@ -571,16 +571,14 @@ export class StructType implements JSONType<object, any, string> {
 
   [REVERSECONVERTER] = (input: any): object => {
     return input
-  };
-
-  [key: string]: JSONType<any, any, string>
+  }
 }
 
 export type Fields<T extends StructType> = {
-  [K in keyof T as K extends `__${string}` | 'kind' | typeof JSON_TYPE_SYMBOL
-    ? never
-    : T[K] extends JSONType<any, any, string>
-    ? K
+  [K in keyof T as K extends string
+    ? T[K] extends JSONType<any, any, string>
+      ? K
+      : never
     : never]: T[K]
 }
 
@@ -618,6 +616,8 @@ function getKeys<T extends {}>(o: T): Array<keyof T> {
 
 //   bar = StringType
 // }
+
+// type A = Fields<FooAndBarClass>
 
 // const FooAndBar = Struct(FooAndBarClass)
 
