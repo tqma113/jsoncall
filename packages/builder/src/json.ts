@@ -606,16 +606,17 @@ function getKeys<T extends {}>(o: T): Array<keyof T> {
 // const b = ListType(NumberType)
 // const c = ObjectType({ foo: NumberType, bar: StringType })
 // const d = RecordType(NumberType)
-class FooAndBarClass extends StructType {
-  [DESCRIPTION] = 'foo and bar'
 
-  @description('some')
-  foo = NumberType
+// class FooAndBarClass extends StructType {
+//   [DESCRIPTION] = 'foo and bar'
 
-  bar = StringType
-}
+//   @description('some')
+//   foo = NumberType
 
-const FooAndBar = Struct(FooAndBarClass)
+//   bar = StringType
+// }
+
+// const FooAndBar = Struct(FooAndBarClass)
 
 // const validate: Validator<string> = (input) => {
 
