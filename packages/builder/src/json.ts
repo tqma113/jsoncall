@@ -586,7 +586,7 @@ export const Struct = <T extends StructType>(Ctro: new () => T) => {
   return ObjectType((struct as unknown) as Fields<T>)
 }
 
-function description(value: string) {
+export function description(value: string) {
   return function <T extends JSONType<any, any, string>>(
     target: T,
     propertyKey: string
