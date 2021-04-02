@@ -1,43 +1,55 @@
 import {
   createJSONType,
-  VALIDATE,
-  CONVERT,
-  REVERSECONVERTER,
+  validate,
+  convert,
+  reverseConverter,
 } from '../src/index'
 
 describe('constructor>base', () => {
   it('simple', () => {
-    const Foo = createJSONType(
-      'Foo',
+    const NumberString = createJSONType(
+      'NumberString',
       (input) => {
-        return typeof input === 'object'
-          ? true
-          : `expected object | null | list, accept: ${JSON.stringify(input)}`
+        if (typeof input === 'string') {
+          const result = Number(input)
+          if (!isNaN(result)) {
+            return true
+          } else {
+            return `expected NumberString, accept: ${JSON.stringify(input)}`
+          }
+        } else {
+          return `expected string, accept: ${JSON.stringify(input)}`
+        }
       },
-      (input: object | null | any[]) => {
-        return { foo: input } as const
+      (input: string): number => {
+        return Number(input)
       },
-      (input: { foo: object | null | any[] }) => {
-        return input.foo
+      (input: number): string => {
+        return '' + input
       }
     )
 
-    expect(Foo[VALIDATE](null)).toBeTruthy()
-    expect(Foo[VALIDATE]({})).toBeTruthy()
-    expect(Foo[VALIDATE]([])).toBeTruthy()
-    expect(Foo[VALIDATE]('foo')).toBe(
-      'expected object | null | list, accept: "foo"'
-    )
-    expect(Foo[VALIDATE](0)).toBe('expected object | null | list, accept: 0')
-    expect(Foo[VALIDATE](true)).toBe(
-      'expected object | null | list, accept: true'
-    )
-    expect(Foo[VALIDATE](undefined)).toBe(
-      'expected object | null | list, accept: undefined'
+    expect(validate(NumberString, '123')).toBeTruthy()
+
+    expect(validate(NumberString, 'foo')).toBe(
+      'expected NumberString, accept: "foo"'
     )
 
-    expect(Foo[CONVERT]({})).toMatchObject({ foo: {} })
-    expect(Foo[REVERSECONVERTER]({ foo: {} })).toMatchObject({})
-    expect(Foo[REVERSECONVERTER](Foo[CONVERT]({}))).toMatchObject({})
+    expect(validate(NumberString, null as any)).toBeTruthy()
+    expect(validate(NumberString, {} as any)).toBeTruthy()
+    expect(validate(NumberString, [] as any)).toBeTruthy()
+    expect(validate(NumberString, 0 as any)).toBe('expected string, accept: 0')
+    expect(validate(NumberString, true as any)).toBe(
+      'expected string, accept: true'
+    )
+    expect(validate(NumberString, undefined as any)).toBe(
+      'expected string, accept: undefined'
+    )
+
+    expect(convert(NumberString, '123')).toBe(123)
+    expect(reverseConverter(NumberString, 123)).toBe('123')
+    expect(reverseConverter(NumberString, convert(NumberString, '123'))).toBe(
+      '123'
+    )
   })
 })
