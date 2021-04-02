@@ -1,8 +1,14 @@
 {
-  "name": "js-client",
+  "name": "jc-client",
   "version": "0.0.1",
   "description": "Infrastructure at client for json call.",
   "main": "index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
   "author": "Ma Tianqi <mtq1997@126.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "jc-builder": "0.0.1",
+    "jc-server": "0.0.1"
+  }
 }

@@ -1,50 +1,39 @@
-import { JSONType, validate, convert, reverseConverter, kind } from './type'
-import { ValidateError, ConvertError, ResolverError } from './error'
+import type { JSONType } from './type'
 
-export type Resolver<I, O> = (input: I) => O
+export const JSON_CALL_TYPE_SYMBOL = Symbol('JSON_CALL_TYPE_SYMBOL')
 
-export type JSONCall<I, O> = ((input: I) => O) & {
-  name: string
+export type JSONCallType<
+  N extends string,
+  II,
+  IT,
+  IK extends string,
+  OI,
+  OT,
+  OK extends string
+> = {
+  [JSON_CALL_TYPE_SYMBOL]: symbol
+  name: N
+  input: JSONType<II, IT, IK>
+  output: JSONType<OI, OT, OK>
 }
 
-export const createJSONCall = <II, IT, OI, OT>(
-  name: string,
-  input: JSONType<II, IT, string>,
-  output: JSONType<OI, OT, string>
-) => (
-  resolve: Resolver<IT, OT>
-): JSONCall<II, OI | ValidateError | ConvertError | ResolverError> => {
-  const obj = {
-    [name]: function (
-      data: II
-    ): OI | ValidateError | ConvertError | ResolverError {
-      const inputValidateResult = validate(input, data)
-
-      if (inputValidateResult === true) {
-        try {
-          const convertResult = convert(input, data)
-
-          try {
-            const resolveResult = resolve(convertResult)
-            const result = reverseConverter(output, resolveResult)
-            const outputValidateResult = validate(output, result)
-
-            if (outputValidateResult === true) {
-              return result
-            } else {
-              return outputValidateResult
-            }
-          } catch (err) {
-            throw new ResolverError(err, name)
-          }
-        } catch (err) {
-          return new ConvertError(err, kind(input))
-        }
-      } else {
-        return inputValidateResult
-      }
-    },
+export const createJSONCallType = <
+  N extends string,
+  II,
+  IT,
+  IK extends string,
+  OI,
+  OT,
+  OK extends string
+>(
+  name: N,
+  input: JSONType<II, IT, IK>,
+  output: JSONType<OI, OT, OK>
+): JSONCallType<N, II, IT, IK, OI, OT, OK> => {
+  return {
+    [JSON_CALL_TYPE_SYMBOL]: JSON_CALL_TYPE_SYMBOL,
+    name,
+    input,
+    output,
   }
-
-  return obj[name]
 }
