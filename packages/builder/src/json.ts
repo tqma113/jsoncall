@@ -554,13 +554,16 @@ export class StructType implements JSONType<object, any, string> {
   [VALIDATE]: Validator<object>;
   [CONVERT]: Converter<object, any>;
   [REVERSECONVERTER]: Converter<any, object>;
-  [STRUCT_TYPE] = (STRUCT_TYPE[KIND] = 'Struct'[DESCRIPTION] = 'Struct'[
-    VALIDATE
-  ] = (input: object) => {
+  [STRUCT_TYPE] = STRUCT_TYPE;
+
+  [KIND] = 'Struct';
+  [DESCRIPTION] = 'Struct';
+
+  [VALIDATE] = (input: object) => {
     return typeof input === 'object' && input !== null && !Array.isArray(input)
       ? true
       : `expected object, accept: ${JSON.stringify(input)}`
-  });
+  };
 
   [CONVERT] = (input: object): any => {
     return input
