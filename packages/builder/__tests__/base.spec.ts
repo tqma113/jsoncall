@@ -4,6 +4,7 @@ import {
   convert,
   reverseConverter,
 } from '../src/index'
+import { ValidateError } from '../src/error'
 
 describe('builder>base', () => {
   it('simple', () => {
@@ -15,10 +16,10 @@ describe('builder>base', () => {
           if (!isNaN(result)) {
             return true
           } else {
-            return `expected NumberString, accept: ${JSON.stringify(input)}`
+            return new ValidateError('NumberString', JSON.stringify(input))
           }
         } else {
-          return `expected string, accept: ${JSON.stringify(input)}`
+          return new ValidateError('string', JSON.stringify(input))
         }
       },
       (input: string): number => {
