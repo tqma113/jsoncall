@@ -3,7 +3,7 @@
   "workspaces": [
     "packages/*"
   ],
-  "repository": "git@github.com:tqma113/json.git",
+  "repository": "git@github.com:tqma113/jsoncall.git",
   "author": "Ma Tianqi <mtq1997@126.com>",
   "license": "MIT",
   "scripts": {
