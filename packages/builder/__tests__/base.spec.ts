@@ -5,7 +5,7 @@ import {
   reverseConverter,
 } from '../src/index'
 
-describe('constructor>base', () => {
+describe('builder>base', () => {
   it('simple', () => {
     const NumberString = createJSONType(
       'NumberString',
