@@ -8,7 +8,7 @@
       "path": "./packages/language/tsconfig.json"
     },
     {
-      "path": "./packages/constructor/tsconfig.json"
+      "path": "./packages/builder/tsconfig.json"
     },
     {
       "path": "./packages/server/tsconfig.json"
