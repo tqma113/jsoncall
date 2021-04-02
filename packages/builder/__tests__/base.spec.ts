@@ -1,4 +1,9 @@
-import { createJSONType } from '../src/index'
+import {
+  createJSONType,
+  VALIDATE,
+  CONVERT,
+  REVERSECONVERTER,
+} from '../src/index'
 
 describe('constructor>base', () => {
   it('simple', () => {
@@ -17,22 +22,22 @@ describe('constructor>base', () => {
       }
     )
 
-    expect(Foo.validate(null)).toBeTruthy()
-    expect(Foo.validate({})).toBeTruthy()
-    expect(Foo.validate([])).toBeTruthy()
-    expect(Foo.validate('foo')).toBe(
+    expect(Foo[VALIDATE](null)).toBeTruthy()
+    expect(Foo[VALIDATE]({})).toBeTruthy()
+    expect(Foo[VALIDATE]([])).toBeTruthy()
+    expect(Foo[VALIDATE]('foo')).toBe(
       'expected object | null | list, accept: "foo"'
     )
-    expect(Foo.validate(0)).toBe('expected object | null | list, accept: 0')
-    expect(Foo.validate(true)).toBe(
+    expect(Foo[VALIDATE](0)).toBe('expected object | null | list, accept: 0')
+    expect(Foo[VALIDATE](true)).toBe(
       'expected object | null | list, accept: true'
     )
-    expect(Foo.validate(undefined)).toBe(
+    expect(Foo[VALIDATE](undefined)).toBe(
       'expected object | null | list, accept: undefined'
     )
 
-    expect(Foo.convert({})).toMatchObject({ foo: {} })
-    expect(Foo.reverseConverter({ foo: {} })).toMatchObject({})
-    expect(Foo.reverseConverter(Foo.convert({}))).toMatchObject({})
+    expect(Foo[CONVERT]({})).toMatchObject({ foo: {} })
+    expect(Foo[REVERSECONVERTER]({ foo: {} })).toMatchObject({})
+    expect(Foo[REVERSECONVERTER](Foo[CONVERT]({}))).toMatchObject({})
   })
 })

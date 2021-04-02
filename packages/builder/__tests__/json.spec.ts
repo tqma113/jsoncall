@@ -12,104 +12,111 @@ import {
   ObjectType,
   Literal,
   Union,
+  VALIDATE,
 } from '../src/index'
 
 describe('constructor>json', () => {
   describe('primitive', () => {
     it('StringType', () => {
-      expect(StringType.validate('foo')).toBeTruthy()
-      expect(StringType.validate(0)).toBe('expected string, accept: 0')
-      expect(StringType.validate(true)).toBe('expected string, accept: true')
-      expect(StringType.validate(null)).toBe('expected string, accept: null')
-      expect(StringType.validate({})).toBe('expected string, accept: {}')
-      expect(StringType.validate([])).toBe('expected string, accept: []')
-      expect(StringType.validate(undefined)).toBe(
+      expect(StringType[VALIDATE]('foo')).toBeTruthy()
+      expect(StringType[VALIDATE](0)).toBe('expected string, accept: 0')
+      expect(StringType[VALIDATE](true)).toBe('expected string, accept: true')
+      expect(StringType[VALIDATE](null)).toBe('expected string, accept: null')
+      expect(StringType[VALIDATE]({})).toBe('expected string, accept: {}')
+      expect(StringType[VALIDATE]([])).toBe('expected string, accept: []')
+      expect(StringType[VALIDATE](undefined)).toBe(
         'expected string, accept: undefined'
       )
     })
 
     it('NumberType', () => {
-      expect(NumberType.validate('foo')).toBe('expected number, accept: "foo"')
-      expect(NumberType.validate(0)).toBeTruthy()
-      expect(NumberType.validate(true)).toBe('expected number, accept: true')
-      expect(NumberType.validate(null)).toBe('expected number, accept: null')
-      expect(NumberType.validate({})).toBe('expected number, accept: {}')
-      expect(NumberType.validate([])).toBe('expected number, accept: []')
-      expect(NumberType.validate(undefined)).toBe(
+      expect(NumberType[VALIDATE]('foo')).toBe('expected number, accept: "foo"')
+      expect(NumberType[VALIDATE](0)).toBeTruthy()
+      expect(NumberType[VALIDATE](true)).toBe('expected number, accept: true')
+      expect(NumberType[VALIDATE](null)).toBe('expected number, accept: null')
+      expect(NumberType[VALIDATE]({})).toBe('expected number, accept: {}')
+      expect(NumberType[VALIDATE]([])).toBe('expected number, accept: []')
+      expect(NumberType[VALIDATE](undefined)).toBe(
         'expected number, accept: undefined'
       )
     })
 
     it('BooleanType', () => {
-      expect(BooleanType.validate('foo')).toBe(
+      expect(BooleanType[VALIDATE]('foo')).toBe(
         'expected boolean, accept: "foo"'
       )
-      expect(BooleanType.validate(0)).toBe('expected boolean, accept: 0')
-      expect(BooleanType.validate(true)).toBeTruthy()
-      expect(BooleanType.validate(null)).toBe('expected boolean, accept: null')
-      expect(BooleanType.validate({})).toBe('expected boolean, accept: {}')
-      expect(BooleanType.validate([])).toBe('expected boolean, accept: []')
-      expect(BooleanType.validate(undefined)).toBe(
+      expect(BooleanType[VALIDATE](0)).toBe('expected boolean, accept: 0')
+      expect(BooleanType[VALIDATE](true)).toBeTruthy()
+      expect(BooleanType[VALIDATE](null)).toBe('expected boolean, accept: null')
+      expect(BooleanType[VALIDATE]({})).toBe('expected boolean, accept: {}')
+      expect(BooleanType[VALIDATE]([])).toBe('expected boolean, accept: []')
+      expect(BooleanType[VALIDATE](undefined)).toBe(
         'expected boolean, accept: undefined'
       )
     })
 
     it('NullType', () => {
-      expect(NullType.validate('foo')).toBe('expected null, accept: "foo"')
-      expect(NullType.validate(0)).toBe('expected null, accept: 0')
-      expect(NullType.validate(true)).toBe('expected null, accept: true')
-      expect(NullType.validate(null)).toBeTruthy()
-      expect(NullType.validate({})).toBe('expected null, accept: {}')
-      expect(NullType.validate([])).toBe('expected null, accept: []')
-      expect(NullType.validate(undefined)).toBe(
+      expect(NullType[VALIDATE]('foo')).toBe('expected null, accept: "foo"')
+      expect(NullType[VALIDATE](0)).toBe('expected null, accept: 0')
+      expect(NullType[VALIDATE](true)).toBe('expected null, accept: true')
+      expect(NullType[VALIDATE](null)).toBeTruthy()
+      expect(NullType[VALIDATE]({})).toBe('expected null, accept: {}')
+      expect(NullType[VALIDATE]([])).toBe('expected null, accept: []')
+      expect(NullType[VALIDATE](undefined)).toBe(
         'expected null, accept: undefined'
       )
     })
 
     it('AnyObjectType', () => {
-      expect(AnyObjectType.validate('foo')).toBe(
+      expect(AnyObjectType[VALIDATE]('foo')).toBe(
         'expected object, accept: "foo"'
       )
-      expect(AnyObjectType.validate(0)).toBe('expected object, accept: 0')
-      expect(AnyObjectType.validate(true)).toBe('expected object, accept: true')
-      expect(AnyObjectType.validate(null)).toBe('expected object, accept: null')
-      expect(AnyObjectType.validate({})).toBeTruthy()
-      expect(AnyObjectType.validate([])).toBe('expected object, accept: []')
-      expect(AnyObjectType.validate(undefined)).toBe(
+      expect(AnyObjectType[VALIDATE](0)).toBe('expected object, accept: 0')
+      expect(AnyObjectType[VALIDATE](true)).toBe(
+        'expected object, accept: true'
+      )
+      expect(AnyObjectType[VALIDATE](null)).toBe(
+        'expected object, accept: null'
+      )
+      expect(AnyObjectType[VALIDATE]({})).toBeTruthy()
+      expect(AnyObjectType[VALIDATE]([])).toBe('expected object, accept: []')
+      expect(AnyObjectType[VALIDATE](undefined)).toBe(
         'expected object, accept: undefined'
       )
     })
 
     it('AnyListType', () => {
-      expect(AnyListType.validate('foo')).toBe('expected list, accept: "foo"')
-      expect(AnyListType.validate(0)).toBe('expected list, accept: 0')
-      expect(AnyListType.validate(true)).toBe('expected list, accept: true')
-      expect(AnyListType.validate(null)).toBe('expected list, accept: null')
-      expect(AnyListType.validate({})).toBe('expected list, accept: {}')
-      expect(AnyListType.validate([])).toBeTruthy()
-      expect(AnyListType.validate(undefined)).toBe(
+      expect(AnyListType[VALIDATE]('foo')).toBe('expected list, accept: "foo"')
+      expect(AnyListType[VALIDATE](0)).toBe('expected list, accept: 0')
+      expect(AnyListType[VALIDATE](true)).toBe('expected list, accept: true')
+      expect(AnyListType[VALIDATE](null)).toBe('expected list, accept: null')
+      expect(AnyListType[VALIDATE]({})).toBe('expected list, accept: {}')
+      expect(AnyListType[VALIDATE]([])).toBeTruthy()
+      expect(AnyListType[VALIDATE](undefined)).toBe(
         'expected list, accept: undefined'
       )
     })
 
     it('AnyType', () => {
-      expect(AnyType.validate('foo')).toBeTruthy()
-      expect(AnyType.validate(0)).toBeTruthy()
-      expect(AnyType.validate(true)).toBeTruthy()
-      expect(AnyType.validate(null)).toBeTruthy()
-      expect(AnyType.validate({})).toBeTruthy()
-      expect(AnyType.validate([])).toBeTruthy()
-      expect(AnyType.validate(undefined)).toBeTruthy()
+      expect(AnyType[VALIDATE]('foo')).toBeTruthy()
+      expect(AnyType[VALIDATE](0)).toBeTruthy()
+      expect(AnyType[VALIDATE](true)).toBeTruthy()
+      expect(AnyType[VALIDATE](null)).toBeTruthy()
+      expect(AnyType[VALIDATE]({})).toBeTruthy()
+      expect(AnyType[VALIDATE]([])).toBeTruthy()
+      expect(AnyType[VALIDATE](undefined)).toBeTruthy()
     })
 
     it('NoneType', () => {
-      expect(NoneType.validate('foo')).toBe('expected undefined, accept: "foo"')
-      expect(NoneType.validate(0)).toBe('expected undefined, accept: 0')
-      expect(NoneType.validate(true)).toBe('expected undefined, accept: true')
-      expect(NoneType.validate(null)).toBe('expected undefined, accept: null')
-      expect(NoneType.validate({})).toBe('expected undefined, accept: {}')
-      expect(NoneType.validate([])).toBe('expected undefined, accept: []')
-      expect(NoneType.validate(undefined)).toBeTruthy()
+      expect(NoneType[VALIDATE]('foo')).toBe(
+        'expected undefined, accept: "foo"'
+      )
+      expect(NoneType[VALIDATE](0)).toBe('expected undefined, accept: 0')
+      expect(NoneType[VALIDATE](true)).toBe('expected undefined, accept: true')
+      expect(NoneType[VALIDATE](null)).toBe('expected undefined, accept: null')
+      expect(NoneType[VALIDATE]({})).toBe('expected undefined, accept: {}')
+      expect(NoneType[VALIDATE]([])).toBe('expected undefined, accept: []')
+      expect(NoneType[VALIDATE](undefined)).toBeTruthy()
     })
   })
 
@@ -118,29 +125,29 @@ describe('constructor>json', () => {
       it('number', () => {
         const Zero = Literal(0)
 
-        expect(Zero.validate(0)).toBeTruthy()
+        expect(Zero[VALIDATE](0)).toBeTruthy()
 
-        expect(Zero.validate('foo')).toBe('expected 0, accept: "foo"')
-        expect(Zero.validate(1)).toBe('expected 0, accept: 1')
-        expect(Zero.validate(true)).toBe('expected 0, accept: true')
-        expect(Zero.validate(null)).toBe('expected 0, accept: null')
-        expect(Zero.validate({})).toBe('expected 0, accept: {}')
-        expect(Zero.validate([])).toBe('expected 0, accept: []')
-        expect(Zero.validate(undefined)).toBe('expected 0, accept: undefined')
+        expect(Zero[VALIDATE]('foo')).toBe('expected 0, accept: "foo"')
+        expect(Zero[VALIDATE](1)).toBe('expected 0, accept: 1')
+        expect(Zero[VALIDATE](true)).toBe('expected 0, accept: true')
+        expect(Zero[VALIDATE](null)).toBe('expected 0, accept: null')
+        expect(Zero[VALIDATE]({})).toBe('expected 0, accept: {}')
+        expect(Zero[VALIDATE]([])).toBe('expected 0, accept: []')
+        expect(Zero[VALIDATE](undefined)).toBe('expected 0, accept: undefined')
       })
 
       it('string', () => {
         const Foo = Literal('foo')
 
-        expect(Foo.validate('foo')).toBeTruthy()
+        expect(Foo[VALIDATE]('foo')).toBeTruthy()
 
-        expect(Foo.validate('bar')).toBe('expected "foo", accept: "bar"')
-        expect(Foo.validate(0)).toBe('expected "foo", accept: 0')
-        expect(Foo.validate(true)).toBe('expected "foo", accept: true')
-        expect(Foo.validate(null)).toBe('expected "foo", accept: null')
-        expect(Foo.validate({})).toBe('expected "foo", accept: {}')
-        expect(Foo.validate([])).toBe('expected "foo", accept: []')
-        expect(Foo.validate(undefined)).toBe(
+        expect(Foo[VALIDATE]('bar')).toBe('expected "foo", accept: "bar"')
+        expect(Foo[VALIDATE](0)).toBe('expected "foo", accept: 0')
+        expect(Foo[VALIDATE](true)).toBe('expected "foo", accept: true')
+        expect(Foo[VALIDATE](null)).toBe('expected "foo", accept: null')
+        expect(Foo[VALIDATE]({})).toBe('expected "foo", accept: {}')
+        expect(Foo[VALIDATE]([])).toBe('expected "foo", accept: []')
+        expect(Foo[VALIDATE](undefined)).toBe(
           'expected "foo", accept: undefined'
         )
       })
@@ -148,15 +155,15 @@ describe('constructor>json', () => {
       it('boolean', () => {
         const True = Literal(true)
 
-        expect(True.validate(true)).toBeTruthy()
+        expect(True[VALIDATE](true)).toBeTruthy()
 
-        expect(True.validate('foo')).toBe('expected true, accept: "foo"')
-        expect(True.validate(0)).toBe('expected true, accept: 0')
-        expect(True.validate(false)).toBe('expected true, accept: false')
-        expect(True.validate(null)).toBe('expected true, accept: null')
-        expect(True.validate({})).toBe('expected true, accept: {}')
-        expect(True.validate([])).toBe('expected true, accept: []')
-        expect(True.validate(undefined)).toBe(
+        expect(True[VALIDATE]('foo')).toBe('expected true, accept: "foo"')
+        expect(True[VALIDATE](0)).toBe('expected true, accept: 0')
+        expect(True[VALIDATE](false)).toBe('expected true, accept: false')
+        expect(True[VALIDATE](null)).toBe('expected true, accept: null')
+        expect(True[VALIDATE]({})).toBe('expected true, accept: {}')
+        expect(True[VALIDATE]([])).toBe('expected true, accept: []')
+        expect(True[VALIDATE](undefined)).toBe(
           'expected true, accept: undefined'
         )
       })
@@ -164,14 +171,14 @@ describe('constructor>json', () => {
       it('null', () => {
         const Null = Literal(null)
 
-        expect(Null.validate(null)).toBeTruthy()
+        expect(Null[VALIDATE](null)).toBeTruthy()
 
-        expect(Null.validate('foo')).toBe('expected null, accept: "foo"')
-        expect(Null.validate(0)).toBe('expected null, accept: 0')
-        expect(Null.validate(false)).toBe('expected null, accept: false')
-        expect(Null.validate({})).toBe('expected null, accept: {}')
-        expect(Null.validate([])).toBe('expected null, accept: []')
-        expect(Null.validate(undefined)).toBe(
+        expect(Null[VALIDATE]('foo')).toBe('expected null, accept: "foo"')
+        expect(Null[VALIDATE](0)).toBe('expected null, accept: 0')
+        expect(Null[VALIDATE](false)).toBe('expected null, accept: false')
+        expect(Null[VALIDATE]({})).toBe('expected null, accept: {}')
+        expect(Null[VALIDATE]([])).toBe('expected null, accept: []')
+        expect(Null[VALIDATE](undefined)).toBe(
           'expected null, accept: undefined'
         )
       })
@@ -179,48 +186,48 @@ describe('constructor>json', () => {
       it('object', () => {
         const Obj = Literal({})
 
-        expect(Obj.validate({})).toBeTruthy()
+        expect(Obj[VALIDATE]({})).toBeTruthy()
 
-        expect(Obj.validate('foo')).toBe('expected {}, accept: "foo"')
-        expect(Obj.validate(0)).toBe('expected {}, accept: 0')
-        expect(Obj.validate(false)).toBe('expected {}, accept: false')
-        expect(Obj.validate(null)).toBe('expected {}, accept: null')
-        expect(Obj.validate({ foo: 0 })).toBe('expected {}, accept: {"foo":0}')
-        expect(Obj.validate([])).toBe('expected {}, accept: []')
-        expect(Obj.validate(undefined)).toBe('expected {}, accept: undefined')
+        expect(Obj[VALIDATE]('foo')).toBe('expected {}, accept: "foo"')
+        expect(Obj[VALIDATE](0)).toBe('expected {}, accept: 0')
+        expect(Obj[VALIDATE](false)).toBe('expected {}, accept: false')
+        expect(Obj[VALIDATE](null)).toBe('expected {}, accept: null')
+        expect(Obj[VALIDATE]({ foo: 0 })).toBe('expected {}, accept: {"foo":0}')
+        expect(Obj[VALIDATE]([])).toBe('expected {}, accept: []')
+        expect(Obj[VALIDATE](undefined)).toBe('expected {}, accept: undefined')
       })
 
       it('list', () => {
         const List = Literal([])
 
-        expect(List.validate([])).toBeTruthy()
+        expect(List[VALIDATE]([])).toBeTruthy()
 
-        expect(List.validate('foo')).toBe('expected [], accept: "foo"')
-        expect(List.validate(0)).toBe('expected [], accept: 0')
-        expect(List.validate(false)).toBe('expected [], accept: false')
-        expect(List.validate(null)).toBe('expected [], accept: null')
-        expect(List.validate({})).toBe('expected [], accept: {}')
-        expect(List.validate([0])).toBe('expected [], accept: [0]')
-        expect(List.validate(undefined)).toBe('expected [], accept: undefined')
+        expect(List[VALIDATE]('foo')).toBe('expected [], accept: "foo"')
+        expect(List[VALIDATE](0)).toBe('expected [], accept: 0')
+        expect(List[VALIDATE](false)).toBe('expected [], accept: false')
+        expect(List[VALIDATE](null)).toBe('expected [], accept: null')
+        expect(List[VALIDATE]({})).toBe('expected [], accept: {}')
+        expect(List[VALIDATE]([0])).toBe('expected [], accept: [0]')
+        expect(List[VALIDATE](undefined)).toBe('expected [], accept: undefined')
       })
 
       it('undefined', () => {
         const Undefined = Literal(undefined)
 
-        expect(Undefined.validate(undefined)).toBeTruthy()
+        expect(Undefined[VALIDATE](undefined)).toBeTruthy()
 
-        expect(Undefined.validate('foo')).toBe(
+        expect(Undefined[VALIDATE]('foo')).toBe(
           'expected undefined, accept: "foo"'
         )
-        expect(Undefined.validate(0)).toBe('expected undefined, accept: 0')
-        expect(Undefined.validate(false)).toBe(
+        expect(Undefined[VALIDATE](0)).toBe('expected undefined, accept: 0')
+        expect(Undefined[VALIDATE](false)).toBe(
           'expected undefined, accept: false'
         )
-        expect(Undefined.validate(null)).toBe(
+        expect(Undefined[VALIDATE](null)).toBe(
           'expected undefined, accept: null'
         )
-        expect(Undefined.validate({})).toBe('expected undefined, accept: {}')
-        expect(Undefined.validate([])).toBe('expected undefined, accept: []')
+        expect(Undefined[VALIDATE]({})).toBe('expected undefined, accept: {}')
+        expect(Undefined[VALIDATE]([])).toBe('expected undefined, accept: []')
       })
     })
 
@@ -228,36 +235,36 @@ describe('constructor>json', () => {
       it('simple', () => {
         const NumberList = ListType(NumberType)
 
-        expect(NumberList.validate([])).toBeTruthy()
-        expect(NumberList.validate([0])).toBeTruthy()
-        expect(NumberList.validate([0, 1])).toBeTruthy()
-        expect(NumberList.validate([0, 1, 2])).toBeTruthy()
+        expect(NumberList[VALIDATE]([])).toBeTruthy()
+        expect(NumberList[VALIDATE]([0])).toBeTruthy()
+        expect(NumberList[VALIDATE]([0, 1])).toBeTruthy()
+        expect(NumberList[VALIDATE]([0, 1, 2])).toBeTruthy()
 
-        expect(NumberList.validate(['foo'])).toBe(
+        expect(NumberList[VALIDATE](['foo'])).toBe(
           'expected number, accept: "foo" in list'
         )
-        expect(NumberList.validate([false])).toBe(
+        expect(NumberList[VALIDATE]([false])).toBe(
           'expected number, accept: false in list'
         )
-        expect(NumberList.validate([null])).toBe(
+        expect(NumberList[VALIDATE]([null])).toBe(
           'expected number, accept: null in list'
         )
-        expect(NumberList.validate([{}])).toBe(
+        expect(NumberList[VALIDATE]([{}])).toBe(
           'expected number, accept: {} in list'
         )
-        expect(NumberList.validate([[]])).toBe(
+        expect(NumberList[VALIDATE]([[]])).toBe(
           'expected number, accept: [] in list'
         )
-        expect(NumberList.validate([undefined])).toBe(
+        expect(NumberList[VALIDATE]([undefined])).toBe(
           'expected number, accept: undefined in list'
         )
 
-        expect(NumberList.validate('foo')).toBe('expected list, accept: "foo"')
-        expect(NumberList.validate(0)).toBe('expected list, accept: 0')
-        expect(NumberList.validate(true)).toBe('expected list, accept: true')
-        expect(NumberList.validate(null)).toBe('expected list, accept: null')
-        expect(NumberList.validate({})).toBe('expected list, accept: {}')
-        expect(NumberList.validate(undefined)).toBe(
+        expect(NumberList[VALIDATE]('foo')).toBe('expected list, accept: "foo"')
+        expect(NumberList[VALIDATE](0)).toBe('expected list, accept: 0')
+        expect(NumberList[VALIDATE](true)).toBe('expected list, accept: true')
+        expect(NumberList[VALIDATE](null)).toBe('expected list, accept: null')
+        expect(NumberList[VALIDATE]({})).toBe('expected list, accept: {}')
+        expect(NumberList[VALIDATE](undefined)).toBe(
           'expected list, accept: undefined'
         )
       })
@@ -267,33 +274,33 @@ describe('constructor>json', () => {
       it('simple', () => {
         const NumberAndString = Tuple(NumberType, StringType)
 
-        expect(NumberAndString.validate([0, 'foo'])).toBeTruthy()
+        expect(NumberAndString[VALIDATE]([0, 'foo'])).toBeTruthy()
 
-        expect(NumberAndString.validate([])).toBe(
+        expect(NumberAndString[VALIDATE]([])).toBe(
           'expected [number, string], accept: []'
         )
-        expect(NumberAndString.validate([0])).toBe(
+        expect(NumberAndString[VALIDATE]([0])).toBe(
           'expected [number, string], accept: [0]'
         )
-        expect(NumberAndString.validate([0, 1])).toBe(
+        expect(NumberAndString[VALIDATE]([0, 1])).toBe(
           'expected [number, string], accept: [0,1]'
         )
-        expect(NumberAndString.validate(['foo', 'bar'])).toBe(
+        expect(NumberAndString[VALIDATE](['foo', 'bar'])).toBe(
           'expected [number, string], accept: ["foo","bar"]'
         )
 
-        expect(NumberAndString.validate('foo')).toBe(
+        expect(NumberAndString[VALIDATE]('foo')).toBe(
           'expected list, accept: "foo"'
         )
-        expect(NumberAndString.validate(0)).toBe('expected list, accept: 0')
-        expect(NumberAndString.validate(false)).toBe(
+        expect(NumberAndString[VALIDATE](0)).toBe('expected list, accept: 0')
+        expect(NumberAndString[VALIDATE](false)).toBe(
           'expected list, accept: false'
         )
-        expect(NumberAndString.validate(null)).toBe(
+        expect(NumberAndString[VALIDATE](null)).toBe(
           'expected list, accept: null'
         )
-        expect(NumberAndString.validate({})).toBe('expected list, accept: {}')
-        expect(NumberAndString.validate(undefined)).toBe(
+        expect(NumberAndString[VALIDATE]({})).toBe('expected list, accept: {}')
+        expect(NumberAndString[VALIDATE](undefined)).toBe(
           'expected list, accept: undefined'
         )
       })
@@ -303,18 +310,20 @@ describe('constructor>json', () => {
       it('simple', () => {
         const FooAndBar = ObjectType({ foo: NumberType, bar: StringType })
 
-        expect(FooAndBar.validate({ foo: 0, bar: 'bar' })).toBeTruthy()
+        expect(FooAndBar[VALIDATE]({ foo: 0, bar: 'bar' })).toBeTruthy()
 
-        expect(FooAndBar.validate({ foo: 0, bar: 1 })).toBe(
+        expect(FooAndBar[VALIDATE]({ foo: 0, bar: 1 })).toBe(
           'expected string, accept: 1 in object.bar'
         )
 
-        expect(FooAndBar.validate('foo')).toBe('expected object, accept: "foo"')
-        expect(FooAndBar.validate(0)).toBe('expected object, accept: 0')
-        expect(FooAndBar.validate(true)).toBe('expected object, accept: true')
-        expect(FooAndBar.validate(null)).toBe('expected object, accept: null')
-        expect(FooAndBar.validate([])).toBe('expected object, accept: []')
-        expect(FooAndBar.validate(undefined)).toBe(
+        expect(FooAndBar[VALIDATE]('foo')).toBe(
+          'expected object, accept: "foo"'
+        )
+        expect(FooAndBar[VALIDATE](0)).toBe('expected object, accept: 0')
+        expect(FooAndBar[VALIDATE](true)).toBe('expected object, accept: true')
+        expect(FooAndBar[VALIDATE](null)).toBe('expected object, accept: null')
+        expect(FooAndBar[VALIDATE]([])).toBe('expected object, accept: []')
+        expect(FooAndBar[VALIDATE](undefined)).toBe(
           'expected object, accept: undefined'
         )
       })
@@ -324,22 +333,22 @@ describe('constructor>json', () => {
       it('simple', () => {
         const NumberOrString = Union(NumberType, StringType)
 
-        expect(NumberOrString.validate('foo')).toBeTruthy()
-        expect(NumberOrString.validate(0)).toBeTruthy()
+        expect(NumberOrString[VALIDATE]('foo')).toBeTruthy()
+        expect(NumberOrString[VALIDATE](0)).toBeTruthy()
 
-        expect(NumberOrString.validate(false)).toBe(
+        expect(NumberOrString[VALIDATE](false)).toBe(
           'expected number | string, accept: false'
         )
-        expect(NumberOrString.validate(null)).toBe(
+        expect(NumberOrString[VALIDATE](null)).toBe(
           'expected number | string, accept: null'
         )
-        expect(NumberOrString.validate({})).toBe(
+        expect(NumberOrString[VALIDATE]({})).toBe(
           'expected number | string, accept: {}'
         )
-        expect(NumberOrString.validate([])).toBe(
+        expect(NumberOrString[VALIDATE]([])).toBe(
           'expected number | string, accept: []'
         )
-        expect(NumberOrString.validate(undefined)).toBe(
+        expect(NumberOrString[VALIDATE](undefined)).toBe(
           'expected number | string, accept: undefined'
         )
       })
