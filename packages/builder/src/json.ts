@@ -28,7 +28,8 @@ export const createJSONType = <I, T, K extends string>(
   kind: K,
   validate: Validator,
   convert: Converter<I, T>,
-  reverseConverter: Converter<T, I>
+  reverseConverter: Converter<T, I>,
+  description: string = ''
 ): JSONType<I, T, K> => {
   return {
     [JSON_TYPE_SYMBOL]: JSON_TYPE_SYMBOL,
@@ -36,8 +37,23 @@ export const createJSONType = <I, T, K extends string>(
     [VALIDATE]: validate,
     [CONVERT]: convert,
     [REVERSECONVERTER]: reverseConverter,
-    [DESCRIPTION]: '',
+    [DESCRIPTION]: description,
   }
+}
+
+export const validate = <I>(type: JSONType<I, any, string>, input: I) => {
+  return type[VALIDATE](input)
+}
+
+export const convert = <I, T>(type: JSONType<I, T, string>, input: I): T => {
+  return type[CONVERT](input)
+}
+
+export const reverseConverter = <I, T>(
+  type: JSONType<I, T, string>,
+  input: T
+): I => {
+  return type[REVERSECONVERTER](input)
 }
 
 const identify = (input: any) => input
@@ -121,7 +137,7 @@ export const NoneType = createJSONType(
   identify
 )
 
-export const createLiteralType = <T>(to: T) => {
+export const createLiteralType = <T>(to: T, description: string = '') => {
   return createJSONType(
     `Literal(${to})` as const,
     (input) => {
@@ -130,7 +146,8 @@ export const createLiteralType = <T>(to: T) => {
         : `expected ${JSON.stringify(to)}, accept: ${JSON.stringify(input)}`
     },
     identify as Converter<any, T>,
-    identify
+    identify,
+    description
   )
 }
 
@@ -317,7 +334,8 @@ export const createDeriveType = <FI, FT, FK extends string>(
   kind: CK,
   curValidate: Validator<FT>,
   curConvert: Converter<FT, T>,
-  curReverseConverter: Converter<T, FT>
+  curReverseConverter: Converter<T, FT>,
+  description: string = ''
 ): JSONType<FI, T, `${CK} <= ${FK}`> => {
   const validate: Validator<FI> = (input) => {
     const result = from[VALIDATE](input)
@@ -340,7 +358,8 @@ export const createDeriveType = <FI, FT, FK extends string>(
     `${kind} <= ${from[KIND]}` as const,
     validate,
     convert,
-    reverseConverter
+    reverseConverter,
+    description
   )
 }
 
@@ -350,7 +369,8 @@ export const createListType = <
   Type extends JSONType<any, any, string>,
   FT = ToType<Type>
 >(
-  type: Type
+  type: Type,
+  description: string = ''
 ): JSONType<any, FT[], `List[${string}] <= list`> => {
   const validate: Validator = (input: any[]) => {
     let result: true | string = true
@@ -375,7 +395,8 @@ export const createListType = <
     `List[${type[KIND]}]` as const,
     validate,
     convert,
-    reverseConverter
+    reverseConverter,
+    description
   )
 }
 
@@ -448,7 +469,8 @@ export const createObjectType = <
   Obj extends object,
   T extends object = ToObjectType<Obj>
 >(
-  objectType: Obj
+  objectType: Obj,
+  description: string = ''
 ): JSONType<any, T, `ObjectType {\n ${string} \n} <= object`> => {
   type I = object
   const validate: Validator = <I extends object>(input: I) => {
@@ -492,7 +514,8 @@ export const createObjectType = <
       .join(',\n')} \n}` as const,
     validate,
     convert,
-    reverseConverter
+    reverseConverter,
+    description
   )
 }
 
@@ -503,7 +526,8 @@ export const createRecordType = <
   FT = ToType<Type>,
   T = Record<string, FT>
 >(
-  type: Type
+  type: Type,
+  description: string = ''
 ): JSONType<any, T, `Record(${string}) <= object`> => {
   type I = object
   const validate: Validator = <I extends object>(input: I) => {
@@ -539,7 +563,8 @@ export const createRecordType = <
     `Record(${type[KIND]})` as const,
     validate,
     convert,
-    reverseConverter
+    reverseConverter,
+    description
   )
 }
 
