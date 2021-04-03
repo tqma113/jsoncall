@@ -11,6 +11,9 @@
       "path": "./packages/builder/tsconfig.json"
     },
     {
+      "path": "./packages/serialization/tsconfig.json"
+    },
+    {
       "path": "./packages/server/tsconfig.json"
     },
     {

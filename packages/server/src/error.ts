@@ -3,7 +3,7 @@ export class ResolverError extends Error {
   callName: string
 
   constructor(message: string, callName: string) {
-    super(message)
+    super(`at ${callName} ${message}`)
     this.callName = callName
     this.name = 'ResolverError'
   }

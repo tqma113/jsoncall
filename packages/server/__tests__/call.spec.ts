@@ -4,7 +4,9 @@ import { createJSONCall } from '../src/index'
 describe('call', () => {
   it('simple', () => {
     const call = createJSONCall(
-      createJSONCallType('call', NumberType, StringType)
+      createJSONCallType('call', NumberType, StringType),
+      JSON.stringify,
+      JSON.parse
     )((input) => {
       return '' + input
     })
@@ -13,24 +15,24 @@ describe('call', () => {
       expected: 'number',
       accept: '"foo"',
     })
-    expect(call(0)).toBe('0')
-    expect(call(true)).toMatchObject({
+    expect(call('0')).toBe('0')
+    expect(call('true')).toMatchObject({
       expected: 'number',
       accept: 'true',
     })
-    expect(call(null)).toMatchObject({
+    expect(call('null')).toMatchObject({
       expected: 'number',
       accept: 'null',
     })
-    expect(call({})).toMatchObject({
+    expect(call('{}')).toMatchObject({
       expected: 'number',
       accept: '{}',
     })
-    expect(call([])).toMatchObject({
+    expect(call('[]')).toMatchObject({
       expected: 'number',
       accept: '[]',
     })
-    expect(call(undefined)).toMatchObject({
+    expect(call('')).toMatchObject({
       expected: 'number',
       accept: undefined,
     })

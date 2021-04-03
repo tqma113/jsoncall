@@ -8,9 +8,13 @@ import {
   kind,
 } from 'jc-builder'
 import { SendError, ServerError } from './error'
+import type { Serialize } from 'jc-serialization'
 
-export type CallSender<I, O> = (input: I) => Promise<O>
 export type JSONCall<I, O> = (input: I) => Promise<O>
+export type CallSender<N extends string, I, O> = (
+  name: N,
+  input: I
+) => Promise<O>
 
 export const createJSONCall = <
   N extends string,
@@ -22,8 +26,10 @@ export const createJSONCall = <
   OK extends string
 >(
   type: JSONCallType<N, II, IT, IK, OI, OT, OK>
-) => (
-  send: CallSender<II, OI>
+) => <SO, DI>(
+  serialize: Serialize<II, SO>,
+  deserialize: Serialize<DI, OI>,
+  send: CallSender<N, SO, DI>
 ): JSONCall<
   IT,
   OT | ValidateError | ConvertError | SendError | ServerError
@@ -34,7 +40,7 @@ export const createJSONCall = <
       const inputValidateResult = validate(type.input, rcResult)
       if (inputValidateResult === true) {
         try {
-          const result = await send(rcResult)
+          const result = deserialize(await send(type.name, serialize(rcResult)))
           const outputValidateResult = validate(type.output, result)
           if (outputValidateResult === true) {
             try {
@@ -46,7 +52,7 @@ export const createJSONCall = <
             return new ServerError('Server error', outputValidateResult)
           }
         } catch (err) {
-          return err
+          return new SendError(err)
         }
       } else {
         return inputValidateResult
@@ -57,8 +63,8 @@ export const createJSONCall = <
   }
 }
 
-export type SyncCallSender<I, O> = (input: I) => O
 export type SyncJSONCall<I, O> = (input: I) => O
+export type SyncCallSender<N extends string, I, O> = (name: N, input: I) => O
 
 export const createSyncJSONCall = <
   N extends string,
@@ -70,14 +76,18 @@ export const createSyncJSONCall = <
   OK extends string
 >(
   type: JSONCallType<N, II, IT, IK, OI, OT, OK>
-) => (send: SyncCallSender<II, OI>): SyncJSONCall<IT, OI> => {
+) => <SO, DI>(
+  serialize: Serialize<II, SO>,
+  deserialize: Serialize<DI, OI>,
+  send: SyncCallSender<N, SO, DI>
+): SyncJSONCall<IT, OI> => {
   return (input) => {
     try {
       const rcResult = reverseConverter(type.input, input)
       const inputValidateResult = validate(type.input, rcResult)
       if (inputValidateResult === true) {
         try {
-          const result = send(rcResult)
+          const result = deserialize(send(type.name, serialize(rcResult)))
           const outputValidateResult = validate(type.output, result)
           if (outputValidateResult === true) {
             try {
