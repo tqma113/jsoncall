@@ -96,7 +96,7 @@ export const createSyncJSONCall = <
             try {
               return convert(type.output, result)
             } catch (err) {
-              return new ConvertError(err, kind(type.output))
+              return new ConvertError(err.message, kind(type.output))
             }
           } else {
             return new ServerError('Server error', outputValidateResult)
@@ -108,7 +108,7 @@ export const createSyncJSONCall = <
         return inputValidateResult
       }
     } catch (err) {
-      return new ConvertError(err, kind(type.input))
+      return new ConvertError(err.message, kind(type.input))
     }
   }
 }

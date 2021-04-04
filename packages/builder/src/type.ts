@@ -652,8 +652,8 @@ function getKeys<T extends {}>(o: T): Array<keyof T> {
   return Object.keys(o) as Array<keyof T>
 }
 
-// const zero = Literal(0)
-// const name = Literal('name')
+// const zero = Literal(0 as const)
+// const name = Literal('name' as const)
 // const trueValue = Literal(true)
 // const a = Tuple(NumberType, StringType)
 // const b = ListType(NumberType)

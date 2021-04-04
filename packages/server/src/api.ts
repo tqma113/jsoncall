@@ -1,33 +1,26 @@
+import { ValidateError, ConvertError } from 'jc-builder'
+import { SerializationError } from 'jc-serialization'
 import { JSONCall } from './call'
-import { UnknownCallError } from './error'
+import { ResolverError, UnknownCallError } from './error'
 
-export type ApiCall<N extends string> = (name: N, input: string) => string
+export type ApiCallOutputError =
+  | ValidateError
+  | ConvertError
+  | ResolverError
+  | SerializationError
+  | UnknownCallError
 
-export type ApiCallFromJSONCall<
-  T extends JSONCall<string>
-> = T extends JSONCall<infer N> ? ApiCall<N> : never
+export type ApiCallOutput = string | ApiCallOutputError
 
-export type ApiCallUnion<CS extends JSONCall<string>[]> = CS extends [
-  infer Head,
-  ...infer Tail
-]
-  ? Head extends JSONCall<string>
-    ? Tail extends JSONCall<string>[]
-      ? ApiCallFromJSONCall<Head> | ApiCallUnion<Tail>
-      : never
-    : never
-  : never
+export type ApiCall<N extends string> = (
+  name: N,
+  input: string
+) => ApiCallOutput
 
-export type UnionToIntersection<U> = (
-  U extends infer R ? (x: R) => any : never
-) extends (x: infer V) => any
-  ? V
-  : never
-
-export const createApi = <CS extends JSONCall<string>[]>(
-  ...calls: CS
-): // @ts-ignore
-UnionToIntersection<ApiCallUnion<CS>> => (name, input) => {
+export const createApi = <CS extends JSONCall<string>[]>(...calls: CS) => (
+  name: string,
+  input: string
+) => {
   for (let call of calls) {
     if (call.name === name) {
       return call(input)
