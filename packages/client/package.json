@@ -9,6 +9,8 @@
   "license": "MIT",
   "dependencies": {
     "jc-builder": "0.0.1",
-    "jc-server": "0.0.1"
+    "jc-server": "0.0.1",
+    "dataloader": "^2.0.0",
+    "setimmediate": "^1.0.5"
   }
 }
