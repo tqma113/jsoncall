@@ -18,6 +18,11 @@ export const IntrospectionCallingType = ObjectType({
   kind: Literal('Introspection' as const),
 })
 export type IntrospectionCalling = ToType<typeof IntrospectionCallingType>
+export const IntrospectionCalling = (): IntrospectionCalling => {
+  return {
+    kind: 'Introspection',
+  }
+}
 
 export const SingleCallingType = ObjectType({
   kind: Literal('Single' as const),
@@ -25,6 +30,13 @@ export const SingleCallingType = ObjectType({
   input: StringType,
 })
 export type SingleCalling = ToType<typeof SingleCallingType>
+export const SingleCalling = (name: string, input: string): SingleCalling => {
+  return {
+    kind: 'Single',
+    name,
+    input,
+  }
+}
 
 // __batch__ = true is no need since we have tag now
 export const BatchCallingType = ObjectType({
@@ -32,6 +44,12 @@ export const BatchCallingType = ObjectType({
   callings: ListType(SingleCallingType),
 })
 export type BatchCalling = ToType<typeof BatchCallingType>
+export const BatchCalling = (callings: SingleCalling[]): BatchCalling => {
+  return {
+    kind: 'Batch',
+    callings,
+  }
+}
 
 export const CallingType = Union(
   SingleCallingType,
