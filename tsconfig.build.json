@@ -5,6 +5,9 @@
   },
   "references": [
     {
+      "path": "./packages/schema/tsconfig.json"
+    },
+    {
       "path": "./packages/language/tsconfig.json"
     },
     {

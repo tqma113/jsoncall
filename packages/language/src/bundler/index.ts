@@ -1,7 +1,7 @@
 import fs from 'fs'
 import { parse } from '../parser'
 import { format } from '../formater'
-import { Schema, createSchema } from '../schema'
+import { Schema, createSchema } from 'jc-schema'
 import { BundleError } from '../error'
 import { access } from './accessor'
 import { check } from './check'

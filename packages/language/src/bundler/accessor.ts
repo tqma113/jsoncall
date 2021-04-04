@@ -30,7 +30,7 @@ import {
   createIntersectType,
   createNameType,
   createTypeDefination,
-} from '../schema'
+} from 'jc-schema'
 import {
   ASTNodeKind,
   Document,
