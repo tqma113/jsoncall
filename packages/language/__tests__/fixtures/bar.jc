@@ -36,5 +36,4 @@ export {
   foo12,
   int,
   Date
-
 }
