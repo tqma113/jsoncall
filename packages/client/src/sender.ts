@@ -9,9 +9,12 @@ import {
 } from 'jc-server'
 import { Serialize, Deserialize, SerializationError } from 'jc-serialization'
 import { SendError } from './error'
-import type { CallSender, SyncCallSender } from './call'
 
 export type Sender = (input: string) => Promise<string>
+export type CallSender<N extends string> = (
+  name: N,
+  input: string
+) => Promise<string>
 
 export const createSender = <N extends string>(
   send: Sender,
@@ -103,6 +106,10 @@ export const createBatchSender = <N extends string>(
 }
 
 export type SyncSender = (input: string) => string
+export type SyncCallSender<N extends string> = (
+  name: N,
+  input: string
+) => string
 
 export const createSyncSender = <N extends string>(
   send: SyncSender,

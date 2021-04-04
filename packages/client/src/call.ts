@@ -9,12 +9,9 @@ import {
 } from 'jc-builder'
 import { SendError, ServerError } from './error'
 import type { Serialize, Deserialize } from 'jc-serialization'
+import type { CallSender, SyncCallSender } from './sender'
 
 export type JSONCall<I, O> = (input: I) => Promise<O>
-export type CallSender<N extends string> = (
-  name: N,
-  input: string
-) => Promise<string>
 
 export const createJSONCall = <
   N extends string,
@@ -64,10 +61,6 @@ export const createJSONCall = <
 }
 
 export type SyncJSONCall<I, O> = (input: I) => O
-export type SyncCallSender<N extends string> = (
-  name: N,
-  input: string
-) => string
 
 export const createSyncJSONCall = <
   N extends string,
