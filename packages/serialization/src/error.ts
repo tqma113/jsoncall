@@ -4,7 +4,7 @@ export class SerializationError extends Error {
   input: any
 
   constructor(err: Error, input: any) {
-    super(`input: ${input}`)
+    super(`input: ${input}, ${err.message}`)
     this.err = err
     this.input = input
     this.name = 'SerializationError'

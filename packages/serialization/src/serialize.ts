@@ -1,1 +1,1 @@
-export type Serialize<I, O> = (input: I) => O
+export type Serialize<I> = (input: I) => string

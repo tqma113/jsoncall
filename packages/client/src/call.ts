@@ -2,19 +2,19 @@ import {
   JSONCallType,
   ValidateError,
   ConvertError,
+  kind,
   validate,
   convert,
   reverseConverter,
-  kind,
 } from 'jc-builder'
 import { SendError, ServerError } from './error'
-import type { Serialize } from 'jc-serialization'
+import type { Serialize, Deserialize } from 'jc-serialization'
 
 export type JSONCall<I, O> = (input: I) => Promise<O>
-export type CallSender<N extends string, I, O> = (
+export type CallSender<N extends string> = (
   name: N,
-  input: I
-) => Promise<O>
+  input: string
+) => Promise<string>
 
 export const createJSONCall = <
   N extends string,
@@ -26,10 +26,10 @@ export const createJSONCall = <
   OK extends string
 >(
   type: JSONCallType<N, II, IT, IK, OI, OT, OK>
-) => <SO, DI>(
-  serialize: Serialize<II, SO>,
-  deserialize: Serialize<DI, OI>,
-  send: CallSender<N, SO, DI>
+) => (
+  serialize: Serialize<II>,
+  deserialize: Deserialize<OI>,
+  send: CallSender<N>
 ): JSONCall<
   IT,
   OT | ValidateError | ConvertError | SendError | ServerError
@@ -64,7 +64,10 @@ export const createJSONCall = <
 }
 
 export type SyncJSONCall<I, O> = (input: I) => O
-export type SyncCallSender<N extends string, I, O> = (name: N, input: I) => O
+export type SyncCallSender<N extends string> = (
+  name: N,
+  input: string
+) => string
 
 export const createSyncJSONCall = <
   N extends string,
@@ -77,9 +80,9 @@ export const createSyncJSONCall = <
 >(
   type: JSONCallType<N, II, IT, IK, OI, OT, OK>
 ) => <SO, DI>(
-  serialize: Serialize<II, SO>,
-  deserialize: Serialize<DI, OI>,
-  send: SyncCallSender<N, SO, DI>
+  serialize: Serialize<II>,
+  deserialize: Deserialize<OI>,
+  send: SyncCallSender<N>
 ): SyncJSONCall<IT, OI> => {
   return (input) => {
     try {

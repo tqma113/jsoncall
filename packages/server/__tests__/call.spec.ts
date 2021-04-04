@@ -5,17 +5,16 @@ describe('call', () => {
   it('simple', () => {
     const call = createJSONCall(
       createJSONCallType('call', NumberType, StringType),
-      JSON.stringify,
-      JSON.parse
-    )((input) => {
-      return '' + input
-    })
+      (input) => {
+        return '' + input
+      }
+    )(JSON.stringify, JSON.parse)
 
-    expect(call('foo')).toMatchObject({
+    expect(call('"foo"')).toMatchObject({
       expected: 'number',
       accept: '"foo"',
     })
-    expect(call('0')).toBe('0')
+    expect(call('0')).toBe('"0"')
     expect(call('true')).toMatchObject({
       expected: 'number',
       accept: 'true',
@@ -31,10 +30,6 @@ describe('call', () => {
     expect(call('[]')).toMatchObject({
       expected: 'number',
       accept: '[]',
-    })
-    expect(call('')).toMatchObject({
-      expected: 'number',
-      accept: undefined,
     })
   })
 })

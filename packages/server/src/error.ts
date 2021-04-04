@@ -8,3 +8,14 @@ export class ResolverError extends Error {
     this.name = 'ResolverError'
   }
 }
+
+export class UnknownCallError extends Error {
+  kind = 'Error' as const
+  callName: string
+
+  constructor(callName: string) {
+    super(`Unknown call: ${callName}`)
+    this.callName = callName
+    this.name = 'UnknownCallError'
+  }
+}
