@@ -8,6 +8,7 @@
   "author": "Ma Tianqi",
   "license": "MIT",
   "dependencies": {
-    "jc-builder": "0.0.1"
+    "jc-builder": "0.0.1",
+    "jc-serialization": "0.0.1"
   }
 }
