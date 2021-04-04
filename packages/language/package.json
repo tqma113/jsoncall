@@ -1,7 +1,7 @@
 {
   "name": "jc-lang",
   "version": "0.0.1",
-  "description": "A parser for json call schema.",
+  "description": "A schema language for json call. Implement in TypeScript.",
   "main": "index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",

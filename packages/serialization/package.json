@@ -1,7 +1,7 @@
 {
   "name": "jc-serialization",
   "version": "0.0.1",
-  "description": "Serialization for json call schema.",
+  "description": "Serialization for json call client and server.",
   "main": "index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
