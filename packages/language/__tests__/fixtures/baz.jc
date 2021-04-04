@@ -1,0 +1,6 @@
+type fooOutput = { foo: string }
+type barOutput = { bar: number }
+
+
+call foo: string => fooOutput
+call bar: number => barOutput

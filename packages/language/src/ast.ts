@@ -100,7 +100,7 @@ export type NameNode = BaseNode & {
 }
 
 export type PathNode = BaseNode & {
-  kind: ASTNodeKind.NameNode
+  kind: ASTNodeKind.PathNode
   path: StringLiteral
 }
 
@@ -284,7 +284,7 @@ export const createPathNode = (
   location: Location
 ): PathNode => {
   return {
-    kind: ASTNodeKind.NameNode,
+    kind: ASTNodeKind.PathNode,
     path,
     location,
   }

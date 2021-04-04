@@ -55,8 +55,31 @@ export type Parser = {
 
   lexer: Lexer
 
+  expectToken: <K extends TokenKind, T = TokenType<Token, K>>(kind: K) => T
+
   parseDocument: () => Document
+  parseStatement: () => Statement
+  parseTypeDeclaration: () => TypeDeclaration
+  parseDeriveDeclaration: () => DeriveDeclaration
+  parseCallDeclaration: () => CallDeclaration
+  parseImportStatement: () => ImportStatement
+  parseExportStatement: () => ExportStatement
+  parseNameNode: () => NameNode
+  parseTypeNode: () => TypeNode
+  parseSimpleTypeNode: () => TypeNode | null
+  parseListTypeNode: () => ListTypeNode
+  parseObjectTypeNode: () => ObjectTypeNode
+  parseTupleTypeNode: () => TupleTypeNode
+  parsePrimitiveTypeNode: () => PrimitiveTypeNode
+  parseSpecialTypeNode: () => SpecialTypeNode
+  parseStringLiteralNode: () => StringLiteralNode
+  parseNumberLiteralNode: () => NumberLiteralNode
+  parseBooleanLiteralNode: () => BooleanLiteralNode
 }
+
+type TokenType<T extends Token, K extends TokenKind> = T extends { kind: K }
+  ? T
+  : never
 
 export const createParser = (source: Source): Parser => {
   const lexer = createLexer(source)
@@ -68,10 +91,6 @@ export const createParser = (source: Source): Parser => {
   const peek = (kind: TokenKind): boolean => {
     return lexer.token.kind === kind
   }
-
-  type TokenType<T extends Token, K extends TokenKind> = T extends { kind: K }
-    ? T
-    : never
 
   const expectToken = <K extends TokenKind, T = TokenType<Token, K>>(
     kind: K
@@ -240,6 +259,9 @@ export const createParser = (source: Source): Parser => {
 
   const parseTypeDeclaration = (): TypeDeclaration => {
     const start = lexer.token
+
+    expectKeyword(KeywordEnum.Type)
+
     const name = parseNameNode()
 
     expectOperator(OperatorEnum.Assign)
@@ -248,6 +270,9 @@ export const createParser = (source: Source): Parser => {
 
   const parseDeriveDeclaration = (): DeriveDeclaration => {
     const start = lexer.token
+
+    expectKeyword(KeywordEnum.Derive)
+
     const name = parseNameNode()
 
     expectKeyword(KeywordEnum.From)
@@ -256,6 +281,9 @@ export const createParser = (source: Source): Parser => {
 
   const parseCallDeclaration = (): CallDeclaration => {
     const start = lexer.token
+
+    expectKeyword(KeywordEnum.Call)
+
     const name = parseNameNode()
 
     expectOperator(OperatorEnum.Colon)
@@ -288,6 +316,8 @@ export const createParser = (source: Source): Parser => {
   }
 
   const parseImportName = (): [NameNode, NameNode] => {
+    expectOptionalOperator(OperatorEnum.Comma)
+
     const name = parseNameNode()
     if (expectOptionalKeyword(KeywordEnum.As)) {
       const asName = expectToken(TokenKind.NAME)
@@ -330,44 +360,32 @@ export const createParser = (source: Source): Parser => {
     if (node === null) {
       throw unexpected()
     } else {
-      const token = lexer.token
-      if (token.kind === TokenKind.OPERATOR) {
-        if (token.word === OperatorEnum.Union) {
-          return createUnionNode([node, ...parseUnionRest()], loc(start))
-        } else if (token.word === OperatorEnum.Intersect) {
-          return createIntersectionNode(
-            [node, ...parseIntersectRest()],
-            loc(start)
-          )
-        }
+      if (expectOptionalOperator(OperatorEnum.Union)) {
+        return createUnionNode(
+          [
+            node,
+            ...delimitedMany(
+              shouldOptionalOperator(OperatorEnum.Union),
+              parseTypeNode
+            ),
+          ],
+          loc(start)
+        )
+      } else if (expectOptionalOperator(OperatorEnum.Intersect)) {
+        return createIntersectionNode(
+          [
+            node,
+            ...delimitedMany(
+              shouldOptionalOperator(OperatorEnum.Intersect),
+              parseTypeNode
+            ),
+          ],
+          loc(start)
+        )
       }
 
       return node
     }
-  }
-
-  const parseUnionRest = (): TypeNode[] => {
-    expectOperator(OperatorEnum.Union)
-
-    return [
-      parseTypeNode(),
-      ...delimitedMany(
-        shouldOptionalOperator(OperatorEnum.Union),
-        parseTypeNode
-      ),
-    ]
-  }
-
-  const parseIntersectRest = (): TypeNode[] => {
-    expectOperator(OperatorEnum.Intersect)
-
-    return [
-      parseTypeNode(),
-      ...delimitedMany(
-        shouldOptionalOperator(OperatorEnum.Intersect),
-        parseTypeNode
-      ),
-    ]
   }
 
   // PrimitiveTypeNode SpecialTypeNode ListTypeNode ObjectTypeNode TupleTypeNode
@@ -495,7 +513,27 @@ export const createParser = (source: Source): Parser => {
   const parser: Parser = {
     source,
     lexer,
+
+    expectToken,
+
     parseDocument,
+    parseStatement,
+    parseTypeDeclaration,
+    parseDeriveDeclaration,
+    parseCallDeclaration,
+    parseImportStatement,
+    parseExportStatement,
+    parseNameNode,
+    parseTypeNode,
+    parseSimpleTypeNode,
+    parseListTypeNode,
+    parseObjectTypeNode,
+    parseTupleTypeNode,
+    parsePrimitiveTypeNode,
+    parseSpecialTypeNode,
+    parseStringLiteralNode,
+    parseNumberLiteralNode,
+    parseBooleanLiteralNode,
   }
 
   return parser

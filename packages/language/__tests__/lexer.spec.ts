@@ -4,7 +4,7 @@ import { createLexer } from '../src/lexer'
 
 describe('lexer', () => {
   it('sample', () => {
-    const filepath = path.resolve(__dirname, './fixtures/foo.jsoncall')
+    const filepath = path.resolve(__dirname, './fixtures/foo.jc')
     const content = fs.readFileSync(filepath, 'utf-8')
     const lexer = createLexer({ content, filepath })
 

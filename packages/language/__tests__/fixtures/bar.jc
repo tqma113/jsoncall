@@ -1,0 +1,40 @@
+import { bar } from "./baz.jc"
+
+type foo1 = number
+type foo2 = boolean
+type foo3 = null
+type foo4 = string
+
+type foo5 = [number]
+type foo6 = {
+  foo: number
+}
+
+type foo7 = (number, string)
+
+type foo8 = any
+type foo9 = none
+
+type foo10 = number | string
+type foo11 = { foo: string } & { bar: number }
+
+type foo12 = "foo12"
+type foo13 = 0
+type foo14 = true
+type foo15 = false
+
+call fooCall: number => string
+
+derive int from number
+
+derive Date from string
+
+export {
+  foo1,
+  foo5,
+  foo9,
+  foo12,
+  int,
+  Date
+
+}
