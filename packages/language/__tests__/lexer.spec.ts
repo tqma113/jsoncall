@@ -4,9 +4,9 @@ import { createLexer } from '../src/lexer'
 
 describe('lexer', () => {
   it('sample', () => {
-    const filepath = path.resolve(__dirname, './fixtures/foo.jc')
-    const content = fs.readFileSync(filepath, 'utf-8')
-    const lexer = createLexer({ content, filepath })
+    const moduleId = path.resolve(__dirname, './fixtures/foo.jc')
+    const content = fs.readFileSync(moduleId, 'utf-8')
+    const lexer = createLexer({ content, moduleId })
 
     expect(lexer.token).toMatchObject({
       word: void 0,

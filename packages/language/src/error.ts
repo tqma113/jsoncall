@@ -11,7 +11,7 @@ export class LexicalError extends Error {
 
     this.name = 'LexicalError'
     this.source = source
-    this.message = `${message} at line: ${line}, column: ${column} in ${source.filepath}`
+    this.message = `${message} at line: ${line}, column: ${column} in ${source.moduleId}`
   }
 }
 
@@ -26,7 +26,7 @@ export class SyntaxError extends Error {
     this.name = 'SyntaxError'
     this.token = token
     this.source = source
-    this.message = `${message} at line: ${token.range.line}, column: ${token.range.column} in ${source.filepath}`
+    this.message = `${message} at line: ${token.range.line}, column: ${token.range.column} in ${source.moduleId}`
   }
 }
 
@@ -41,7 +41,7 @@ export class SemanticError extends Error {
     this.name = 'SemanticError'
     this.fragment = fragment
     this.source = source
-    this.message = `${message} start at line: ${fragment.location.startToken.range.line}, column: ${fragment.location.startToken.range.column}, end at line: ${fragment.location.endToken.range.line}, column: ${fragment.location.endToken.range.column} in ${source.filepath}`
+    this.message = `${message} start at line: ${fragment.location.startToken.range.line}, column: ${fragment.location.startToken.range.column}, end at line: ${fragment.location.endToken.range.line}, column: ${fragment.location.endToken.range.column} in ${source.moduleId}`
   }
 }
 
