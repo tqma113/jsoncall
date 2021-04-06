@@ -17,4 +17,36 @@ describe('bundler', () => {
     expect(module.deriveDefinations.length).toBe(2)
     expect(module.exportDefinations.length).toBe(1)
   })
+
+  it('circlar', () => {
+    const moduleId = path.resolve(__dirname, './fixtures/baz.jc')
+    const schema = bundle(moduleId)
+
+    expect(schema.entry).toMatch('fixtures/baz.jc')
+    expect(schema.modules.length).toBe(3)
+
+    const module0 = schema.modules[0]
+    expect(module0.id).toMatch('fixtures/baz.jc')
+    expect(module0.linkDefinations.length).toBe(2)
+    expect(module0.typeDefinations.length).toBe(3)
+    expect(module0.callDefinations.length).toBe(3)
+    expect(module0.deriveDefinations.length).toBe(0)
+    expect(module0.exportDefinations.length).toBe(0)
+
+    const module1 = schema.modules[1]
+    expect(module1.id).toMatch('fixtures/foo.jc')
+    expect(module1.linkDefinations.length).toBe(0)
+    expect(module1.typeDefinations.length).toBe(15)
+    expect(module1.callDefinations.length).toBe(1)
+    expect(module1.deriveDefinations.length).toBe(2)
+    expect(module1.exportDefinations.length).toBe(1)
+
+    const module2 = schema.modules[2]
+    expect(module2.id).toMatch('fixtures/bar.jc')
+    expect(module2.linkDefinations.length).toBe(1)
+    expect(module2.typeDefinations.length).toBe(2)
+    expect(module2.callDefinations.length).toBe(0)
+    expect(module2.deriveDefinations.length).toBe(0)
+    expect(module2.exportDefinations.length).toBe(1)
+  })
 })

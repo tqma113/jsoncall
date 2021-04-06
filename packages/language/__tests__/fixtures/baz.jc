@@ -1,5 +1,5 @@
-import { foo6 as foo } from "'./foo.jc"
-import { bar, fooAndBar } from './bar
+import { foo6 as foo } from "./foo.jc"
+import { bar, fooAndBar } from "./bar.jc"
 
 # baz
 type baz = {
