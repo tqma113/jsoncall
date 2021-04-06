@@ -334,13 +334,13 @@ export const createModuleAccessor = (
           .map(([from, to]) => {
             if (!isExported(from)) {
               throw new SemanticError(
-                `Type '${from}' has not been exported from "${from}"`,
+                `Type '${from}' has not been exported from "${importStatement.path.path.word}"`,
                 importStatement,
                 module.source
               )
             } else if (isExist(to)) {
               throw new SemanticError(
-                `Type '${from}' is exist`,
+                `Type '${to}' is exist`,
                 importStatement,
                 module.source
               )
@@ -349,7 +349,12 @@ export const createModuleAccessor = (
             }
           })
 
-        schemaModule.linkDefinations.push(createLinkDefination(from, links))
+        schemaModule.linkDefinations.push(
+          createLinkDefination(
+            moduleResolver.resolve(from, module.source.moduleId),
+            links
+          )
+        )
       }
     }
 

@@ -1,4 +1,5 @@
 import path from 'path'
+import { check } from 'jc-schema'
 import { bundle } from '../src'
 
 describe('bundler', () => {
@@ -16,9 +17,11 @@ describe('bundler', () => {
     expect(module.callDefinations.length).toBe(1)
     expect(module.deriveDefinations.length).toBe(2)
     expect(module.exportDefinations.length).toBe(1)
+
+    expect(check(schema)).toBe(null)
   })
 
-  it('circlar', () => {
+  it('dependency', () => {
     const moduleId = path.resolve(__dirname, './fixtures/baz.jc')
     const schema = bundle(moduleId)
 
@@ -48,5 +51,20 @@ describe('bundler', () => {
     expect(module2.callDefinations.length).toBe(0)
     expect(module2.deriveDefinations.length).toBe(0)
     expect(module2.exportDefinations.length).toBe(1)
+
+    expect(check(schema)).toBe(null)
+  })
+
+  it('circular', () => {
+    const moduleId = path.resolve(
+      __dirname,
+      './fixtures/circularDependency/foo.jc'
+    )
+    const schema = bundle(moduleId)
+
+    expect(schema.entry).toMatch('foo.jc')
+    expect(schema.modules.length).toBe(2)
+
+    expect(check(schema)).toBe(null)
   })
 })
