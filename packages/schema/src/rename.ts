@@ -28,7 +28,7 @@ export const rename = (prev: Schema, getName: Namer): Schema => {
 
   for (let [prev, current] of moduleIdMap.entries()) {
     if (schema.entry === prev) {
-      module.id = current
+      schema.entry = current
     }
 
     schema.modules.forEach((module) => {
