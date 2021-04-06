@@ -18,6 +18,7 @@ export type TypeDefination = {
   kind: 'TypeDefination'
   name: string
   type: Type
+  description: string
 }
 
 export type LinkDefination = {
@@ -37,6 +38,7 @@ export type DeriveDefination = {
   kind: 'DeriveDefination'
   name: string
   type: Type
+  description: string
 }
 
 export type CallDefination = {
@@ -44,6 +46,7 @@ export type CallDefination = {
   name: string
   input: Type
   output: Type
+  description: string
 }
 
 export type Type =
@@ -93,7 +96,14 @@ export type ListType = {
 
 export type ObjectType = {
   kind: 'ObjectType'
-  type: Record<string, Type>
+  type: ObjectTypeFiled[]
+}
+
+export type ObjectTypeFiled = {
+  kind: 'ObjectTypeFiled'
+  name: string
+  type: Type
+  description: string
 }
 
 export type TupleType = {
@@ -138,12 +148,14 @@ export const createSchemaModule = (name: string): SchemaModule => {
 
 export const createTypeDefination = (
   name: string,
-  type: Type
+  type: Type,
+  description: string
 ): TypeDefination => {
   return {
     kind: 'TypeDefination',
     name,
     type,
+    description,
   }
 }
 
@@ -167,25 +179,29 @@ export const createLinkDefination = (
 
 export const createDeriveDefination = (
   name: string,
-  type: Type
+  type: Type,
+  description: string
 ): DeriveDefination => {
   return {
     kind: 'DeriveDefination',
     name,
     type,
+    description,
   }
 }
 
 export const createCallDefination = (
   name: string,
   input: Type,
-  output: Type
+  output: Type,
+  description: string
 ): CallDefination => {
   return {
     kind: 'CallDefination',
     name,
     input,
     output,
+    description,
   }
 }
 
@@ -219,10 +235,23 @@ export const createListType = (type: Type): ListType => {
   }
 }
 
-export const createObjectType = (type: Record<string, Type>): ObjectType => {
+export const createObjectType = (type: ObjectTypeFiled[]): ObjectType => {
   return {
     kind: 'ObjectType',
     type,
+  }
+}
+
+export const createObjectTypeFiled = (
+  name: string,
+  type: Type,
+  description: string
+): ObjectTypeFiled => {
+  return {
+    kind: 'ObjectTypeFiled',
+    name,
+    type,
+    description,
   }
 }
 

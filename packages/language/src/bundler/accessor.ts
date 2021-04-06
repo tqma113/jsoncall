@@ -12,6 +12,7 @@ import {
   LiteralType,
   ListType,
   ObjectType,
+  ObjectTypeFiled,
   TupleType,
   UnionType,
   IntersectType,
@@ -25,11 +26,13 @@ import {
   createLiteralType,
   createListType,
   createObjectType,
+  createObjectTypeFiled,
   createTupleType,
   createUnionType,
   createIntersectType,
   createNameType,
   createTypeDefination,
+  createDeriveDefination,
 } from 'jc-schema'
 import {
   ASTNodeKind,
@@ -48,10 +51,12 @@ import {
   SpecialTypeNode,
   ListTypeNode,
   ObjectTypeNode,
+  ObjectFieldNode,
   TupleTypeNode,
   UnionNode,
   IntersectionNode,
   NameNode,
+  CommentBlock,
 } from '../ast'
 import { SemanticError, BundleError } from '../error'
 import type { Bundler, Module } from './index'
@@ -139,11 +144,17 @@ export const createModuleAccessor = (bundler: Bundler): ModuleAccessor => {
     const accessObjectTypeNode = (
       objectTypeNode: ObjectTypeNode
     ): ObjectType => {
-      const type: Record<string, Type> = {}
-      objectTypeNode.fields.forEach(
-        ({ name, type }) => (type[name.name.word] = accessTypeNode(type))
+      return createObjectType(objectTypeNode.fields.map(accessObjectFieldNode))
+    }
+
+    const accessObjectFieldNode = (
+      objectFieldNode: ObjectFieldNode
+    ): ObjectTypeFiled => {
+      return createObjectTypeFiled(
+        objectFieldNode.name.name.word,
+        accessTypeNode(objectFieldNode.type),
+        accessCommentBlock(objectFieldNode.comment)
       )
-      return createObjectType(type)
     }
 
     const accessTupleTypeNode = (tupleTypeNode: TupleTypeNode): TupleType => {
@@ -168,6 +179,10 @@ export const createModuleAccessor = (bundler: Bundler): ModuleAccessor => {
 
     const accessNameNode = (nameNode: NameNode): NameType => {
       return createNameType(nameNode.name.word)
+    }
+
+    const accessCommentBlock = (commentBlock: CommentBlock): string => {
+      return commentBlock.comments.map((comment) => comment.word).join('\n')
     }
 
     const accessTypeNode = (typeNode: TypeNode): Type => {
@@ -236,11 +251,28 @@ export const createModuleAccessor = (bundler: Bundler): ModuleAccessor => {
         )
       } else {
         const type = accessTypeNode(typeDeclaration.type)
-        schemaModule.typeDefinations.push(createTypeDefination(name, type))
+        schemaModule.typeDefinations.push(
+          createTypeDefination(
+            name,
+            type,
+            accessCommentBlock(typeDeclaration.comment)
+          )
+        )
       }
     }
 
-    const accessDeriveDeclaration = (deriveDeclaration: DeriveDeclaration) => {}
+    const accessDeriveDeclaration = (deriveDeclaration: DeriveDeclaration) => {
+      const name = deriveDeclaration.name.name.word
+      const type = accessTypeNode(deriveDeclaration.type)
+
+      schemaModule.deriveDefinations.push(
+        createDeriveDefination(
+          name,
+          type,
+          accessCommentBlock(deriveDeclaration.comment)
+        )
+      )
+    }
 
     const accessCallDeclaration = (callDeclaration: CallDeclaration) => {
       const name = callDeclaration.name.name.word
@@ -248,7 +280,12 @@ export const createModuleAccessor = (bundler: Bundler): ModuleAccessor => {
       const output = accessTypeNode(callDeclaration.output)
 
       schemaModule.callDefinations.push(
-        createCallDefination(name, input, output)
+        createCallDefination(
+          name,
+          input,
+          output,
+          accessCommentBlock(callDeclaration.comment)
+        )
       )
     }
 
