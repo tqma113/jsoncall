@@ -1,6 +1,14 @@
-type fooOutput = { foo: string }
-type barOutput = { bar: number }
+import { foo6 as foo } from "'./foo.jc"
+import { bar, fooAndBar } from './bar
 
+type baz = {
+  baz: boolean
+}
 
-call foo: string => fooOutput
-call bar: number => barOutput
+type fooAndBaz = foo & baz
+
+type fooAndBarAndBaz = foo & bar & baz
+
+call bazCall: fooAndBarAndBaz => baz
+call barCall: fooAndBar => bar
+call fooCall: fooAndBaz => foo

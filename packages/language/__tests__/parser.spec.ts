@@ -9,7 +9,7 @@ describe('parser', () => {
 
     const document = parse({ moduleId, content })
 
-    expect(document.statements.length).toBe(19)
+    expect(document.statements.length).toBe(20)
   })
 
   describe('base', () => {
