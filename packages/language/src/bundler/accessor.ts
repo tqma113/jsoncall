@@ -137,7 +137,24 @@ export const createModuleAccessor = (
         | StringLiteralNode
         | BooleanLiteralNode
     ): LiteralType => {
-      return createLiteralType(literalTypeNode.value.word)
+      switch (literalTypeNode.kind) {
+        case ASTNodeKind.StringLiteralNode: {
+          return createLiteralType(literalTypeNode.value.word)
+        }
+        case ASTNodeKind.BooleanLiteralNode: {
+          const value = literalTypeNode.value.word
+          if (value === 'true') {
+            return createLiteralType(true)
+          } else if (value === 'false') {
+            return createLiteralType(false)
+          } else {
+            throw new Error(`Unknown boolean literal value: ${value}`)
+          }
+        }
+        case ASTNodeKind.NumberLiteralNode: {
+          return createLiteralType(Number(literalTypeNode.value.word))
+        }
+      }
     }
 
     const accessListTypeNode = (listTypeNode: ListTypeNode): ListType => {
@@ -184,8 +201,10 @@ export const createModuleAccessor = (
       return createNameType(nameNode.name.word)
     }
 
-    const accessCommentBlock = (commentBlock: CommentBlock): string => {
-      return commentBlock.comments.map((comment) => comment.word).join('\n')
+    const accessCommentBlock = (commentBlock: CommentBlock): string | null => {
+      return commentBlock.comments.length > 0
+        ? commentBlock.comments.map((comment) => comment.word).join('\n')
+        : null
     }
 
     const accessTypeNode = (typeNode: TypeNode): Type => {

@@ -18,7 +18,7 @@ export type TypeDefination = {
   kind: 'TypeDefination'
   name: string
   type: Type
-  description: string
+  description: string | null
 }
 
 export type LinkDefination = {
@@ -38,7 +38,7 @@ export type DeriveDefination = {
   kind: 'DeriveDefination'
   name: string
   type: Type
-  description: string
+  description: string | null
 }
 
 export type CallDefination = {
@@ -46,7 +46,7 @@ export type CallDefination = {
   name: string
   input: Type
   output: Type
-  description: string
+  description: string | null
 }
 
 export type Type =
@@ -83,10 +83,12 @@ export type SpecialType = {
   type: SpecialTypeEnum
 }
 
+export type LiteralValueType = boolean | number | string
+
 // prettier-ignore
 export type LiteralType = {
   kind: 'Literal',
-  value: boolean | number | string
+  value: LiteralValueType
 }
 
 export type ListType = {
@@ -96,14 +98,14 @@ export type ListType = {
 
 export type ObjectType = {
   kind: 'ObjectType'
-  type: ObjectTypeFiled[]
+  fields: ObjectTypeFiled[]
 }
 
 export type ObjectTypeFiled = {
   kind: 'ObjectTypeFiled'
   name: string
   type: Type
-  description: string
+  description: string | null
 }
 
 export type TupleType = {
@@ -149,7 +151,7 @@ export const createSchemaModule = (id: string): SchemaModule => {
 export const createTypeDefination = (
   name: string,
   type: Type,
-  description: string
+  description: string | null
 ): TypeDefination => {
   return {
     kind: 'TypeDefination',
@@ -180,7 +182,7 @@ export const createLinkDefination = (
 export const createDeriveDefination = (
   name: string,
   type: Type,
-  description: string
+  description: string | null
 ): DeriveDefination => {
   return {
     kind: 'DeriveDefination',
@@ -194,7 +196,7 @@ export const createCallDefination = (
   name: string,
   input: Type,
   output: Type,
-  description: string
+  description: string | null
 ): CallDefination => {
   return {
     kind: 'CallDefination',
@@ -235,17 +237,17 @@ export const createListType = (type: Type): ListType => {
   }
 }
 
-export const createObjectType = (type: ObjectTypeFiled[]): ObjectType => {
+export const createObjectType = (fields: ObjectTypeFiled[]): ObjectType => {
   return {
     kind: 'ObjectType',
-    type,
+    fields,
   }
 }
 
 export const createObjectTypeFiled = (
   name: string,
   type: Type,
-  description: string
+  description: string | null
 ): ObjectTypeFiled => {
   return {
     kind: 'ObjectTypeFiled',
