@@ -81,7 +81,7 @@ export const createModuleAccessor = (
 
     if (module) {
       const schemaModule = bundler.schema.modules.find(
-        (module) => module.name === moduleId
+        (module) => module.id === moduleId
       )
       if (schemaModule) {
         return [module, schemaModule]
@@ -240,7 +240,7 @@ export const createModuleAccessor = (
       }
 
       return schemaModule.deriveDefinations.some(
-        (deriveDefination) => deriveDefination.name
+        (deriveDefination) => deriveDefination.name === name
       )
     }
 
@@ -248,7 +248,7 @@ export const createModuleAccessor = (
       const name = typeDeclaration.name.name.word
       if (isTypeExist(name)) {
         throw new SemanticError(
-          `Type ${name} is exist`,
+          `Type '${name}' is exist`,
           typeDeclaration,
           module.source
         )
@@ -315,13 +315,13 @@ export const createModuleAccessor = (
           .map(([from, to]) => {
             if (!isExported(from)) {
               throw new SemanticError(
-                `Type ${from} has not been exported from ${from}`,
+                `Type '${from}' has not been exported from "${from}"`,
                 importStatement,
                 module.source
               )
             } else if (isExist(to)) {
               throw new SemanticError(
-                `Type ${from} is exist`,
+                `Type '${from}' is exist`,
                 importStatement,
                 module.source
               )

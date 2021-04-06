@@ -1,0 +1,10 @@
+import { foo } from "./foo.jc"
+
+type bar = {
+  bar: string
+}
+
+export {
+  foo,
+  bar
+}

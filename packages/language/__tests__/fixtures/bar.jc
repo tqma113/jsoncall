@@ -1,9 +1,11 @@
 import { foo6 as foo } from "./foo.jc"
 
+# bar
 type bar = {
-  bar: number
+  bar: string
 }
 
+# foo and bar
 type fooAndBar = foo & bar
 
 export {

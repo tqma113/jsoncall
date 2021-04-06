@@ -3,7 +3,7 @@ import type { Token } from './token'
 import type { Fragment } from './ast'
 
 export class LexicalError extends Error {
-  kind = 'LexicalError' as const
+  kind = 'Error' as const
   source: Source
 
   constructor(message: string, line: number, column: number, source: Source) {
@@ -16,7 +16,7 @@ export class LexicalError extends Error {
 }
 
 export class SyntaxError extends Error {
-  kind = 'SyntaxError' as const
+  kind = 'Error' as const
   token: Token
   source: Source
 
@@ -31,7 +31,7 @@ export class SyntaxError extends Error {
 }
 
 export class SemanticError extends Error {
-  kind = 'SemanticError' as const
+  kind = 'Error' as const
   fragment: Fragment
   source: Source
 
@@ -46,7 +46,7 @@ export class SemanticError extends Error {
 }
 
 export class BundleError extends Error {
-  kind = 'BundleError' as const
+  kind = 'Error' as const
 
   constructor(message: string, entry: string) {
     super(message)

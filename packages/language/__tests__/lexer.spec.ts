@@ -4,7 +4,7 @@ import { createLexer } from '../src/lexer'
 
 describe('lexer', () => {
   it('sample', () => {
-    const moduleId = path.resolve(__dirname, './fixtures/foo.jc')
+    const moduleId = path.resolve(__dirname, './fixtures/base.jc')
     const content = fs.readFileSync(moduleId, 'utf-8')
     const lexer = createLexer({ content, moduleId })
 
@@ -193,7 +193,7 @@ describe('lexer', () => {
     expect(lexer.next()).toMatchObject({ word: 'bar', kind: 'name' })
     expect(lexer.next()).toMatchObject({ word: '}', kind: 'operator' })
     expect(lexer.next()).toMatchObject({ word: 'from', kind: 'keyword' })
-    expect(lexer.next()).toMatchObject({ word: './bar.jt', kind: 'string' })
+    expect(lexer.next()).toMatchObject({ word: './bar.jc', kind: 'string' })
 
     expect(lexer.next()).toMatchObject({ word: 'derive', kind: 'keyword' })
     expect(lexer.next()).toMatchObject({ word: 'int', kind: 'name' })
@@ -242,6 +242,8 @@ describe('lexer', () => {
     expect(lexer.next()).toMatchObject({ word: 'foo14', kind: 'name' })
     expect(lexer.next()).toMatchObject({ word: ',', kind: 'operator' })
     expect(lexer.next()).toMatchObject({ word: 'foo15', kind: 'name' })
+    expect(lexer.next()).toMatchObject({ word: ',', kind: 'operator' })
+    expect(lexer.next()).toMatchObject({ word: 'bar', kind: 'name' })
     expect(lexer.next()).toMatchObject({ word: ',', kind: 'operator' })
     expect(lexer.next()).toMatchObject({ word: 'int', kind: 'name' })
     expect(lexer.next()).toMatchObject({ word: ',', kind: 'operator' })

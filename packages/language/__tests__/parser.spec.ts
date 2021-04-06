@@ -4,7 +4,7 @@ import { parse, createParser, TokenKind } from '../src'
 
 describe('parser', () => {
   it('sample', () => {
-    const moduleId = path.resolve(__dirname, './fixtures/foo.jc')
+    const moduleId = path.resolve(__dirname, './fixtures/base.jc')
     const content = fs.readFileSync(moduleId, 'utf-8')
 
     const document = parse({ moduleId, content })

@@ -6,7 +6,7 @@ export type Schema = {
 
 export type SchemaModule = {
   kind: 'SchemaModule'
-  name: string
+  id: string
   typeDefinations: TypeDefination[]
   deriveDefinations: DeriveDefination[]
   callDefinations: CallDefination[]
@@ -134,7 +134,7 @@ export const createSchema = (entry: string): Schema => {
   }
 }
 
-export const createSchemaModule = (name: string): SchemaModule => {
+export const createSchemaModule = (id: string): SchemaModule => {
   return {
     kind: 'SchemaModule',
     typeDefinations: [],
@@ -142,7 +142,7 @@ export const createSchemaModule = (name: string): SchemaModule => {
     exportDefinations: [],
     deriveDefinations: [],
     callDefinations: [],
-    name,
+    id,
   }
 }
 

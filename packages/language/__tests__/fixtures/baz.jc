@@ -1,12 +1,15 @@
 import { foo6 as foo } from "'./foo.jc"
 import { bar, fooAndBar } from './bar
 
+# baz
 type baz = {
   baz: boolean
 }
 
+# foo and baz
 type fooAndBaz = foo & baz
 
+# foo, bar and baz
 type fooAndBarAndBaz = foo & bar & baz
 
 call bazCall: fooAndBarAndBaz => baz

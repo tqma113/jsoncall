@@ -1,9 +1,8 @@
 import { parse } from '../parser'
 import { format } from '../formater'
-import { Schema, createSchema } from 'jc-schema'
+import { Schema, createSchema, check } from 'jc-schema'
 import { BundleError } from '../error'
 import { access } from './accessor'
-import { check } from './check'
 import { ModuleResolver, defaultModuleResolver } from './resolver'
 import type { Document } from '../ast'
 import type { Source } from '../source'
@@ -48,7 +47,10 @@ export const createBundler = (
 
     access(bundler, entryModule, moduleResolver)
 
-    check(bundler.schema)
+    const checkResult = check(bundler.schema)
+    if (checkResult !== null) {
+      throw checkResult
+    }
 
     return bundler.schema
   }
