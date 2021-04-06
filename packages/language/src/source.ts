@@ -1,11 +1,11 @@
 export type Source = {
   content: string
-  filepath: string
+  moduleId: string
 }
 
-export const createSource = (content: string, filepath: string): Source => {
+export const createSource = (content: string, moduleId: string): Source => {
   return {
     content,
-    filepath,
+    moduleId,
   }
 }

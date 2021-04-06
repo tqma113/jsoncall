@@ -1,10 +1,10 @@
-import fs from 'fs'
 import { parse } from '../parser'
 import { format } from '../formater'
 import { Schema, createSchema } from 'jc-schema'
 import { BundleError } from '../error'
 import { access } from './accessor'
 import { check } from './check'
+import { ModuleResolver, defaultModuleResolver } from './resolver'
 import type { Document } from '../ast'
 import type { Source } from '../source'
 
@@ -20,12 +20,15 @@ export type Bundler = {
   bundle: () => Schema
 }
 
-export const createBundler = (entry: string): Bundler => {
-  const loadEntry = (filepath: string) => {
+export const createBundler = (
+  entry: string,
+  moduleResolver: ModuleResolver = defaultModuleResolver
+): Bundler => {
+  const loadEntry = (moduleId: string) => {
     try {
-      const content = fs.readFileSync(filepath, 'utf8')
+      const content = moduleResolver.read(moduleId)
       const source: Source = {
-        filepath,
+        moduleId,
         content,
       }
       const document = format(parse(source))
@@ -33,17 +36,17 @@ export const createBundler = (entry: string): Bundler => {
         source,
         document,
       }
-      bundler.modules.set(filepath, module)
+      bundler.modules.set(moduleId, module)
       return module
     } catch (err) {
-      throw new BundleError(`Can't access entry file`, filepath)
+      throw new BundleError(`Can't access entry module`, moduleId)
     }
   }
 
   const bundle = (): Schema => {
     const entryModule = loadEntry(bundler.entry)
 
-    access(bundler, entryModule)
+    access(bundler, entryModule, moduleResolver)
 
     check(bundler.schema)
 
@@ -60,7 +63,10 @@ export const createBundler = (entry: string): Bundler => {
   return bundler
 }
 
-export const bundle = (entry: string): Schema => {
-  const bundler = createBundler(entry)
+export const bundle = (
+  entry: string,
+  resolveModule: ModuleResolver = defaultModuleResolver
+): Schema => {
+  const bundler = createBundler(entry, resolveModule)
   return bundler.bundle()
 }

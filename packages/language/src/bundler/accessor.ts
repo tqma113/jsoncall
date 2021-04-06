@@ -1,6 +1,3 @@
-import fs from 'fs'
-import path from 'path'
-
 import { parse } from '../parser'
 import { format } from '../formater'
 import {
@@ -58,6 +55,7 @@ import {
   NameNode,
   CommentBlock,
 } from '../ast'
+import { ModuleResolver, defaultModuleResolver } from './resolver'
 import { SemanticError, BundleError } from '../error'
 import type { Bundler, Module } from './index'
 import type { Source } from '../source'
@@ -67,32 +65,37 @@ export type ModuleAccessor = {
   access: (module: Module) => void
 }
 
-export const createModuleAccessor = (bundler: Bundler): ModuleAccessor => {
+export const createModuleAccessor = (
+  bundler: Bundler,
+  moduleResolver: ModuleResolver = defaultModuleResolver
+): ModuleAccessor => {
   const loadModule = (
     fromModule: Module,
     importStatement: ImportStatement
   ): [Module, SchemaModule] => {
-    const fromDir = path.dirname(fromModule.source.filepath)
-    const filepath = path.resolve(fromDir, importStatement.path.path.word)
-    const module = bundler.modules.get(filepath)
+    const moduleId = moduleResolver.resolve(
+      importStatement.path.path.word,
+      fromModule.source.moduleId
+    )
+    const module = bundler.modules.get(moduleId)
 
     if (module) {
       const schemaModule = bundler.schema.modules.find(
-        (module) => module.name === filepath
+        (module) => module.name === moduleId
       )
       if (schemaModule) {
         return [module, schemaModule]
       } else {
         throw new BundleError(
-          `Module: ${filepath} has been loaded, but SchemaModule has not been loaded`,
-          fromModule.source.filepath
+          `Module: ${moduleId} has been loaded, but SchemaModule has not been loaded`,
+          fromModule.source.moduleId
         )
       }
     } else {
       try {
-        const content = fs.readFileSync(filepath, 'utf8')
+        const content = moduleResolver.read(moduleId)
         const source: Source = {
-          filepath,
+          moduleId,
           content,
         }
         const document = format(parse(source))
@@ -100,11 +103,11 @@ export const createModuleAccessor = (bundler: Bundler): ModuleAccessor => {
           source,
           document,
         }
-        bundler.modules.set(filepath, module)
+        bundler.modules.set(moduleId, module)
         return [module, access(module)]
       } catch (err) {
         throw new SemanticError(
-          `Can't access file: ${filepath}`,
+          `Can't access module: ${moduleId}`,
           importStatement,
           fromModule.source
         )
@@ -113,7 +116,7 @@ export const createModuleAccessor = (bundler: Bundler): ModuleAccessor => {
   }
 
   const access = (module: Module) => {
-    const schemaModule = createSchemaModule(module.source.filepath)
+    const schemaModule = createSchemaModule(module.source.moduleId)
     bundler.schema.modules.push(schemaModule)
 
     const accessPrimitiveTypeNode = (
@@ -381,7 +384,11 @@ export const createModuleAccessor = (bundler: Bundler): ModuleAccessor => {
   return accessor
 }
 
-export const access = (bundler: Bundler, module: Module) => {
-  const accessor = createModuleAccessor(bundler)
+export const access = (
+  bundler: Bundler,
+  module: Module,
+  moduleResolver: ModuleResolver = defaultModuleResolver
+) => {
+  const accessor = createModuleAccessor(bundler, moduleResolver)
   accessor.access(module)
 }

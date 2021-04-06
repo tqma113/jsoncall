@@ -4,20 +4,20 @@ import { parse, createParser, TokenKind } from '../src'
 
 describe('parser', () => {
   it('sample', () => {
-    const filepath = path.resolve(__dirname, './fixtures/bar.jc')
-    const content = fs.readFileSync(filepath, 'utf-8')
+    const moduleId = path.resolve(__dirname, './fixtures/bar.jc')
+    const content = fs.readFileSync(moduleId, 'utf-8')
 
-    const document = parse({ filepath, content })
+    const document = parse({ moduleId, content })
 
     expect(document.statements.length).toBe(20)
   })
 
   describe('base', () => {
     it('parseBooleanLiteralNode', () => {
-      const filepath = 'parseBooleanLiteralNode.jc'
+      const moduleId = 'parseBooleanLiteralNode.jc'
       const content = 'true false'
 
-      const parser = createParser({ filepath, content })
+      const parser = createParser({ moduleId, content })
       parser.expectToken(TokenKind.SOF)
 
       expect(parser.parseBooleanLiteralNode()).toMatchObject({
@@ -30,10 +30,10 @@ describe('parser', () => {
     })
 
     it('parseNumberLiteralNode', () => {
-      const filepath = 'parseNumberLiteralNode.jc'
+      const moduleId = 'parseNumberLiteralNode.jc'
       const content = '123'
 
-      const parser = createParser({ filepath, content })
+      const parser = createParser({ moduleId, content })
       parser.expectToken(TokenKind.SOF)
 
       expect(parser.parseNumberLiteralNode()).toMatchObject({
@@ -42,10 +42,10 @@ describe('parser', () => {
     })
 
     it('parseStringLiteralNode', () => {
-      const filepath = 'parseStringLiteralNode.jc'
+      const moduleId = 'parseStringLiteralNode.jc'
       const content = '"foo"'
 
-      const parser = createParser({ filepath, content })
+      const parser = createParser({ moduleId, content })
       parser.expectToken(TokenKind.SOF)
 
       expect(parser.parseStringLiteralNode()).toMatchObject({
@@ -54,10 +54,10 @@ describe('parser', () => {
     })
 
     it('parseSpecialTypeNode', () => {
-      const filepath = 'parseSpecialTypeNode.jc'
+      const moduleId = 'parseSpecialTypeNode.jc'
       const content = 'any none'
 
-      const parser = createParser({ filepath, content })
+      const parser = createParser({ moduleId, content })
       parser.expectToken(TokenKind.SOF)
 
       expect(parser.parseSpecialTypeNode()).toMatchObject({
@@ -70,10 +70,10 @@ describe('parser', () => {
     })
 
     it('parsePrimitiveTypeNode', () => {
-      const filepath = 'parsePrimitiveTypeNode.jc'
+      const moduleId = 'parsePrimitiveTypeNode.jc'
       const content = 'string number boolean null'
 
-      const parser = createParser({ filepath, content })
+      const parser = createParser({ moduleId, content })
       parser.expectToken(TokenKind.SOF)
 
       expect(parser.parsePrimitiveTypeNode()).toMatchObject({
@@ -94,10 +94,10 @@ describe('parser', () => {
     })
 
     it('parseNameNode', () => {
-      const filepath = 'parseNameNode.jc'
+      const moduleId = 'parseNameNode.jc'
       const content = 'foo'
 
-      const parser = createParser({ filepath, content })
+      const parser = createParser({ moduleId, content })
       parser.expectToken(TokenKind.SOF)
 
       expect(parser.parseNameNode()).toMatchObject({
@@ -106,10 +106,10 @@ describe('parser', () => {
     })
 
     it('parseCommentBlock', () => {
-      const filepath = 'parseCommentBlock.jc'
+      const moduleId = 'parseCommentBlock.jc'
       const content = '# foo comment\n # bar comment'
 
-      const parser = createParser({ filepath, content })
+      const parser = createParser({ moduleId, content })
       parser.expectToken(TokenKind.SOF)
 
       expect(parser.parseCommentBlock()).toMatchObject({
@@ -121,10 +121,10 @@ describe('parser', () => {
     })
 
     it('parseTupleTypeNode', () => {
-      const filepath = 'parseTupleTypeNode.jc'
+      const moduleId = 'parseTupleTypeNode.jc'
       const content = '(number, string)'
 
-      const parser = createParser({ filepath, content })
+      const parser = createParser({ moduleId, content })
       parser.expectToken(TokenKind.SOF)
 
       expect(parser.parseTupleTypeNode()).toMatchObject({
@@ -140,10 +140,10 @@ describe('parser', () => {
     })
 
     it('parseObjectTypeNode', () => {
-      const filepath = 'parseObjectTypeNode.jc'
+      const moduleId = 'parseObjectTypeNode.jc'
       const content = '{ foo: number, bar: string }'
 
-      const parser = createParser({ filepath, content })
+      const parser = createParser({ moduleId, content })
       parser.expectToken(TokenKind.SOF)
 
       expect(parser.parseObjectTypeNode()).toMatchObject({
@@ -165,10 +165,10 @@ describe('parser', () => {
     })
 
     it('parseListTypeNode', () => {
-      const filepath = 'parseListTypeNode.jc'
+      const moduleId = 'parseListTypeNode.jc'
       const content = '[string]'
 
-      const parser = createParser({ filepath, content })
+      const parser = createParser({ moduleId, content })
       parser.expectToken(TokenKind.SOF)
 
       expect(parser.parseListTypeNode()).toMatchObject({
@@ -179,10 +179,10 @@ describe('parser', () => {
     })
 
     it('parseTypeNode', () => {
-      const filepath = 'parseTypeNode.jc'
+      const moduleId = 'parseTypeNode.jc'
       const content = 'string | number string & number'
 
-      const parser = createParser({ filepath, content })
+      const parser = createParser({ moduleId, content })
       parser.expectToken(TokenKind.SOF)
 
       expect(parser.parseTypeNode()).toMatchObject({
@@ -211,10 +211,10 @@ describe('parser', () => {
     })
 
     it('parseExportStatement', () => {
-      const filepath = 'parseExportStatement.jc'
+      const moduleId = 'parseExportStatement.jc'
       const content = 'export { foo, bar }'
 
-      const parser = createParser({ filepath, content })
+      const parser = createParser({ moduleId, content })
       parser.expectToken(TokenKind.SOF)
 
       expect(parser.parseExportStatement()).toMatchObject({
@@ -230,10 +230,10 @@ describe('parser', () => {
     })
 
     it('parseImportStatement', () => {
-      const filepath = 'parseImportStatement.jc'
+      const moduleId = 'parseImportStatement.jc'
       const content = 'import { foo, bar as baz } from "./sample.jc"'
 
-      const parser = createParser({ filepath, content })
+      const parser = createParser({ moduleId, content })
       parser.expectToken(TokenKind.SOF)
 
       expect(parser.parseImportStatement()).toMatchObject({
@@ -262,10 +262,10 @@ describe('parser', () => {
     })
 
     it('parseCallDeclaration', () => {
-      const filepath = 'parseCallDeclaration.jc'
+      const moduleId = 'parseCallDeclaration.jc'
       const content = 'call fooCall: number => string'
 
-      const parser = createParser({ filepath, content })
+      const parser = createParser({ moduleId, content })
       parser.expectToken(TokenKind.SOF)
 
       expect(parser.parseCallDeclaration()).toMatchObject({
@@ -282,10 +282,10 @@ describe('parser', () => {
     })
 
     it('parseDeriveDeclaration', () => {
-      const filepath = 'parseDeriveDeclaration.jc'
+      const moduleId = 'parseDeriveDeclaration.jc'
       const content = 'derive Date from string'
 
-      const parser = createParser({ filepath, content })
+      const parser = createParser({ moduleId, content })
       parser.expectToken(TokenKind.SOF)
 
       expect(parser.parseDeriveDeclaration()).toMatchObject({
@@ -299,10 +299,10 @@ describe('parser', () => {
     })
 
     it('parseTypeDeclaration', () => {
-      const filepath = 'parseTypeDeclaration.jc'
+      const moduleId = 'parseTypeDeclaration.jc'
       const content = 'type foo = number'
 
-      const parser = createParser({ filepath, content })
+      const parser = createParser({ moduleId, content })
       parser.expectToken(TokenKind.SOF)
 
       expect(parser.parseTypeDeclaration()).toMatchObject({
@@ -319,7 +319,7 @@ describe('parser', () => {
   describe('complex', () => {
     describe('parseObjectTypeNode', () => {
       it('field with comment block', () => {
-        const filepath = 'parseObjectTypeNode.jc'
+        const moduleId = 'parseObjectTypeNode.jc'
         const content = `{
           # foo1 comment
           # foo2 comment
@@ -330,7 +330,7 @@ describe('parser', () => {
           bar: string 
         }`
 
-        const parser = createParser({ filepath, content })
+        const parser = createParser({ moduleId, content })
         parser.expectToken(TokenKind.SOF)
 
         expect(parser.parseObjectTypeNode()).toMatchObject({
@@ -366,14 +366,14 @@ describe('parser', () => {
 
     describe('parseTypeDeclaration', () => {
       it('with comment block', () => {
-        const filepath = 'parseTypeDeclaration.jc'
+        const moduleId = 'parseTypeDeclaration.jc'
         const content = `
         # foo1 comment
         # foo2 comment
         type foo = number
         `
 
-        const parser = createParser({ filepath, content })
+        const parser = createParser({ moduleId, content })
         parser.expectToken(TokenKind.SOF)
 
         expect(parser.parseTypeDeclaration()).toMatchObject({
@@ -395,14 +395,14 @@ describe('parser', () => {
 
     describe('parseDeriveDeclaration', () => {
       it('with comment block', () => {
-        const filepath = 'parseDeriveDeclaration.jc'
+        const moduleId = 'parseDeriveDeclaration.jc'
         const content = `
         # foo1 comment
         # foo2 comment
         derive Date from string
         `
 
-        const parser = createParser({ filepath, content })
+        const parser = createParser({ moduleId, content })
         parser.expectToken(TokenKind.SOF)
 
         expect(parser.parseDeriveDeclaration()).toMatchObject({
@@ -424,14 +424,14 @@ describe('parser', () => {
 
     describe('parseCallDeclaration', () => {
       it('with comment block', () => {
-        const filepath = 'parseCallDeclaration.jc'
+        const moduleId = 'parseCallDeclaration.jc'
         const content = `
         # foo1 comment
         # foo2 comment
         call fooCall: number => string
         `
 
-        const parser = createParser({ filepath, content })
+        const parser = createParser({ moduleId, content })
         parser.expectToken(TokenKind.SOF)
 
         expect(parser.parseCallDeclaration()).toMatchObject({
