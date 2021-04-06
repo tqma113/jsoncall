@@ -4,12 +4,12 @@ import { parse, createParser, TokenKind } from '../src'
 
 describe('parser', () => {
   it('sample', () => {
-    const moduleId = path.resolve(__dirname, './fixtures/bar.jc')
+    const moduleId = path.resolve(__dirname, './fixtures/foo.jc')
     const content = fs.readFileSync(moduleId, 'utf-8')
 
     const document = parse({ moduleId, content })
 
-    expect(document.statements.length).toBe(20)
+    expect(document.statements.length).toBe(19)
   })
 
   describe('base', () => {
@@ -376,7 +376,9 @@ describe('parser', () => {
         const parser = createParser({ moduleId, content })
         parser.expectToken(TokenKind.SOF)
 
-        expect(parser.parseTypeDeclaration()).toMatchObject({
+        expect(
+          parser.parseTypeDeclaration(parser.parseCommentBlock())
+        ).toMatchObject({
           name: {
             name: { kind: 'name', word: 'foo' },
           },
@@ -405,7 +407,9 @@ describe('parser', () => {
         const parser = createParser({ moduleId, content })
         parser.expectToken(TokenKind.SOF)
 
-        expect(parser.parseDeriveDeclaration()).toMatchObject({
+        expect(
+          parser.parseDeriveDeclaration(parser.parseCommentBlock())
+        ).toMatchObject({
           name: {
             name: { kind: 'name', word: 'Date' },
           },
@@ -434,7 +438,9 @@ describe('parser', () => {
         const parser = createParser({ moduleId, content })
         parser.expectToken(TokenKind.SOF)
 
-        expect(parser.parseCallDeclaration()).toMatchObject({
+        expect(
+          parser.parseCallDeclaration(parser.parseCommentBlock())
+        ).toMatchObject({
           name: {
             name: { kind: 'name', word: 'fooCall' },
           },

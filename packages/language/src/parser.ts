@@ -64,9 +64,9 @@ export type Parser = {
 
   parseDocument: () => Document
   parseStatement: () => Statement
-  parseTypeDeclaration: () => TypeDeclaration
-  parseDeriveDeclaration: () => DeriveDeclaration
-  parseCallDeclaration: () => CallDeclaration
+  parseTypeDeclaration: (comment?: CommentBlock) => TypeDeclaration
+  parseDeriveDeclaration: (comment?: CommentBlock) => DeriveDeclaration
+  parseCallDeclaration: (comment?: CommentBlock) => CallDeclaration
   parseImportStatement: () => ImportStatement
   parseExportStatement: () => ExportStatement
   parseNameNode: () => NameNode
@@ -244,15 +244,16 @@ export const createParser = (source: Source): Parser => {
   }
 
   const parseStatement = (): Statement => {
+    const comment = parseCommentBlock()
     if (peek(TokenKind.KEYWORD)) {
       const token = lexer.token as Keyword
       switch (token.word) {
         case KeywordEnum.Type:
-          return parseTypeDeclaration()
+          return parseTypeDeclaration(comment)
         case KeywordEnum.Derive:
-          return parseDeriveDeclaration()
+          return parseDeriveDeclaration(comment)
         case KeywordEnum.Call:
-          return parseCallDeclaration()
+          return parseCallDeclaration(comment)
         case KeywordEnum.Import:
           return parseImportStatement()
         case KeywordEnum.Export:
@@ -263,8 +264,9 @@ export const createParser = (source: Source): Parser => {
     throw unexpected()
   }
 
-  const parseTypeDeclaration = (): TypeDeclaration => {
-    const comment = parseCommentBlock()
+  const parseTypeDeclaration = (
+    comment: CommentBlock = createCommentBlock()
+  ): TypeDeclaration => {
     const start = lexer.token
 
     expectKeyword(KeywordEnum.Type)
@@ -275,8 +277,9 @@ export const createParser = (source: Source): Parser => {
     return createTypeDeclaration(name, parseTypeNode(), comment, loc(start))
   }
 
-  const parseDeriveDeclaration = (): DeriveDeclaration => {
-    const comment = parseCommentBlock()
+  const parseDeriveDeclaration = (
+    comment: CommentBlock = createCommentBlock()
+  ): DeriveDeclaration => {
     const start = lexer.token
 
     expectKeyword(KeywordEnum.Derive)
@@ -287,8 +290,9 @@ export const createParser = (source: Source): Parser => {
     return createDeriveDeclaration(name, parseTypeNode(), comment, loc(start))
   }
 
-  const parseCallDeclaration = (): CallDeclaration => {
-    const comment = parseCommentBlock()
+  const parseCallDeclaration = (
+    comment: CommentBlock = createCommentBlock()
+  ): CallDeclaration => {
     const start = lexer.token
 
     expectKeyword(KeywordEnum.Call)

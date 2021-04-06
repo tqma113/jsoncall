@@ -170,6 +170,11 @@ describe('lexer', () => {
     expect(lexer.next()).toMatchObject({ word: '=', kind: 'operator' })
     expect(lexer.next()).toMatchObject({ word: 'false', kind: 'boolean' })
 
+    expect(lexer.next()).toMatchObject({
+      word: ' some comments',
+      kind: 'comment',
+    })
+
     expect(lexer.next()).toMatchObject({ word: 'call', kind: 'keyword' })
     expect(lexer.next()).toMatchObject({ word: 'fooCall', kind: 'name' })
     expect(lexer.next()).toMatchObject({ word: ':', kind: 'operator' })
@@ -181,11 +186,6 @@ describe('lexer', () => {
     expect(lexer.next()).toMatchObject({
       word: 'string',
       kind: 'primitive type',
-    })
-
-    expect(lexer.next()).toMatchObject({
-      word: ' some comments',
-      kind: 'comment',
     })
 
     expect(lexer.next()).toMatchObject({ word: 'import', kind: 'keyword' })

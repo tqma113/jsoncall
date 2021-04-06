@@ -21,9 +21,8 @@ type foo13 = 0
 type foo14 = true
 type foo15 = false
 
-call fooCall: number => string
-
 # some comments
+call fooCall: number => string
 
 import { bar } from "./bar.jt"
 
