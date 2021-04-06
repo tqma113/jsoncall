@@ -141,7 +141,7 @@ export const createModuleAccessor = (bundler: Bundler): ModuleAccessor => {
     ): ObjectType => {
       const type: Record<string, Type> = {}
       objectTypeNode.fields.forEach(
-        ([name, typeNode]) => (type[name.name.word] = accessTypeNode(typeNode))
+        ({ name, type }) => (type[name.name.word] = accessTypeNode(type))
       )
       return createObjectType(type)
     }

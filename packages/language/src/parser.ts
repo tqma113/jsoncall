@@ -36,7 +36,11 @@ import {
   createNumberLiteralNode,
   createBooleanLiteralNode,
   createObjectTypeNode,
+  createObjectFieldNode,
   createPathNode,
+  ObjectFieldNode,
+  CommentBlock,
+  createCommentBlock,
 } from './ast'
 import { Lexer, createLexer } from './lexer'
 import { SyntaxError } from './error'
@@ -47,6 +51,7 @@ import {
   Keyword,
   OperatorEnum,
   Operator,
+  Comment,
 } from './token'
 import type { Source } from './source'
 
@@ -75,6 +80,7 @@ export type Parser = {
   parseStringLiteralNode: () => StringLiteralNode
   parseNumberLiteralNode: () => NumberLiteralNode
   parseBooleanLiteralNode: () => BooleanLiteralNode
+  parseCommentBlock: () => CommentBlock
 }
 
 type TokenType<T extends Token, K extends TokenKind> = T extends { kind: K }
@@ -258,6 +264,7 @@ export const createParser = (source: Source): Parser => {
   }
 
   const parseTypeDeclaration = (): TypeDeclaration => {
+    const comment = parseCommentBlock()
     const start = lexer.token
 
     expectKeyword(KeywordEnum.Type)
@@ -265,10 +272,11 @@ export const createParser = (source: Source): Parser => {
     const name = parseNameNode()
 
     expectOperator(OperatorEnum.Assign)
-    return createTypeDeclaration(name, parseTypeNode(), loc(start))
+    return createTypeDeclaration(name, parseTypeNode(), comment, loc(start))
   }
 
   const parseDeriveDeclaration = (): DeriveDeclaration => {
+    const comment = parseCommentBlock()
     const start = lexer.token
 
     expectKeyword(KeywordEnum.Derive)
@@ -276,10 +284,11 @@ export const createParser = (source: Source): Parser => {
     const name = parseNameNode()
 
     expectKeyword(KeywordEnum.From)
-    return createDeriveDeclaration(name, parseTypeNode(), loc(start))
+    return createDeriveDeclaration(name, parseTypeNode(), comment, loc(start))
   }
 
   const parseCallDeclaration = (): CallDeclaration => {
+    const comment = parseCommentBlock()
     const start = lexer.token
 
     expectKeyword(KeywordEnum.Call)
@@ -292,7 +301,13 @@ export const createParser = (source: Source): Parser => {
 
     expectOperator(OperatorEnum.Output)
 
-    return createCallDeclaration(name, input, parseTypeNode(), loc(start))
+    return createCallDeclaration(
+      name,
+      input,
+      parseTypeNode(),
+      comment,
+      loc(start)
+    )
   }
 
   const parseImportStatement = (): ImportStatement => {
@@ -452,7 +467,10 @@ export const createParser = (source: Source): Parser => {
     )
   }
 
-  const parseObjectTypeField = (): [NameNode, TypeNode] => {
+  const parseObjectTypeField = (): ObjectFieldNode => {
+    const comment = parseCommentBlock()
+    const start = lexer.token
+
     const name = parseNameNode()
 
     expectOperator(OperatorEnum.Colon)
@@ -461,7 +479,7 @@ export const createParser = (source: Source): Parser => {
 
     expectOptionalOperator(OperatorEnum.Comma)
 
-    return [name, node]
+    return createObjectFieldNode(name, node, comment, loc(start))
   }
 
   const parseTupleTypeNode = (): TupleTypeNode => {
@@ -510,6 +528,24 @@ export const createParser = (source: Source): Parser => {
     return createBooleanLiteralNode(token, loc(token))
   }
 
+  const parseCommentBlock = (): CommentBlock => {
+    const start = lexer.token
+
+    let cur: Token = start
+    const comments: Comment[] = []
+    while (cur.kind === TokenKind.COMMENT) {
+      comments.push(cur)
+      expectToken(TokenKind.COMMENT)
+      cur = lexer.token
+    }
+
+    if (comments.length > 0) {
+      return createCommentBlock(comments, loc(start))
+    } else {
+      return createCommentBlock()
+    }
+  }
+
   const parser: Parser = {
     source,
     lexer,
@@ -534,6 +570,7 @@ export const createParser = (source: Source): Parser => {
     parseStringLiteralNode,
     parseNumberLiteralNode,
     parseBooleanLiteralNode,
+    parseCommentBlock,
   }
 
   return parser

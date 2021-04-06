@@ -6,6 +6,7 @@ import type {
   StringLiteral,
   NumberLiteral,
   BooleanLiteral,
+  Comment,
 } from './token'
 import type { Source } from './source'
 
@@ -17,6 +18,7 @@ export enum ASTNodeKind {
 
   ListTypeNode          = 'list type node',
   ObjectTypeNode        = 'object type node',
+  ObjectFieldNode        = 'object field node',
   TupleTypeNode         = 'tuple type node',
 
   StringLiteralNode     = 'string literal node',
@@ -35,6 +37,8 @@ export enum ASTNodeKind {
 
   ImportStatement       = 'import statement',
   ExportStatement       = 'export statement',
+
+  CommentBlock          = 'comment block',
 
   Document              = 'document'
 }
@@ -61,8 +65,15 @@ export type ListTypeNode = BaseNode & {
 
 export type ObjectTypeNode = BaseNode & {
   kind: ASTNodeKind.ObjectTypeNode
-  fields: [NameNode, TypeNode][]
+  fields: ObjectFieldNode[]
 }
+
+export type ObjectFieldNode = BaseNode &
+  WithComments & {
+    kind: ASTNodeKind.ObjectFieldNode
+    name: NameNode
+    type: TypeNode
+  }
 
 export type TupleTypeNode = BaseNode & {
   kind: ASTNodeKind.TupleTypeNode
@@ -104,6 +115,12 @@ export type PathNode = BaseNode & {
   path: StringLiteral
 }
 
+export type CommentBlock = {
+  kind: ASTNodeKind.CommentBlock
+  location: Location | null
+  comments: Comment[]
+}
+
 export type TypeNode =
   | PrimitiveTypeNode
   | SpecialTypeNode
@@ -117,24 +134,31 @@ export type TypeNode =
   | IntersectionNode
   | NameNode
 
-export type TypeDeclaration = BaseNode & {
-  kind: ASTNodeKind.TypeDeclaration
-  name: NameNode
-  type: TypeNode
+export type WithComments = {
+  comment: CommentBlock
 }
 
-export type DeriveDeclaration = BaseNode & {
-  kind: ASTNodeKind.DeriveDeclaration
-  name: NameNode
-  type: TypeNode
-}
+export type TypeDeclaration = BaseNode &
+  WithComments & {
+    kind: ASTNodeKind.TypeDeclaration
+    name: NameNode
+    type: TypeNode
+  }
 
-export type CallDeclaration = BaseNode & {
-  kind: ASTNodeKind.CallDeclaration
-  name: NameNode
-  input: TypeNode
-  output: TypeNode
-}
+export type DeriveDeclaration = BaseNode &
+  WithComments & {
+    kind: ASTNodeKind.DeriveDeclaration
+    name: NameNode
+    type: TypeNode
+  }
+
+export type CallDeclaration = BaseNode &
+  WithComments & {
+    kind: ASTNodeKind.CallDeclaration
+    name: NameNode
+    input: TypeNode
+    output: TypeNode
+  }
 
 export type ImportStatement = BaseNode & {
   kind: ASTNodeKind.ImportStatement
@@ -195,13 +219,28 @@ export const createListTypeNode = (
 }
 
 export const createObjectTypeNode = (
-  fields: [NameNode, TypeNode][],
+  fields: ObjectFieldNode[],
   location: Location
 ): ObjectTypeNode => {
   return {
     kind: ASTNodeKind.ObjectTypeNode,
     fields,
     location,
+  }
+}
+
+export const createObjectFieldNode = (
+  name: NameNode,
+  type: TypeNode,
+  comment: CommentBlock,
+  location: Location
+): ObjectFieldNode => {
+  return {
+    kind: ASTNodeKind.ObjectFieldNode,
+    name,
+    type,
+    location,
+    comment,
   }
 }
 
@@ -290,9 +329,21 @@ export const createPathNode = (
   }
 }
 
+export const createCommentBlock = (
+  comments: Comment[] = [],
+  location: Location | null = null
+): CommentBlock => {
+  return {
+    kind: ASTNodeKind.CommentBlock,
+    comments,
+    location,
+  }
+}
+
 export const createTypeDeclaration = (
   name: NameNode,
   type: TypeNode,
+  comment: CommentBlock,
   location: Location
 ): TypeDeclaration => {
   return {
@@ -300,12 +351,14 @@ export const createTypeDeclaration = (
     name,
     type,
     location,
+    comment,
   }
 }
 
 export const createDeriveDeclaration = (
   name: NameNode,
   type: TypeNode,
+  comment: CommentBlock,
   location: Location
 ): DeriveDeclaration => {
   return {
@@ -313,6 +366,7 @@ export const createDeriveDeclaration = (
     name,
     type,
     location,
+    comment,
   }
 }
 
@@ -320,6 +374,7 @@ export const createCallDeclaration = (
   name: NameNode,
   input: TypeNode,
   output: TypeNode,
+  comment: CommentBlock,
   location: Location
 ): CallDeclaration => {
   return {
@@ -328,6 +383,7 @@ export const createCallDeclaration = (
     input,
     output,
     location,
+    comment,
   }
 }
 

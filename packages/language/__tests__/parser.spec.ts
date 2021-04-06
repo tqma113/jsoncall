@@ -105,6 +105,21 @@ describe('parser', () => {
       })
     })
 
+    it('parseCommentBlock', () => {
+      const filepath = 'parseCommentBlock.jc'
+      const content = '# foo comment\n # bar comment'
+
+      const parser = createParser({ filepath, content })
+      parser.expectToken(TokenKind.SOF)
+
+      expect(parser.parseCommentBlock()).toMatchObject({
+        comments: [
+          { kind: 'comment', word: ' foo comment' },
+          { kind: 'comment', word: ' bar comment' },
+        ],
+      })
+    })
+
     it('parseTupleTypeNode', () => {
       const filepath = 'parseTupleTypeNode.jc'
       const content = '(number, string)'
@@ -133,18 +148,18 @@ describe('parser', () => {
 
       expect(parser.parseObjectTypeNode()).toMatchObject({
         fields: [
-          [
-            { name: { kind: 'name', word: 'foo' } },
-            {
+          {
+            name: { name: { kind: 'name', word: 'foo' } },
+            type: {
               primitiveType: { kind: 'primitive type', word: 'number' },
             },
-          ],
-          [
-            { name: { kind: 'name', word: 'bar' } },
-            {
+          },
+          {
+            name: { name: { kind: 'name', word: 'bar' } },
+            type: {
               primitiveType: { kind: 'primitive type', word: 'string' },
             },
-          ],
+          },
         ],
       })
     })
@@ -297,6 +312,145 @@ describe('parser', () => {
         type: {
           primitiveType: { kind: 'primitive type', word: 'number' },
         },
+      })
+    })
+  })
+
+  describe('complex', () => {
+    describe('parseObjectTypeNode', () => {
+      it('field with comment block', () => {
+        const filepath = 'parseObjectTypeNode.jc'
+        const content = `{
+          # foo1 comment
+          # foo2 comment
+          foo: number,
+
+          # bar1 comment
+          # bar2 comment
+          bar: string 
+        }`
+
+        const parser = createParser({ filepath, content })
+        parser.expectToken(TokenKind.SOF)
+
+        expect(parser.parseObjectTypeNode()).toMatchObject({
+          fields: [
+            {
+              name: { name: { kind: 'name', word: 'foo' } },
+              type: {
+                primitiveType: { kind: 'primitive type', word: 'number' },
+              },
+              comment: {
+                comments: [
+                  { kind: 'comment', word: ' foo1 comment' },
+                  { kind: 'comment', word: ' foo2 comment' },
+                ],
+              },
+            },
+            {
+              name: { name: { kind: 'name', word: 'bar' } },
+              type: {
+                primitiveType: { kind: 'primitive type', word: 'string' },
+              },
+              comment: {
+                comments: [
+                  { kind: 'comment', word: ' bar1 comment' },
+                  { kind: 'comment', word: ' bar2 comment' },
+                ],
+              },
+            },
+          ],
+        })
+      })
+    })
+
+    describe('parseTypeDeclaration', () => {
+      it('with comment block', () => {
+        const filepath = 'parseTypeDeclaration.jc'
+        const content = `
+        # foo1 comment
+        # foo2 comment
+        type foo = number
+        `
+
+        const parser = createParser({ filepath, content })
+        parser.expectToken(TokenKind.SOF)
+
+        expect(parser.parseTypeDeclaration()).toMatchObject({
+          name: {
+            name: { kind: 'name', word: 'foo' },
+          },
+          type: {
+            primitiveType: { kind: 'primitive type', word: 'number' },
+          },
+          comment: {
+            comments: [
+              { kind: 'comment', word: ' foo1 comment' },
+              { kind: 'comment', word: ' foo2 comment' },
+            ],
+          },
+        })
+      })
+    })
+
+    describe('parseDeriveDeclaration', () => {
+      it('with comment block', () => {
+        const filepath = 'parseDeriveDeclaration.jc'
+        const content = `
+        # foo1 comment
+        # foo2 comment
+        derive Date from string
+        `
+
+        const parser = createParser({ filepath, content })
+        parser.expectToken(TokenKind.SOF)
+
+        expect(parser.parseDeriveDeclaration()).toMatchObject({
+          name: {
+            name: { kind: 'name', word: 'Date' },
+          },
+          type: {
+            primitiveType: { kind: 'primitive type', word: 'string' },
+          },
+          comment: {
+            comments: [
+              { kind: 'comment', word: ' foo1 comment' },
+              { kind: 'comment', word: ' foo2 comment' },
+            ],
+          },
+        })
+      })
+    })
+
+    describe('parseCallDeclaration', () => {
+      it('with comment block', () => {
+        const filepath = 'parseCallDeclaration.jc'
+        const content = `
+        # foo1 comment
+        # foo2 comment
+        call fooCall: number => string
+        `
+
+        const parser = createParser({ filepath, content })
+        parser.expectToken(TokenKind.SOF)
+
+        expect(parser.parseCallDeclaration()).toMatchObject({
+          name: {
+            name: { kind: 'name', word: 'fooCall' },
+          },
+          input: {
+            primitiveType: { kind: 'primitive type', word: 'number' },
+          },
+          output: {
+            primitiveType: { kind: 'primitive type', word: 'string' },
+          },
+          comment: {
+            comments: [
+              { kind: 'comment', word: ' foo1 comment' },
+              { kind: 'comment', word: ' foo2 comment' },
+            ],
+          },
+        })
       })
     })
   })
