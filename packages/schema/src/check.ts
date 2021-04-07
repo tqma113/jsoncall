@@ -198,7 +198,7 @@ export const check = (schema: Schema): SchemaError | null => {
   return null
 }
 
-const checkType = (type: Type, names: string[]): SchemaError | null => {
+export const checkType = (type: Type, names: string[]): SchemaError | null => {
   const checkPrimitiveType = (
     primitiveType: PrimitiveType
   ): SchemaError | null => {
