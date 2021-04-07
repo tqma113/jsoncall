@@ -70,11 +70,11 @@ function getStatementValue(statement: Statement) {
       return 2
     case ASTNodeKind.DeriveDeclaration:
       return 1
-    case ASTNodeKind.CallDeclaration:
-      return 0
     case ASTNodeKind.ExportStatement:
       return -1
     case ASTNodeKind.ImportStatement:
       return 3
+    case ASTNodeKind.CallDeclaration:
+      return -2
   }
 }

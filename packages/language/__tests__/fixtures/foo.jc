@@ -40,10 +40,6 @@ derive int from number
 derive Date from string
 
 
-# some comments
-call fooCall: number => string
-
-
 export {
   foo1,
   foo2,
@@ -63,3 +59,7 @@ export {
   int,
   Date,
 }
+
+
+# some comments
+call fooCall: number => string

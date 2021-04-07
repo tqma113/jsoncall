@@ -43,14 +43,14 @@ export const codegenModule = (module: SchemaModule): string => {
     )
   }
 
-  if (module.callDefinations.length > 0) {
-    blocks.push(module.callDefinations.map(codegenCallDefination).join('\n\n'))
-  }
-
   if (module.exportDefinations.length > 0) {
     blocks.push(
       module.exportDefinations.map(codegenExportDefination).join('\n')
     )
+  }
+
+  if (module.callDefinations.length > 0) {
+    blocks.push(module.callDefinations.map(codegenCallDefination).join('\n\n'))
   }
 
   return blocks.join('\n\n\n')
