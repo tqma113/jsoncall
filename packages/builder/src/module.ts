@@ -3,7 +3,11 @@ import type { JSONCallType } from './call'
 
 export type BuilderSchema = {
   entry: string
-  modules: BuilderModule[]
+  modules: Record<string, BuilderModule>
+  calls: Record<
+    string,
+    JSONCallType<string, any, any, string, any, any, string>
+  >
 }
 
 export type BuilderModule = {
@@ -11,6 +15,7 @@ export type BuilderModule = {
   links: TypeLink[]
   types: Record<string, JSONType<any, any, string>>
   derives: Record<string, JSONType<any, any, string>>
+  exports: Record<string, JSONType<any, any, string>>
   calls: Record<
     string,
     JSONCallType<string, any, any, string, any, any, string>
@@ -18,6 +23,11 @@ export type BuilderModule = {
 }
 
 export type TypeLink = {
-  types: string[]
-  module: BuilderModule
+  types: LinkType[]
+  module: string
+}
+
+export type LinkType = {
+  type: string
+  as: string
 }

@@ -1,3 +1,4 @@
+import { createNameType } from 'jc-schema'
 import {
   StringType,
   NumberType,
@@ -26,6 +27,7 @@ describe('type', () => {
   it('base', () => {
     const NumberString = createJSONType(
       'NumberString',
+      createNameType('NumberString'),
       (input) => {
         if (typeof input === 'string') {
           const result = Number(input)
@@ -388,138 +390,6 @@ describe('type', () => {
         expect(validate(True, undefined)).toMatchObject({
           expected: 'true',
           accept: undefined,
-        })
-      })
-
-      it('null', () => {
-        const Null = Literal(null)
-
-        expect(validate(Null, null)).toBeTruthy()
-
-        expect(validate(Null, 'foo')).toMatchObject({
-          expected: 'null',
-          accept: '"foo"',
-        })
-        expect(validate(Null, 0)).toMatchObject({
-          expected: 'null',
-          accept: '0',
-        })
-        expect(validate(Null, true)).toMatchObject({
-          expected: 'null',
-          accept: 'true',
-        })
-        expect(validate(Null, {})).toMatchObject({
-          expected: 'null',
-          accept: '{}',
-        })
-        expect(validate(Null, [])).toMatchObject({
-          expected: 'null',
-          accept: '[]',
-        })
-        expect(validate(Null, undefined)).toMatchObject({
-          expected: 'null',
-          accept: undefined,
-        })
-      })
-
-      it('object', () => {
-        const Obj = Literal({})
-
-        expect(validate(Obj, {})).toBeTruthy()
-
-        expect(validate(Obj, 'foo')).toMatchObject({
-          expected: '{}',
-          accept: '"foo"',
-        })
-        expect(validate(Obj, 0)).toMatchObject({
-          expected: '{}',
-          accept: '0',
-        })
-        expect(validate(Obj, true)).toMatchObject({
-          expected: '{}',
-          accept: 'true',
-        })
-        expect(validate(Obj, null)).toMatchObject({
-          expected: '{}',
-          accept: 'null',
-        })
-        expect(validate(Obj, { foo: 0 })).toMatchObject({
-          expected: '{}',
-          accept: '{"foo":0}',
-        })
-        expect(validate(Obj, [])).toMatchObject({
-          expected: '{}',
-          accept: '[]',
-        })
-        expect(validate(Obj, undefined)).toMatchObject({
-          expected: '{}',
-          accept: undefined,
-        })
-      })
-
-      it('list', () => {
-        const List = Literal([])
-
-        expect(validate(List, [])).toBeTruthy()
-
-        expect(validate(List, 'foo')).toMatchObject({
-          expected: '[]',
-          accept: '"foo"',
-        })
-        expect(validate(List, 0)).toMatchObject({
-          expected: '[]',
-          accept: '0',
-        })
-        expect(validate(List, false)).toMatchObject({
-          expected: '[]',
-          accept: 'false',
-        })
-        expect(validate(List, null)).toMatchObject({
-          expected: '[]',
-          accept: 'null',
-        })
-        expect(validate(List, {})).toMatchObject({
-          expected: '[]',
-          accept: '{}',
-        })
-        expect(validate(List, [0])).toMatchObject({
-          expected: '[]',
-          accept: '[0]',
-        })
-        expect(validate(List, undefined)).toMatchObject({
-          expected: '[]',
-          accept: undefined,
-        })
-      })
-
-      it('undefined', () => {
-        const Undefined = Literal(undefined)
-
-        expect(validate(Undefined, undefined)).toBeTruthy()
-
-        expect(validate(Undefined, 'foo')).toMatchObject({
-          expected: undefined,
-          accept: '"foo"',
-        })
-        expect(validate(Undefined, 0)).toMatchObject({
-          expected: undefined,
-          accept: '0',
-        })
-        expect(validate(Undefined, true)).toMatchObject({
-          expected: undefined,
-          accept: 'true',
-        })
-        expect(validate(Undefined, null)).toMatchObject({
-          expected: undefined,
-          accept: 'null',
-        })
-        expect(validate(Undefined, {})).toMatchObject({
-          expected: undefined,
-          accept: '{}',
-        })
-        expect(validate(Undefined, [])).toMatchObject({
-          expected: undefined,
-          accept: '[]',
         })
       })
     })

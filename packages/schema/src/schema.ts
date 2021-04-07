@@ -10,7 +10,7 @@ export type SchemaModule = {
   typeDefinations: TypeDefination[]
   deriveDefinations: DeriveDefination[]
   linkDefinations: LinkDefination[]
-  exportDefinations: ExportDefination[]
+  exportDefination: ExportDefination | null
   callDefinations: CallDefination[]
 }
 
@@ -56,6 +56,7 @@ export type Type =
   | ListType
   | ObjectType
   | TupleType
+  | RecordType
   | UnionType
   | IntersectType
   | NameType
@@ -113,6 +114,11 @@ export type TupleType = {
   types: Type[]
 }
 
+export type RecordType = {
+  kind: 'RecordType'
+  type: Type
+}
+
 export type UnionType = {
   kind: 'UnionType'
   types: Type[]
@@ -141,7 +147,7 @@ export const createSchemaModule = (id: string): SchemaModule => {
     kind: 'SchemaModule',
     typeDefinations: [],
     linkDefinations: [],
-    exportDefinations: [],
+    exportDefination: null,
     deriveDefinations: [],
     callDefinations: [],
     id,
@@ -261,6 +267,13 @@ export const createTupleType = (types: Type[]): TupleType => {
   return {
     kind: 'TupleType',
     types,
+  }
+}
+
+export const createRecordType = (type: Type): RecordType => {
+  return {
+    kind: 'RecordType',
+    type,
   }
 }
 

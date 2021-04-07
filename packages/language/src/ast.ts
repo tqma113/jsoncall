@@ -18,8 +18,9 @@ export enum ASTNodeKind {
 
   ListTypeNode          = 'list type node',
   ObjectTypeNode        = 'object type node',
-  ObjectFieldNode        = 'object field node',
+  ObjectFieldNode       = 'object field node',
   TupleTypeNode         = 'tuple type node',
+  RecordTypeNode        = 'record type node',
 
   StringLiteralNode     = 'string literal node',
   NumberLiteralNode     = 'number literal node',
@@ -80,6 +81,11 @@ export type TupleTypeNode = BaseNode & {
   fields: TypeNode[]
 }
 
+export type RecordTypeNode = BaseNode & {
+  kind: ASTNodeKind.RecordTypeNode
+  type: TypeNode
+}
+
 export type StringLiteralNode = BaseNode & {
   kind: ASTNodeKind.StringLiteralNode
   value: StringLiteral
@@ -127,6 +133,7 @@ export type TypeNode =
   | ListTypeNode
   | ObjectTypeNode
   | TupleTypeNode
+  | RecordTypeNode
   | StringLiteralNode
   | NumberLiteralNode
   | BooleanLiteralNode
@@ -251,6 +258,17 @@ export const createTupleTypeNode = (
   return {
     kind: ASTNodeKind.TupleTypeNode,
     fields,
+    location,
+  }
+}
+
+export const createRecordTypeNode = (
+  type: TypeNode,
+  location: Location
+): RecordTypeNode => {
+  return {
+    kind: ASTNodeKind.RecordTypeNode,
+    type,
     location,
   }
 }

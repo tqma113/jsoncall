@@ -9,7 +9,7 @@ describe('parser', () => {
 
     const document = parse({ moduleId, content })
 
-    expect(document.statements.length).toBe(20)
+    expect(document.statements.length).toBe(21)
   })
 
   describe('base', () => {
@@ -136,6 +136,20 @@ describe('parser', () => {
             primitiveType: { kind: 'primitive type', word: 'string' },
           },
         ],
+      })
+    })
+
+    it('parseRecordTypeNode', () => {
+      const moduleId = 'parseRecordTypeNode.jc'
+      const content = '<number>'
+
+      const parser = createParser({ moduleId, content })
+      parser.expectToken(TokenKind.SOF)
+
+      expect(parser.parseRecordTypeNode()).toMatchObject({
+        type: {
+          primitiveType: { kind: 'primitive type', word: 'number' },
+        },
       })
     })
 

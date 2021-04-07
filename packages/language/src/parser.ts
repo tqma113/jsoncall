@@ -16,6 +16,7 @@ import {
   ListTypeNode,
   ObjectTypeNode,
   TupleTypeNode,
+  RecordTypeNode,
   PrimitiveTypeNode,
   SpecialTypeNode,
   StringLiteralNode,
@@ -30,6 +31,7 @@ import {
   createIntersectionNode,
   createListTypeNode,
   createTupleTypeNode,
+  createRecordTypeNode,
   createPrimitiveTypeNode,
   createSpecialTypeNode,
   createStringLiteralNode,
@@ -75,6 +77,7 @@ export type Parser = {
   parseListTypeNode: () => ListTypeNode
   parseObjectTypeNode: () => ObjectTypeNode
   parseTupleTypeNode: () => TupleTypeNode
+  parseRecordTypeNode: () => RecordTypeNode
   parsePrimitiveTypeNode: () => PrimitiveTypeNode
   parseSpecialTypeNode: () => SpecialTypeNode
   parseStringLiteralNode: () => StringLiteralNode
@@ -421,6 +424,8 @@ export const createParser = (source: Source): Parser => {
             return parseObjectTypeNode()
           case OperatorEnum.OpenParen:
             return parseTupleTypeNode()
+          case OperatorEnum.OpenAngle:
+            return parseRecordTypeNode()
         }
 
         break
@@ -499,6 +504,16 @@ export const createParser = (source: Source): Parser => {
     )
   }
 
+  const parseRecordTypeNode = (): RecordTypeNode => {
+    const start = lexer.token
+
+    expectOperator(OperatorEnum.OpenAngle)
+    const node = parseTypeNode()
+    expectOperator(OperatorEnum.CloseAngle)
+
+    return createRecordTypeNode(node, loc(start))
+  }
+
   const parseTupleItem = (): TypeNode => {
     const node = parseTypeNode()
 
@@ -569,6 +584,7 @@ export const createParser = (source: Source): Parser => {
     parseListTypeNode,
     parseObjectTypeNode,
     parseTupleTypeNode,
+    parseRecordTypeNode,
     parsePrimitiveTypeNode,
     parseSpecialTypeNode,
     parseStringLiteralNode,

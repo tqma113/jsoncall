@@ -61,7 +61,7 @@ describe('check', () => {
             ''
           )
         )
-        fooModule.exportDefinations.push(createExportDefination(['foo6']))
+        fooModule.exportDefination = createExportDefination(['foo6'])
 
         const barModule = createSchemaModule(bar)
         barModule.linkDefinations.push(
@@ -109,7 +109,7 @@ describe('check', () => {
             ''
           )
         )
-        fooModule.exportDefinations.push(createExportDefination(['foo6']))
+        fooModule.exportDefination = createExportDefination(['foo6'])
 
         const barModule = createSchemaModule(bar)
         barModule.linkDefinations.push(
@@ -145,7 +145,7 @@ describe('check', () => {
           ''
         )
       )
-      fooModule.exportDefinations.push(createExportDefination(['foo6']))
+      fooModule.exportDefination = createExportDefination(['foo6'])
 
       schema.modules.push(fooModule)
 
@@ -165,7 +165,7 @@ describe('check', () => {
           ''
         )
       )
-      fooModule.exportDefinations.push(createExportDefination(['foo6']))
+      fooModule.exportDefination = createExportDefination(['foo6'])
 
       schema.modules.push(fooModule)
 
@@ -194,7 +194,7 @@ describe('check', () => {
           ''
         )
       )
-      fooModule.exportDefinations.push(createExportDefination(['foo6']))
+      fooModule.exportDefination = createExportDefination(['foo6'])
 
       schema.modules.push(fooModule)
 
@@ -214,7 +214,7 @@ describe('check', () => {
           ''
         )
       )
-      fooModule.exportDefinations.push(createExportDefination(['foo6']))
+      fooModule.exportDefination = createExportDefination(['foo6'])
 
       schema.modules.push(fooModule)
 
@@ -244,7 +244,7 @@ describe('check', () => {
           ''
         )
       )
-      fooModule.exportDefinations.push(createExportDefination(['foo6']))
+      fooModule.exportDefination = createExportDefination(['foo6'])
 
       schema.modules.push(fooModule)
 
@@ -264,7 +264,7 @@ describe('check', () => {
           ''
         )
       )
-      fooModule.exportDefinations.push(createExportDefination(['foo6']))
+      fooModule.exportDefination = createExportDefination(['foo6'])
 
       schema.modules.push(fooModule)
 
@@ -287,9 +287,7 @@ describe('check', () => {
             ''
           )
         )
-        fooModule.exportDefinations.push(
-          createExportDefination(['foo6', 'foo6'])
-        )
+        fooModule.exportDefination = createExportDefination(['foo6', 'foo6'])
 
         schema.modules.push(fooModule)
 
@@ -309,7 +307,7 @@ describe('check', () => {
             ''
           )
         )
-        fooModule.exportDefinations.push(createExportDefination(['foo6']))
+        fooModule.exportDefination = createExportDefination(['foo6'])
 
         schema.modules.push(fooModule)
 
@@ -324,7 +322,7 @@ describe('check', () => {
         const schema = createSchema(foo)
 
         const fooModule = createSchemaModule(foo)
-        fooModule.exportDefinations.push(createExportDefination(['foo6']))
+        fooModule.exportDefination = createExportDefination(['foo6'])
 
         schema.modules.push(fooModule)
 
@@ -344,7 +342,7 @@ describe('check', () => {
             ''
           )
         )
-        fooModule.exportDefinations.push(createExportDefination(['foo6']))
+        fooModule.exportDefination = createExportDefination(['foo6'])
 
         schema.modules.push(fooModule)
 

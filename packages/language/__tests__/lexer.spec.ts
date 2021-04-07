@@ -109,15 +109,25 @@ describe('lexer', () => {
     expect(lexer.next()).toMatchObject({ word: 'type', kind: 'keyword' })
     expect(lexer.next()).toMatchObject({ word: 'foo8', kind: 'name' })
     expect(lexer.next()).toMatchObject({ word: '=', kind: 'operator' })
-    expect(lexer.next()).toMatchObject({ word: 'any', kind: 'special type' })
+    expect(lexer.next()).toMatchObject({ word: '<', kind: 'operator' })
+    expect(lexer.next()).toMatchObject({
+      word: 'number',
+      kind: 'primitive type',
+    })
+    expect(lexer.next()).toMatchObject({ word: '>', kind: 'operator' })
 
     expect(lexer.next()).toMatchObject({ word: 'type', kind: 'keyword' })
     expect(lexer.next()).toMatchObject({ word: 'foo9', kind: 'name' })
     expect(lexer.next()).toMatchObject({ word: '=', kind: 'operator' })
-    expect(lexer.next()).toMatchObject({ word: 'none', kind: 'special type' })
+    expect(lexer.next()).toMatchObject({ word: 'any', kind: 'special type' })
 
     expect(lexer.next()).toMatchObject({ word: 'type', kind: 'keyword' })
     expect(lexer.next()).toMatchObject({ word: 'foo10', kind: 'name' })
+    expect(lexer.next()).toMatchObject({ word: '=', kind: 'operator' })
+    expect(lexer.next()).toMatchObject({ word: 'none', kind: 'special type' })
+
+    expect(lexer.next()).toMatchObject({ word: 'type', kind: 'keyword' })
+    expect(lexer.next()).toMatchObject({ word: 'foo11', kind: 'name' })
     expect(lexer.next()).toMatchObject({ word: '=', kind: 'operator' })
     expect(lexer.next()).toMatchObject({
       word: 'number',
@@ -130,7 +140,7 @@ describe('lexer', () => {
     })
 
     expect(lexer.next()).toMatchObject({ word: 'type', kind: 'keyword' })
-    expect(lexer.next()).toMatchObject({ word: 'foo11', kind: 'name' })
+    expect(lexer.next()).toMatchObject({ word: 'foo12', kind: 'name' })
     expect(lexer.next()).toMatchObject({ word: '=', kind: 'operator' })
     expect(lexer.next()).toMatchObject({ word: '{', kind: 'operator' })
     expect(lexer.next()).toMatchObject({ word: 'foo', kind: 'name' })
@@ -151,22 +161,22 @@ describe('lexer', () => {
     expect(lexer.next()).toMatchObject({ word: '}', kind: 'operator' })
 
     expect(lexer.next()).toMatchObject({ word: 'type', kind: 'keyword' })
-    expect(lexer.next()).toMatchObject({ word: 'foo12', kind: 'name' })
-    expect(lexer.next()).toMatchObject({ word: '=', kind: 'operator' })
-    expect(lexer.next()).toMatchObject({ word: 'foo12', kind: 'string' })
-
-    expect(lexer.next()).toMatchObject({ word: 'type', kind: 'keyword' })
     expect(lexer.next()).toMatchObject({ word: 'foo13', kind: 'name' })
     expect(lexer.next()).toMatchObject({ word: '=', kind: 'operator' })
-    expect(lexer.next()).toMatchObject({ word: '0', kind: 'number' })
+    expect(lexer.next()).toMatchObject({ word: 'foo13', kind: 'string' })
 
     expect(lexer.next()).toMatchObject({ word: 'type', kind: 'keyword' })
     expect(lexer.next()).toMatchObject({ word: 'foo14', kind: 'name' })
     expect(lexer.next()).toMatchObject({ word: '=', kind: 'operator' })
-    expect(lexer.next()).toMatchObject({ word: 'true', kind: 'boolean' })
+    expect(lexer.next()).toMatchObject({ word: '0', kind: 'number' })
 
     expect(lexer.next()).toMatchObject({ word: 'type', kind: 'keyword' })
     expect(lexer.next()).toMatchObject({ word: 'foo15', kind: 'name' })
+    expect(lexer.next()).toMatchObject({ word: '=', kind: 'operator' })
+    expect(lexer.next()).toMatchObject({ word: 'true', kind: 'boolean' })
+
+    expect(lexer.next()).toMatchObject({ word: 'type', kind: 'keyword' })
+    expect(lexer.next()).toMatchObject({ word: 'foo16', kind: 'name' })
     expect(lexer.next()).toMatchObject({ word: '=', kind: 'operator' })
     expect(lexer.next()).toMatchObject({ word: 'false', kind: 'boolean' })
 

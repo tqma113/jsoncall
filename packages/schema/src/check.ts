@@ -19,6 +19,7 @@ import {
   NameType,
   PrimitiveTypeEnum,
   SpecialTypeEnum,
+  RecordType,
 } from './schema'
 
 export const check = (schema: Schema): SchemaError | null => {
@@ -37,9 +38,7 @@ export const check = (schema: Schema): SchemaError | null => {
         (module) => module.id === linkDefination.from
       )
       if (fromModule) {
-        const exports = fromModule.exportDefinations
-          .map((exportDefination) => exportDefination.names)
-          .flat()
+        const exports = fromModule.exportDefination?.names || []
         for (const [from, to] of linkDefination.links) {
           if (!exports.includes(from)) {
             return new SchemaError(
@@ -150,14 +149,13 @@ export const check = (schema: Schema): SchemaError | null => {
       if (result !== null) return result
     }
 
-    for (const exportDefination of module.exportDefinations) {
-      const result = checkExportDefination(exportDefination)
+    if (module.exportDefination !== null) {
+      const result = checkExportDefination(module.exportDefination)
 
       if (result !== null) return result
     }
-    const exportNames = module.exportDefinations
-      .map((exportDefination) => exportDefination.names)
-      .flat()
+
+    const exportNames = module.exportDefination?.names || []
 
     // check type
     for (const typeDefination of module.typeDefinations) {
@@ -269,6 +267,10 @@ export const checkType = (type: Type, names: string[]): SchemaError | null => {
     return null
   }
 
+  const checkRecordType = (recordType: RecordType): SchemaError | null => {
+    return checkType(recordType.type, names)
+  }
+
   const checkUnionType = (unionType: UnionType): SchemaError | null => {
     for (const type of unionType.types) {
       const result = checkType(type, names)
@@ -317,6 +319,9 @@ export const checkType = (type: Type, names: string[]): SchemaError | null => {
     }
     case 'TupleType': {
       return checkTupleType(type)
+    }
+    case 'RecordType': {
+      return checkRecordType(type)
     }
     case 'UnionType': {
       return checkUnionType(type)

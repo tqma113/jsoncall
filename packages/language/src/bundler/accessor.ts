@@ -30,6 +30,8 @@ import {
   createNameType,
   createTypeDefination,
   createDeriveDefination,
+  RecordType,
+  createRecordType,
 } from 'jc-schema'
 import {
   ASTNodeKind,
@@ -50,6 +52,7 @@ import {
   ObjectTypeNode,
   ObjectFieldNode,
   TupleTypeNode,
+  RecordTypeNode,
   UnionNode,
   IntersectionNode,
   NameNode,
@@ -182,6 +185,12 @@ export const createModuleAccessor = (
       )
     }
 
+    const accessRecordTypeNode = (
+      recordTypeNode: RecordTypeNode
+    ): RecordType => {
+      return createRecordType(accessTypeNode(recordTypeNode.type))
+    }
+
     const accessUnionNode = (unionNode: UnionNode): UnionType => {
       return createUnionType(
         unionNode.types.map((typeNode) => accessTypeNode(typeNode))
@@ -227,6 +236,9 @@ export const createModuleAccessor = (
         }
         case ASTNodeKind.TupleTypeNode: {
           return accessTupleTypeNode(typeNode)
+        }
+        case ASTNodeKind.RecordTypeNode: {
+          return accessRecordTypeNode(typeNode)
         }
         case ASTNodeKind.UnionNode: {
           return accessUnionNode(typeNode)
@@ -316,8 +328,8 @@ export const createModuleAccessor = (
       if (result) {
         const [_, nextSchemaModule] = result
         const isExported = (name: string): boolean => {
-          return nextSchemaModule.exportDefinations.some((exportDefination) =>
-            exportDefination.names.includes(name)
+          return (
+            nextSchemaModule.exportDefination?.names.includes(name) || false
           )
         }
 
@@ -358,10 +370,8 @@ export const createModuleAccessor = (
     }
 
     const accessExportStatement = (exportStatement: ExportStatement) => {
-      schemaModule.exportDefinations.push(
-        createExportDefination(
-          exportStatement.names.map((name) => name.name.word)
-        )
+      schemaModule.exportDefination = createExportDefination(
+        exportStatement.names.map((name) => name.name.word)
       )
     }
 

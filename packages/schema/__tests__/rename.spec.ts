@@ -28,7 +28,7 @@ describe('rename', () => {
         ''
       )
     )
-    fooModule.exportDefinations.push(createExportDefination(['foo6']))
+    fooModule.exportDefination = createExportDefination(['foo6'])
 
     const barModule = createSchemaModule(bar)
     barModule.linkDefinations.push(createLinkDefination(foo, [['foo6', 'foo']]))
@@ -46,9 +46,7 @@ describe('rename', () => {
         ''
       )
     )
-    barModule.exportDefinations.push(
-      createExportDefination(['bar', 'fooAndBar'])
-    )
+    barModule.exportDefination = createExportDefination(['bar', 'fooAndBar'])
 
     const bazModule = createSchemaModule(baz)
     bazModule.linkDefinations.push(createLinkDefination(foo, [['foo6', 'foo']]))

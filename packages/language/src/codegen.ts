@@ -12,6 +12,7 @@ import type {
   ObjectType,
   ObjectTypeFiled,
   TupleType,
+  RecordType,
   UnionType,
   IntersectType,
 } from 'jc-schema'
@@ -43,10 +44,8 @@ export const codegenModule = (module: SchemaModule): string => {
     )
   }
 
-  if (module.exportDefinations.length > 0) {
-    blocks.push(
-      module.exportDefinations.map(codegenExportDefination).join('\n')
-    )
+  if (module.exportDefination !== null) {
+    blocks.push(codegenExportDefination(module.exportDefination))
   }
 
   if (module.callDefinations.length > 0) {
@@ -171,6 +170,10 @@ export const codegenType = (type: Type, depth: number = 0): string => {
       .join(', ')})`
   }
 
+  const codegenRecordType = (tupleType: RecordType): string => {
+    return `<${codegenType(tupleType.type, depth)}>`
+  }
+
   const codegenUnionType = (unionType: UnionType): string => {
     return unionType.types.map((type) => codegenType(type, depth)).join(' | ')
   }
@@ -197,6 +200,9 @@ export const codegenType = (type: Type, depth: number = 0): string => {
     }
     case 'TupleType': {
       return codegenTupleType(type)
+    }
+    case 'RecordType': {
+      return codegenRecordType(type)
     }
     case 'UnionType': {
       return codegenUnionType(type)

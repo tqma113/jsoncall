@@ -6,6 +6,8 @@ export enum OperatorEnum {
   CloseBracket          =         ']',
   OpenParen             =         '(',
   CloseParen            =         ')',
+  OpenAngle             =         '<',
+  CloseAngle            =         '>',
 
   Union                 =         '|',
   Intersect             =         '&',

@@ -20,7 +20,7 @@ export const rename = (prev: Schema, getName: Namer): Schema => {
     newModule.typeDefinations = [...module.typeDefinations]
     newModule.deriveDefinations = [...module.deriveDefinations]
     newModule.callDefinations = [...module.callDefinations]
-    newModule.exportDefinations = [...module.exportDefinations]
+    newModule.exportDefination = module.exportDefination
     newModule.linkDefinations = [...module.linkDefinations]
 
     schema.modules.push(newModule)

@@ -165,6 +165,16 @@ export const createLexer = (source: Readonly<Source>): Lexer => {
             col,
             prev
           )
+        case 60: // <
+          return createToken(
+            TokenKind.OPERATOR,
+            OperatorEnum.OpenAngle,
+            pos,
+            pos + 1,
+            line,
+            col,
+            prev
+          )
         case 61: //  =
           if (content.charCodeAt(pos + 1) === 62) {
             return createToken(
@@ -187,6 +197,16 @@ export const createLexer = (source: Readonly<Source>): Lexer => {
               prev
             )
           }
+        case 62: // >
+          return createToken(
+            TokenKind.OPERATOR,
+            OperatorEnum.CloseAngle,
+            pos,
+            pos + 1,
+            line,
+            col,
+            prev
+          )
         case 91: //  [
           return createToken(
             TokenKind.OPERATOR,

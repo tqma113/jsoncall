@@ -6,6 +6,7 @@ import {
   ListType,
   ObjectType,
   Tuple,
+  RecordType,
   AnyType,
   NoneType,
   Union,
@@ -13,7 +14,7 @@ import {
   Literal,
   JSONType,
   createJSONCallType,
-} from 'jc-builder'
+} from '../../src'
 
 type FooDerive = {
   int: JSONType<any, any, string>
@@ -32,12 +33,13 @@ const createJSONCall = (fooDerive: FooDerive) => {
       foo: NumberType,
     })
     const foo7 = Tuple(NumberType, StringType)
+    const foo8 = RecordType(NumberType)
 
-    const foo8 = AnyType
-    const foo9 = NoneType
+    const foo9 = AnyType
+    const foo10 = NoneType
 
-    const foo10 = Union(NumberType, StringType)
-    const foo11 = Intersection(
+    const foo11 = Union(NumberType, StringType)
+    const foo12 = Intersection(
       ObjectType({
         foo: StringType,
       }),
@@ -46,10 +48,10 @@ const createJSONCall = (fooDerive: FooDerive) => {
       })
     )
 
-    const foo12 = Literal('foo12')
-    const foo13 = Literal(0)
-    const foo14 = Literal(true)
-    const foo15 = Literal(false)
+    const foo13 = Literal('foo12')
+    const foo14 = Literal(0)
+    const foo15 = Literal(true)
+    const foo16 = Literal(false)
 
     return {
       id: 'foo',
@@ -69,6 +71,7 @@ const createJSONCall = (fooDerive: FooDerive) => {
         foo13,
         foo14,
         foo15,
+        foo16,
         int,
         Date,
       },
