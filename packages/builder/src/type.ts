@@ -72,7 +72,8 @@ export const StringType = createJSONType(
       : new ValidateError('string', JSON.stringify(input))
   },
   identify as Converter<any, string>,
-  identify
+  identify,
+  'string'
 )
 export const NumberType = createJSONType(
   'number' as const,
@@ -82,7 +83,8 @@ export const NumberType = createJSONType(
       : new ValidateError('number', JSON.stringify(input))
   },
   identify as Converter<any, number>,
-  identify
+  identify,
+  'number'
 )
 export const BooleanType = createJSONType(
   'boolean' as const,
@@ -92,7 +94,8 @@ export const BooleanType = createJSONType(
       : new ValidateError('boolean', JSON.stringify(input))
   },
   identify as Converter<any, boolean>,
-  identify
+  identify,
+  'boolean'
 )
 export const NullType = createJSONType(
   'null' as const,
@@ -102,7 +105,8 @@ export const NullType = createJSONType(
       : new ValidateError('null', JSON.stringify(input))
   },
   identify as Converter<any, null>,
-  identify
+  identify,
+  'null'
 )
 export const AnyObjectType = createJSONType(
   'object' as const,
@@ -112,7 +116,8 @@ export const AnyObjectType = createJSONType(
       : new ValidateError('object', JSON.stringify(input))
   },
   identify as Converter<any, object>,
-  identify
+  identify,
+  'object'
 )
 export const AnyListType = createJSONType(
   'list' as const,
@@ -122,28 +127,31 @@ export const AnyListType = createJSONType(
       : new ValidateError('list', JSON.stringify(input))
   },
   identify as Converter<any, any[]>,
-  identify
+  identify,
+  'list'
 )
 export const AnyType = createJSONType(
-  'AnyType' as const,
+  'any' as const,
   (_input) => {
     return true
   },
   identify as Converter<any, any>,
-  identify
+  identify,
+  'any'
 )
 export const NoneType = createJSONType(
-  'NoneType' as const,
+  'none' as const,
   (input) => {
     return input === undefined
       ? true
       : new ValidateError('undefined', JSON.stringify(input))
   },
   identify as Converter<any, undefined>,
-  identify
+  identify,
+  'none'
 )
 
-export const createLiteralType = <T>(to: T, description: string = '') => {
+export const createLiteralType = <T>(to: T, description: string) => {
   return createJSONType(
     `Literal(${to})` as const,
     (input) => {
@@ -153,7 +161,7 @@ export const createLiteralType = <T>(to: T, description: string = '') => {
     },
     identify as Converter<any, T>,
     identify,
-    description
+    description ? description : JSON.stringify(to)
   )
 }
 

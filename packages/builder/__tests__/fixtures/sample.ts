@@ -52,29 +52,31 @@ const createJSONCallModule = (fooDerive: FooDerive) => {
     const foo15 = Literal(false)
 
     return {
-      foo1,
-      foo2,
-      foo3,
-      foo4,
-      foo5,
-      foo6,
-      foo7,
-      foo8,
-      foo9,
-      foo10,
-      foo11,
-      foo12,
-      foo13,
-      foo14,
-      foo15,
-      int,
-      Date,
-    }
+      type: {
+        foo1,
+        foo2,
+        foo3,
+        foo4,
+        foo5,
+        foo6,
+        foo7,
+        foo8,
+        foo9,
+        foo10,
+        foo11,
+        foo12,
+        foo13,
+        foo14,
+        foo15,
+        int,
+        Date,
+      },
+      call: {},
+    } as const
   }
-  const fooModule = getFooModule(fooDerive)
 
   const getBarModule = () => {
-    const foo = fooModule.foo6
+    const foo = fooModule.type.foo6
 
     const bar = ObjectType({
       bar: StringType,
@@ -83,16 +85,18 @@ const createJSONCallModule = (fooDerive: FooDerive) => {
     const fooAndBar = Intersection(foo, bar)
 
     return {
-      bar,
-      fooAndBar,
-    }
+      type: {
+        bar,
+        fooAndBar,
+      },
+      call: {},
+    } as const
   }
-  const barModule = getBarModule()
 
   const getBazModule = () => {
-    const foo = fooModule.foo6
-    const bar = barModule.bar
-    const fooAndBar = barModule.fooAndBar
+    const foo = fooModule.type.foo6
+    const bar = barModule.type.bar
+    const fooAndBar = barModule.type.fooAndBar
 
     const baz = ObjectType({
       bar: BooleanType,
@@ -101,38 +105,43 @@ const createJSONCallModule = (fooDerive: FooDerive) => {
     const fooAndBaz = Intersection(foo, baz)
     const fooAndBarAndBaz = Intersection(foo, bar, baz)
 
+    const bazCallInput = fooAndBarAndBaz
+    const bazCallOutput = baz
+    const bazCall = createJSONCallType('bazCall', bazCallInput, bazCallOutput)
+
+    const barCallInput = fooAndBar
+    const barCallOutput = bar
+    const barCall = createJSONCallType('barCall', barCallInput, barCallOutput)
+
+    const fooCallInput = fooAndBaz
+    const fooCallOutput = foo
+    const fooCall = createJSONCallType('barCall', fooCallInput, fooCallOutput)
+
     return {
-      foo,
-      bar,
-      baz,
-      fooAndBarAndBaz,
-      fooAndBar,
-      fooAndBaz,
-    }
+      type: {
+        foo,
+        bar,
+        baz,
+        fooAndBarAndBaz,
+        fooAndBar,
+        fooAndBaz,
+      },
+      call: {
+        bazCall,
+        barCall,
+        fooCall,
+      },
+    } as const
   }
+
+  const fooModule = getFooModule(fooDerive)
+  const barModule = getBarModule()
   const bazModule = getBazModule()
 
-  const bazCall = createJSONCallType(
-    'bazCall',
-    bazModule.fooAndBarAndBaz,
-    bazModule.baz
-  )
-  const barCall = createJSONCallType(
-    'barCall',
-    bazModule.fooAndBar,
-    bazModule.bar
-  )
-  const fooCall = createJSONCallType(
-    'barCall',
-    bazModule.fooAndBaz,
-    bazModule.foo
-  )
-
   return {
-    bazCall,
-    barCall,
-    fooCall,
-  }
+    modules: [fooModule, barModule, bazModule] as const,
+    call: bazModule.call,
+  } as const
 }
 
 export default createJSONCallModule
