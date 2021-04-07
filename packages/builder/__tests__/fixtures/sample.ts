@@ -20,7 +20,7 @@ type FooDerive = {
   Date: JSONType<any, any, string>
 }
 
-const createJSONCallModule = (fooDerive: FooDerive) => {
+const createJSONCall = (fooDerive: FooDerive) => {
   const getFooModule = ({ int, Date }: FooDerive) => {
     const foo1 = NumberType
     const foo2 = BooleanType
@@ -52,6 +52,7 @@ const createJSONCallModule = (fooDerive: FooDerive) => {
     const foo15 = Literal(false)
 
     return {
+      id: 'foo',
       type: {
         foo1,
         foo2,
@@ -85,6 +86,7 @@ const createJSONCallModule = (fooDerive: FooDerive) => {
     const fooAndBar = Intersection(foo, bar)
 
     return {
+      id: 'foo',
       type: {
         bar,
         fooAndBar,
@@ -118,6 +120,7 @@ const createJSONCallModule = (fooDerive: FooDerive) => {
     const fooCall = createJSONCallType('barCall', fooCallInput, fooCallOutput)
 
     return {
+      id: 'foo',
       type: {
         foo,
         bar,
@@ -140,8 +143,8 @@ const createJSONCallModule = (fooDerive: FooDerive) => {
 
   return {
     modules: [fooModule, barModule, bazModule] as const,
-    call: bazModule.call,
+    entry: fooModule,
   } as const
 }
 
-export default createJSONCallModule
+export default createJSONCall

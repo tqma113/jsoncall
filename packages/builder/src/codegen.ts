@@ -1,6 +1,6 @@
 import type { Schema, SchemaModule } from 'jc-schema'
 
-export const codegen = (schema: Schema): Map<string, string> => {}
+export const codegen = (schema: Schema) => {}
 
 export type ModuleCodegen = {
   buildIn: string[]
