@@ -1,11 +1,12 @@
 import fs from 'fs'
 import path from 'path'
 import { bundle, codegen } from '../src'
+import { nodeModuleResolver } from './node'
 
 describe('codegen', () => {
   it('schema', () => {
     const moduleId = path.resolve(__dirname, './fixtures/baz.jc')
-    const schema = bundle(moduleId)
+    const schema = bundle(moduleId, nodeModuleResolver)
     const map = codegen(schema)
 
     expect(map.size).toBe(3)
@@ -14,7 +15,7 @@ describe('codegen', () => {
   it('module', () => {
     const moduleId = path.resolve(__dirname, './fixtures/foo.jc')
     const content = fs.readFileSync(moduleId, 'utf-8')
-    const schema = bundle(moduleId)
+    const schema = bundle(moduleId, nodeModuleResolver)
     const map = codegen(schema)
 
     expect(map.size).toBe(1)

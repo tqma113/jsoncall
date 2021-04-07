@@ -3,9 +3,13 @@ import { format } from '../formater'
 import { Schema, createSchema, check } from 'jc-schema'
 import { BundleError } from '../error'
 import { access } from './accessor'
-import { ModuleResolver, defaultModuleResolver } from './resolver'
 import type { Document } from '../ast'
 import type { Source } from '../source'
+
+export type ModuleResolver = {
+  resolve: (id: string, from: string) => string
+  read: (id: string) => string
+}
 
 export type Module = {
   source: Source
@@ -21,7 +25,7 @@ export type Bundler = {
 
 export const createBundler = (
   entry: string,
-  moduleResolver: ModuleResolver = defaultModuleResolver
+  moduleResolver: ModuleResolver
 ): Bundler => {
   const loadEntry = (moduleId: string) => {
     try {
@@ -67,7 +71,7 @@ export const createBundler = (
 
 export const bundle = (
   entry: string,
-  resolveModule: ModuleResolver = defaultModuleResolver
+  resolveModule: ModuleResolver
 ): Schema => {
   const bundler = createBundler(entry, resolveModule)
   return bundler.bundle()

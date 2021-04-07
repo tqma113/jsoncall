@@ -1,12 +1,8 @@
 import fs from 'fs'
 import path from 'path'
+import type { ModuleResolver } from '../src'
 
-export type ModuleResolver = {
-  resolve: (id: string, from: string) => string
-  read: (id: string) => string
-}
-
-export const defaultModuleResolver: ModuleResolver = {
+export const nodeModuleResolver: ModuleResolver = {
   resolve: (id, from) => {
     const fromDir = path.dirname(from)
     return path.resolve(fromDir, id)

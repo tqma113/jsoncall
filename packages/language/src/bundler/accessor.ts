@@ -55,9 +55,8 @@ import {
   NameNode,
   CommentBlock,
 } from '../ast'
-import { ModuleResolver, defaultModuleResolver } from './resolver'
 import { SemanticError, BundleError } from '../error'
-import type { Bundler, Module } from './index'
+import type { Bundler, Module, ModuleResolver } from './index'
 import type { Source } from '../source'
 
 export type ModuleAccessor = {
@@ -67,7 +66,7 @@ export type ModuleAccessor = {
 
 export const createModuleAccessor = (
   bundler: Bundler,
-  moduleResolver: ModuleResolver = defaultModuleResolver
+  moduleResolver: ModuleResolver
 ): ModuleAccessor => {
   const loadModule = (
     fromModule: Module,
@@ -411,7 +410,7 @@ export const createModuleAccessor = (
 export const access = (
   bundler: Bundler,
   module: Module,
-  moduleResolver: ModuleResolver = defaultModuleResolver
+  moduleResolver: ModuleResolver
 ) => {
   const accessor = createModuleAccessor(bundler, moduleResolver)
   accessor.access(module)

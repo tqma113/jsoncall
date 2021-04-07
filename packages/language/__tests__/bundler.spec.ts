@@ -1,11 +1,12 @@
 import path from 'path'
 import { check } from 'jc-schema'
 import { bundle } from '../src'
+import { nodeModuleResolver } from './node'
 
 describe('bundler', () => {
   it('base', () => {
     const moduleId = path.resolve(__dirname, './fixtures/foo.jc')
-    const schema = bundle(moduleId)
+    const schema = bundle(moduleId, nodeModuleResolver)
 
     expect(schema.entry).toMatch('foo.jc')
     expect(schema.modules.length).toBe(1)
@@ -23,7 +24,7 @@ describe('bundler', () => {
 
   it('dependency', () => {
     const moduleId = path.resolve(__dirname, './fixtures/baz.jc')
-    const schema = bundle(moduleId)
+    const schema = bundle(moduleId, nodeModuleResolver)
 
     expect(schema.entry).toMatch('baz.jc')
     expect(schema.modules.length).toBe(3)
@@ -60,7 +61,7 @@ describe('bundler', () => {
       __dirname,
       './fixtures/circularDependency/foo.jc'
     )
-    const schema = bundle(moduleId)
+    const schema = bundle(moduleId, nodeModuleResolver)
 
     expect(schema.entry).toMatch('foo.jc')
     expect(schema.modules.length).toBe(2)
