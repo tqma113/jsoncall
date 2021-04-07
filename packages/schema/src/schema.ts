@@ -9,9 +9,9 @@ export type SchemaModule = {
   id: string
   typeDefinations: TypeDefination[]
   deriveDefinations: DeriveDefination[]
-  callDefinations: CallDefination[]
   linkDefinations: LinkDefination[]
   exportDefinations: ExportDefination[]
+  callDefinations: CallDefination[]
 }
 
 export type TypeDefination = {

@@ -35,7 +35,7 @@ describe('bundler', () => {
     expect(module0.typeDefinations.length).toBe(3)
     expect(module0.callDefinations.length).toBe(3)
     expect(module0.deriveDefinations.length).toBe(0)
-    expect(module0.exportDefinations.length).toBe(0)
+    expect(module0.exportDefinations.length).toBe(1)
 
     const module1 = schema.modules[1]
     expect(module1.id).toMatch('foo.jc')

@@ -12,6 +12,17 @@ type fooAndBaz = foo & baz
 # foo, bar and baz
 type fooAndBarAndBaz = foo & bar & baz
 
+
+export {
+  fooAndBarAndBaz,
+  fooAndBar,
+  fooAndBaz,
+  baz,
+  bar,
+  foo,
+}
+
+
 call bazCall: fooAndBarAndBaz => baz
 call barCall: fooAndBar => bar
 call fooCall: fooAndBaz => foo
