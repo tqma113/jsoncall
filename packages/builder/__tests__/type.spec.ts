@@ -45,7 +45,8 @@ describe('type', () => {
       },
       (input: number): string => {
         return '' + input
-      }
+      },
+      'NumberString'
     )
 
     expect(validate(NumberString, '123')).toBeTruthy()
@@ -462,19 +463,19 @@ describe('type', () => {
         expect(validate(NumberAndString, [0, 'foo'])).toBeTruthy()
 
         expect(validate(NumberAndString, [])).toMatchObject({
-          expected: '[number, string]',
+          expected: '(number, string)',
           accept: '[]',
         })
         expect(validate(NumberAndString, [0])).toMatchObject({
-          expected: '[number, string]',
+          expected: '(number, string)',
           accept: '[0]',
         })
         expect(validate(NumberAndString, [0, 1])).toMatchObject({
-          expected: '[number, string]',
+          expected: '(number, string)',
           accept: '[0,1]',
         })
         expect(validate(NumberAndString, ['foo', 'bar'])).toMatchObject({
-          expected: '[number, string]',
+          expected: '(number, string)',
           accept: '["foo","bar"]',
         })
 

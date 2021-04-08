@@ -2,7 +2,7 @@ import {
   JSONCallType,
   ValidateError,
   ConvertError,
-  kind,
+  name,
   validate,
   convert,
   reverseConverter,
@@ -43,7 +43,7 @@ export const createJSONCall = <
             try {
               return convert(type.output, result)
             } catch (err) {
-              return new ConvertError(err, kind(type.output))
+              return new ConvertError(err, name(type.output))
             }
           } else {
             return new ServerError('Server error', outputValidateResult)
@@ -55,7 +55,7 @@ export const createJSONCall = <
         return inputValidateResult
       }
     } catch (err) {
-      return new ConvertError(err, kind(type.input))
+      return new ConvertError(err, name(type.input))
     }
   }
 }
@@ -89,7 +89,7 @@ export const createSyncJSONCall = <
             try {
               return convert(type.output, result)
             } catch (err) {
-              return new ConvertError(err.message, kind(type.output))
+              return new ConvertError(err.message, name(type.output))
             }
           } else {
             return new ServerError('Server error', outputValidateResult)
@@ -101,7 +101,7 @@ export const createSyncJSONCall = <
         return inputValidateResult
       }
     } catch (err) {
-      return new ConvertError(err.message, kind(type.input))
+      return new ConvertError(err.message, name(type.input))
     }
   }
 }

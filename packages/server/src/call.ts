@@ -3,7 +3,7 @@ import {
   validate,
   convert,
   reverseConverter,
-  kind,
+  name,
   ValidateError,
   ConvertError,
 } from 'jc-builder'
@@ -66,7 +66,7 @@ export const createJSONCall = <
               throw new ResolverError(err.message, type.name)
             }
           } catch (err) {
-            return new ConvertError(err, kind(type.input))
+            return new ConvertError(err, name(type.input))
           }
         } else {
           return inputValidateResult

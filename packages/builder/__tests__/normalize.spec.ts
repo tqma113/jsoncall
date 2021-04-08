@@ -13,7 +13,7 @@ import createBuilderSchema from './fixtures/foo'
 describe('normalize', () => {
   it('foo', () => {
     const int = createDeriveType(NumberType)(
-      'Date' as const,
+      'int' as const,
       type(NumberType),
       (input) => {
         if (Number.isInteger(input)) {
@@ -27,7 +27,8 @@ describe('normalize', () => {
       },
       (input) => {
         return input
-      }
+      },
+      'int'
     )
     const DateType = createDeriveType(Union(StringType, NumberType))(
       'Date' as const,
@@ -45,7 +46,8 @@ describe('normalize', () => {
       },
       (input) => {
         return input.getTime()
-      }
+      },
+      'Date'
     )
     const builderSchema = createBuilderSchema({ int, Date: DateType })
     const schema = normalize(builderSchema)

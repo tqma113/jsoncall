@@ -1,6 +1,6 @@
 import 'setimmediate'
 import DataLoader from 'dataloader'
-import { kind, validate, convert, ConvertError } from 'jc-builder'
+import { name as getName, validate, convert, ConvertError } from 'jc-builder'
 import {
   SingleCalling,
   SingleCallOutputType,
@@ -42,7 +42,7 @@ export const createSender = <N extends string>(
             }
           }
         } catch (err) {
-          throw new ConvertError(err, kind(SingleCallOutputType))
+          throw new ConvertError(err, getName(SingleCallOutputType))
         }
       } else {
         throw validateResult
@@ -85,7 +85,7 @@ export const createBatchSender = <N extends string>(
               }
             })
           } catch (err) {
-            throw new ConvertError(err, kind(SingleCallOutputType))
+            throw new ConvertError(err, getName(SingleCallOutputType))
           }
         } else {
           throw validateResult
@@ -137,7 +137,7 @@ export const createSyncSender = <N extends string>(
             }
           }
         } catch (err) {
-          throw new ConvertError(err, kind(SingleCallOutputType))
+          throw new ConvertError(err, getName(SingleCallOutputType))
         }
       } else {
         throw validateResult

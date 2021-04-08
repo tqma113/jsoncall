@@ -129,6 +129,153 @@ export const check = (schema: Schema): SchemaError | null => {
       return null
     }
 
+    const checkType = (type: Type, names: string[]): SchemaError | null => {
+      const checkPrimitiveType = (
+        primitiveType: PrimitiveType
+      ): SchemaError | null => {
+        if (!Object.values(PrimitiveTypeEnum).includes(primitiveType.type)) {
+          return new SchemaError(
+            `Unknown PrimitiveType value: ${primitiveType.type}`,
+            module.id
+          )
+        }
+
+        return null
+      }
+
+      const checkSpecialType = (
+        specialType: SpecialType
+      ): SchemaError | null => {
+        if (!Object.values(SpecialTypeEnum).includes(specialType.type)) {
+          return new SchemaError(
+            `Unknown SpecialType value: ${specialType.type}`,
+            module.id
+          )
+        }
+
+        return null
+      }
+
+      const checkLiteral = (literal: LiteralType): SchemaError | null => {
+        if (
+          typeof literal.value !== 'string' &&
+          typeof literal.value !== 'number' &&
+          typeof literal.value !== 'boolean'
+        ) {
+          return new SchemaError(
+            `Unknown LiteralType value: ${literal.value}`,
+            module.id
+          )
+        }
+
+        return null
+      }
+
+      const checkListType = (listType: ListType): SchemaError | null => {
+        return checkType(listType.type, names)
+      }
+
+      const checkObjectType = (objectType: ObjectType): SchemaError | null => {
+        const fields: string[] = []
+
+        for (const field of objectType.fields) {
+          if (fields.includes(field.name)) {
+            return new SchemaError(
+              `Field: ${field.name} has been exist`,
+              module.id
+            )
+          } else {
+            fields.push(field.name)
+            const result = checkType(field.type, names)
+
+            if (result !== null) return result
+          }
+        }
+
+        return null
+      }
+
+      const checkTupleType = (tupleType: TupleType): SchemaError | null => {
+        for (const type of tupleType.types) {
+          const result = checkType(type, names)
+
+          if (result !== null) return result
+        }
+
+        return null
+      }
+
+      const checkRecordType = (recordType: RecordType): SchemaError | null => {
+        return checkType(recordType.type, names)
+      }
+
+      const checkUnionType = (unionType: UnionType): SchemaError | null => {
+        for (const type of unionType.types) {
+          const result = checkType(type, names)
+
+          if (result !== null) return result
+        }
+
+        return null
+      }
+
+      const checkIntersectType = (
+        intersectType: IntersectType
+      ): SchemaError | null => {
+        for (const type of intersectType.types) {
+          const result = checkType(type, names)
+
+          if (result !== null) return result
+        }
+
+        return null
+      }
+
+      const checkNameType = (nameType: NameType): SchemaError | null => {
+        if (!names.includes(nameType.name)) {
+          return new SchemaError(
+            `Unknown type name: '${nameType.name}'`,
+            module.id
+          )
+        }
+
+        return null
+      }
+
+      switch (type.kind) {
+        case 'PrimitiveType': {
+          return checkPrimitiveType(type)
+        }
+        case 'SpecialType': {
+          return checkSpecialType(type)
+        }
+        case 'Literal': {
+          return checkLiteral(type)
+        }
+        case 'ListType': {
+          return checkListType(type)
+        }
+        case 'ObjectType': {
+          return checkObjectType(type)
+        }
+        case 'TupleType': {
+          return checkTupleType(type)
+        }
+        case 'RecordType': {
+          return checkRecordType(type)
+        }
+        case 'UnionType': {
+          return checkUnionType(type)
+        }
+        case 'IntersectType': {
+          return checkIntersectType(type)
+        }
+        case 'NameType': {
+          return checkNameType(type)
+        }
+      }
+    }
+
     const names: string[] = []
 
     for (const linkDefination of module.linkDefinations) {
@@ -194,145 +341,6 @@ export const check = (schema: Schema): SchemaError | null => {
   }
 
   return null
-}
-
-export const checkType = (type: Type, names: string[]): SchemaError | null => {
-  const checkPrimitiveType = (
-    primitiveType: PrimitiveType
-  ): SchemaError | null => {
-    if (!Object.values(PrimitiveTypeEnum).includes(primitiveType.type)) {
-      return new SchemaError(
-        `Unknown PrimitiveType value: ${primitiveType.type}`,
-        module.id
-      )
-    }
-
-    return null
-  }
-
-  const checkSpecialType = (specialType: SpecialType): SchemaError | null => {
-    if (!Object.values(SpecialTypeEnum).includes(specialType.type)) {
-      return new SchemaError(
-        `Unknown SpecialType value: ${specialType.type}`,
-        module.id
-      )
-    }
-
-    return null
-  }
-
-  const checkLiteral = (literal: LiteralType): SchemaError | null => {
-    if (
-      typeof literal.value !== 'string' &&
-      typeof literal.value !== 'number' &&
-      typeof literal.value !== 'boolean'
-    ) {
-      return new SchemaError(
-        `Unknown LiteralType value: ${literal.value}`,
-        module.id
-      )
-    }
-
-    return null
-  }
-
-  const checkListType = (listType: ListType): SchemaError | null => {
-    return checkType(listType.type, names)
-  }
-
-  const checkObjectType = (objectType: ObjectType): SchemaError | null => {
-    const fields: string[] = []
-
-    for (const field of objectType.fields) {
-      if (fields.includes(field.name)) {
-        return new SchemaError(`Field: ${field.name} has been exist`, module.id)
-      } else {
-        fields.push(field.name)
-        const result = checkType(field.type, names)
-
-        if (result !== null) return result
-      }
-    }
-
-    return null
-  }
-
-  const checkTupleType = (tupleType: TupleType): SchemaError | null => {
-    for (const type of tupleType.types) {
-      const result = checkType(type, names)
-
-      if (result !== null) return result
-    }
-
-    return null
-  }
-
-  const checkRecordType = (recordType: RecordType): SchemaError | null => {
-    return checkType(recordType.type, names)
-  }
-
-  const checkUnionType = (unionType: UnionType): SchemaError | null => {
-    for (const type of unionType.types) {
-      const result = checkType(type, names)
-
-      if (result !== null) return result
-    }
-
-    return null
-  }
-
-  const checkIntersectType = (
-    intersectType: IntersectType
-  ): SchemaError | null => {
-    for (const type of intersectType.types) {
-      const result = checkType(type, names)
-
-      if (result !== null) return result
-    }
-
-    return null
-  }
-
-  const checkNameType = (nameType: NameType): SchemaError | null => {
-    if (!names.includes(nameType.name)) {
-      return new SchemaError(`Unknown type name: '${nameType.name}'`, module.id)
-    }
-
-    return null
-  }
-
-  switch (type.kind) {
-    case 'PrimitiveType': {
-      return checkPrimitiveType(type)
-    }
-    case 'SpecialType': {
-      return checkSpecialType(type)
-    }
-    case 'Literal': {
-      return checkLiteral(type)
-    }
-    case 'ListType': {
-      return checkListType(type)
-    }
-    case 'ObjectType': {
-      return checkObjectType(type)
-    }
-    case 'TupleType': {
-      return checkTupleType(type)
-    }
-    case 'RecordType': {
-      return checkRecordType(type)
-    }
-    case 'UnionType': {
-      return checkUnionType(type)
-    }
-    case 'IntersectType': {
-      return checkIntersectType(type)
-    }
-    case 'NameType': {
-      return checkNameType(type)
-    }
-  }
 }
 
 const findRepeated = (list: string[]): string | false => {

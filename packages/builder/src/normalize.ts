@@ -14,9 +14,10 @@ import {
   createSchema,
   createSchemaModule,
   createCallDefination,
+  createNameType,
 } from 'jc-schema'
-import { BuilderSchema, BuilderModule, TypeLink, LinkType } from './module'
-import { JSONType, type } from './type'
+import { BuilderSchema, BuilderModule, TypeLink } from './module'
+import { JSONType, type, name } from './type'
 import { JSONCallType } from './call'
 
 export const normalize = (builderSchema: BuilderSchema): Schema => {
@@ -98,5 +99,10 @@ export const normalizeCallDefination = (
 }
 
 export const normalizeType = (jsontype: JSONType<any, any, string>): Type => {
-  return type(jsontype)
+  const n = name(jsontype)
+  if (n) {
+    return createNameType(n)
+  } else {
+    return type(jsontype)
+  }
 }
