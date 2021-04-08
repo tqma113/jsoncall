@@ -13,6 +13,7 @@ import {
   createRecordType,
   ObjectTypeFiled,
   createObjectTypeFiled,
+  createNameType,
 } from 'jc-schema'
 import { ValidateError } from './error'
 
@@ -27,6 +28,7 @@ export const REVERSECONVERTER = Symbol('REVERSECONVERTER')
 export const NAME = Symbol('NAME')
 export const DESCRIPTION = Symbol('DESCRIPTION')
 export const TYPE = Symbol('TYPE')
+export const ORIGIN = Symbol('ORIGIN')
 
 export const isJSONType = (input: any): input is JSONType<any, any, string> => {
   return (
@@ -42,6 +44,7 @@ export type JSONType<I, T, K extends string> = {
   [VALIDATE]: Validator
   [CONVERT]: Converter<I, T>
   [REVERSECONVERTER]: Converter<T, I>
+  [ORIGIN]: JSONType<I, T, K> | null
 }
 
 export const createJSONType = <I, T, K extends string>(
@@ -50,7 +53,8 @@ export const createJSONType = <I, T, K extends string>(
   validate: Validator,
   convert: Converter<I, T>,
   reverseConverter: Converter<T, I>,
-  description: string
+  description: string,
+  origin: JSONType<I, T, K> | null = null
 ): JSONType<I, T, K> => {
   return {
     [JSON_TYPE_SYMBOL]: JSON_TYPE_SYMBOL,
@@ -60,6 +64,7 @@ export const createJSONType = <I, T, K extends string>(
     [CONVERT]: convert,
     [REVERSECONVERTER]: reverseConverter,
     [DESCRIPTION]: description,
+    [ORIGIN]: origin,
   }
 }
 
@@ -86,19 +91,31 @@ export const type = <K extends string>(type: JSONType<any, any, K>): Type => {
   return type[TYPE]
 }
 
+export const desc = <K extends string>(type: JSONType<any, any, K>): string => {
+  return type[DESCRIPTION]
+}
+
+export const origin = <I, T, K extends string>(
+  type: JSONType<I, T, K>
+): JSONType<I, T, K> | null => {
+  return type[ORIGIN]
+}
+
 const identify = (input: any) => input
 
 export const Naming = <I, T, K extends string>(
   name: K,
-  type: JSONType<I, T, string>
+  type: JSONType<I, T, K>,
+  description?: string
 ): JSONType<I, T, K> => {
   return createJSONType(
     name,
-    type[TYPE],
+    createNameType(name),
     type[VALIDATE],
     type[CONVERT],
     type[REVERSECONVERTER],
-    type[DESCRIPTION]
+    description || type[DESCRIPTION],
+    type
   )
 }
 
@@ -466,7 +483,7 @@ export const createList = <
     validate,
     convert,
     reverseConverter,
-    `[${type[DESCRIPTION]}]`
+    `[${item[DESCRIPTION]}]`
   )
 }
 
@@ -666,6 +683,7 @@ export class StructType implements JSONType<object, any, string> {
   [JSON_TYPE_SYMBOL]: symbol;
   [NAME]: string;
   [TYPE]: Type;
+  [ORIGIN]: JSONType<any, any, string>;
   [DESCRIPTION]: string;
   [VALIDATE]: Validator<object>;
   [CONVERT]: Converter<object, any>;

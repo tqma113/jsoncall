@@ -17,7 +17,7 @@ import {
   createNameType,
 } from 'jc-schema'
 import { BuilderSchema, BuilderModule, TypeLink } from './module'
-import { JSONType, type, name } from './type'
+import { JSONType, type, name, desc, origin } from './type'
 import { JSONCallType } from './call'
 
 export const normalize = (builderSchema: BuilderSchema): Schema => {
@@ -39,7 +39,11 @@ export const normalizeModule = (builderModule: BuilderModule): SchemaModule => {
 
   for (const key in builderModule.types) {
     module.typeDefinations.push(
-      normalizeTypeDefination(key, builderModule.types[key])
+      normalizeTypeDefination(
+        key,
+        builderModule.types[key],
+        desc(builderModule.types[key])
+      )
     )
   }
 
@@ -51,7 +55,11 @@ export const normalizeModule = (builderModule: BuilderModule): SchemaModule => {
 
   for (const key in builderModule.derives) {
     module.deriveDefinations.push(
-      normalizeDeriveDefination(key, builderModule.derives[key])
+      normalizeDeriveDefination(
+        key,
+        builderModule.derives[key],
+        desc(builderModule.derives[key])
+      )
     )
   }
 
@@ -62,16 +70,18 @@ export const normalizeModule = (builderModule: BuilderModule): SchemaModule => {
 
 export const normalizeTypeDefination = (
   name: string,
-  type: JSONType<any, any, string>
+  type: JSONType<any, any, string>,
+  description: string | null
 ): TypeDefination => {
-  return createTypeDefination(name, normalizeType(type), null)
+  return createTypeDefination(name, normalizeType(type, true), description)
 }
 
 export const normalizeDeriveDefination = (
   name: string,
-  type: JSONType<any, any, string>
+  type: JSONType<any, any, string>,
+  description: string | null
 ): DeriveDefination => {
-  return createDeriveDefination(name, normalizeType(type), null)
+  return createDeriveDefination(name, normalizeType(type), description)
 }
 
 export const normalizeLinkDefination = (link: TypeLink): LinkDefination => {
@@ -94,15 +104,19 @@ export const normalizeCallDefination = (
     callType.name,
     normalizeType(callType.input),
     normalizeType(callType.output),
-    null
+    callType.description
   )
 }
 
-export const normalizeType = (jsontype: JSONType<any, any, string>): Type => {
-  const n = name(jsontype)
+export const normalizeType = (
+  jsontype: JSONType<any, any, string>,
+  useOrigin: boolean = false
+): Type => {
+  let jtype = useOrigin ? origin(jsontype) || jsontype : jsontype
+  const n = name(jtype)
   if (n) {
     return createNameType(n)
   } else {
-    return type(jsontype)
+    return type(jtype)
   }
 }

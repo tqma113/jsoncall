@@ -17,21 +17,23 @@ import {
   BuilderSchema,
   BuilderModule,
   Naming,
-} from '../../src'
+} from '../../../src'
 
-type FooDerive = {
-  int: JSONType<any, any, string>
-  Date: JSONType<any, any, string>
-}
-const createJSONCall = <I, II>(fooDerive: {
+const createBuilderSchema = <I, II>(fooDerives: {
   int: JSONType<any, I, string>
   Date: JSONType<any, II, string>
 }): BuilderSchema => {
-  const getFooModule = ({ int, Date }: FooDerive): BuilderModule => {
+  const getFooModule = <I, II>({
+    int,
+    Date,
+  }: {
+    int: JSONType<any, I, string>
+    Date: JSONType<any, II, string>
+  }): BuilderModule => {
     const foo1 = Naming('foo1', NumberType)
-    const foo2 = Naming('foo1', BooleanType)
-    const foo3 = Naming('foo1', NullType)
-    const foo4 = Naming('foo1', StringType)
+    const foo2 = Naming('foo2', BooleanType)
+    const foo3 = Naming('foo3', NullType)
+    const foo4 = Naming('foo4', StringType)
 
     const foo5 = Naming('foo5', ListType(NumberType))
     const foo6 = Naming(
@@ -43,8 +45,8 @@ const createJSONCall = <I, II>(fooDerive: {
     const foo7 = Naming('foo7', Tuple(NumberType, StringType))
     const foo8 = Naming('foo8', RecordType(NumberType))
 
-    const foo9 = AnyType
-    const foo10 = NoneType
+    const foo9 = Naming('foo9', AnyType)
+    const foo10 = Naming('foo10', NoneType)
 
     const foo11 = Naming('foo11', Union(NumberType, StringType))
     const foo12 = Naming(
@@ -112,7 +114,7 @@ const createJSONCall = <I, II>(fooDerive: {
       calls: {},
     }
   }
-  const fooModule = getFooModule(fooDerive)
+  const fooModule = getFooModule(fooDerives)
 
   const getBarModule = (): BuilderModule => {
     const foo = Naming('foo', fooModule.exports.foo6)
@@ -155,8 +157,8 @@ const createJSONCall = <I, II>(fooDerive: {
 
   const getBazModule = (): BuilderModule => {
     const foo = Naming('foo', fooModule.exports.foo6)
-    const bar = barModule.exports.bar
-    const fooAndBar = barModule.exports.fooAndBar
+    const bar = Naming('bar', barModule.exports.bar)
+    const fooAndBar = Naming('fooAndBar', barModule.exports.fooAndBar)
 
     const baz = Naming(
       'baz',
@@ -235,4 +237,4 @@ const createJSONCall = <I, II>(fooDerive: {
   }
 }
 
-export default createJSONCall
+export default createBuilderSchema

@@ -15,6 +15,7 @@ export type JSONCallType<
   name: N
   input: JSONType<II, IT, IK>
   output: JSONType<OI, OT, OK>
+  description: string | null
 }
 
 export const createJSONCallType = <
@@ -28,12 +29,14 @@ export const createJSONCallType = <
 >(
   name: N,
   input: JSONType<II, IT, IK>,
-  output: JSONType<OI, OT, OK>
+  output: JSONType<OI, OT, OK>,
+  description: string | null = null
 ): JSONCallType<N, II, IT, IK, OI, OT, OK> => {
   return {
     [JSON_CALL_TYPE_SYMBOL]: JSON_CALL_TYPE_SYMBOL,
     name,
     input,
     output,
+    description,
   }
 }

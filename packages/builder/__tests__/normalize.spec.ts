@@ -8,7 +8,7 @@ import {
   StringType,
   Union,
 } from '../src'
-import createBuilderSchema from './fixtures/foo'
+import createBuilderSchema from './fixtures/ts/foo'
 
 describe('normalize', () => {
   it('foo', () => {
@@ -55,29 +55,39 @@ describe('normalize', () => {
     expect(schema.entry).toMatch('baz')
     expect(schema.modules.length).toBe(3)
 
-    const module1 = schema.modules[0]
-    expect(module1.id).toMatch('foo')
-    expect(module1.linkDefinations.length).toBe(0)
-    expect(module1.typeDefinations.length).toBe(16)
-    expect(module1.callDefinations.length).toBe(0)
-    expect(module1.deriveDefinations.length).toBe(2)
-    expect(module1.exportDefination?.names.length).toBe(18)
+    {
+      const module1 = schema.modules[0]
+      expect(module1.id).toMatch('foo')
+      expect(module1.linkDefinations.length).toBe(0)
+      expect(module1.typeDefinations.length).toBe(16)
+      {
+        const typeDefination1 = module1.typeDefinations[0]
+        expect(typeDefination1.name).toBe('foo1')
+      }
+      expect(module1.callDefinations.length).toBe(0)
+      expect(module1.deriveDefinations.length).toBe(2)
+      expect(module1.exportDefination?.names.length).toBe(18)
+    }
 
-    const module2 = schema.modules[1]
-    expect(module2.id).toMatch('bar')
-    expect(module2.linkDefinations.length).toBe(1)
-    expect(module2.typeDefinations.length).toBe(2)
-    expect(module2.callDefinations.length).toBe(0)
-    expect(module2.deriveDefinations.length).toBe(0)
-    expect(module2.exportDefination?.names.length).toBe(2)
+    {
+      const module2 = schema.modules[1]
+      expect(module2.id).toMatch('bar')
+      expect(module2.linkDefinations.length).toBe(1)
+      expect(module2.typeDefinations.length).toBe(2)
+      expect(module2.callDefinations.length).toBe(0)
+      expect(module2.deriveDefinations.length).toBe(0)
+      expect(module2.exportDefination?.names.length).toBe(2)
+    }
 
-    const module0 = schema.modules[2]
-    expect(module0.id).toMatch('baz')
-    expect(module0.linkDefinations.length).toBe(2)
-    expect(module0.typeDefinations.length).toBe(3)
-    expect(module0.callDefinations.length).toBe(3)
-    expect(module0.deriveDefinations.length).toBe(0)
-    expect(module0.exportDefination?.names.length).toBe(6)
+    {
+      const module0 = schema.modules[2]
+      expect(module0.id).toMatch('baz')
+      expect(module0.linkDefinations.length).toBe(2)
+      expect(module0.typeDefinations.length).toBe(3)
+      expect(module0.callDefinations.length).toBe(3)
+      expect(module0.deriveDefinations.length).toBe(0)
+      expect(module0.exportDefination?.names.length).toBe(6)
+    }
 
     expect(check(schema)).toBe(null)
   })
