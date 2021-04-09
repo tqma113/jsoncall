@@ -7,27 +7,29 @@ describe('call', () => {
       createJSONCallType('call', NumberType, StringType),
       (input) => {
         return '' + input
-      }
-    )(JSON.stringify, JSON.parse)
+      },
+      JSON.stringify,
+      JSON.parse
+    )
 
-    expect(call('"foo"')).toMatchObject({
+    expect(call('"foo"').value).toMatchObject({
       expected: 'number',
       accept: '"foo"',
     })
-    expect(call('0')).toBe('"0"')
-    expect(call('true')).toMatchObject({
+    expect(call('0').value).toBe('"0"')
+    expect(call('true').value).toMatchObject({
       expected: 'number',
       accept: 'true',
     })
-    expect(call('null')).toMatchObject({
+    expect(call('null').value).toMatchObject({
       expected: 'number',
       accept: 'null',
     })
-    expect(call('{}')).toMatchObject({
+    expect(call('{}').value).toMatchObject({
       expected: 'number',
       accept: '{}',
     })
-    expect(call('[]')).toMatchObject({
+    expect(call('[]').value).toMatchObject({
       expected: 'number',
       accept: '[]',
     })

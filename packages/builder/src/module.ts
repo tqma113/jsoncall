@@ -1,13 +1,15 @@
 import type { JSONType } from './type'
 import type { JSONCallType } from './call'
 
-export type BuilderSchema = {
-  entry: string
-  modules: Record<string, BuilderModule>
-  calls: Record<
+export type BuilderSchema<
+  CS extends Record<
     string,
     JSONCallType<string, any, any, string, any, any, string>
   >
+> = {
+  entry: string
+  modules: Record<string, BuilderModule>
+  calls: CS
 }
 
 export type BuilderModule = {

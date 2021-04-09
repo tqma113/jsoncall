@@ -14,22 +14,20 @@ import {
   Literal,
   JSONType,
   createJSONCallType,
-  BuilderSchema,
-  BuilderModule,
   Naming,
 } from '../../../src'
 
 const createBuilderSchema = <I, II>(fooDerives: {
   int: JSONType<any, I, string>
   Date: JSONType<any, II, string>
-}): BuilderSchema => {
+}) => {
   const getFooModule = <I, II>({
     int,
     Date,
   }: {
     int: JSONType<any, I, string>
     Date: JSONType<any, II, string>
-  }): BuilderModule => {
+  }) => {
     const foo1 = Naming('foo1', NumberType)
     const foo2 = Naming('foo2', BooleanType)
     const foo3 = Naming('foo3', NullType)
@@ -116,7 +114,7 @@ const createBuilderSchema = <I, II>(fooDerives: {
   }
   const fooModule = getFooModule(fooDerives)
 
-  const getBarModule = (): BuilderModule => {
+  const getBarModule = () => {
     const foo = Naming('foo', fooModule.exports.foo6)
 
     const bar = Naming(
@@ -155,7 +153,7 @@ const createBuilderSchema = <I, II>(fooDerives: {
   }
   const barModule = getBarModule()
 
-  const getBazModule = (): BuilderModule => {
+  const getBazModule = () => {
     const foo = Naming('foo', fooModule.exports.foo6)
     const bar = Naming('bar', barModule.exports.bar)
     const fooAndBar = Naming('fooAndBar', barModule.exports.fooAndBar)

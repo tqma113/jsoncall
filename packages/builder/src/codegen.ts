@@ -68,7 +68,7 @@ export const codegen = (schema: Schema, options?: Options): string => {
     ${importItems.map((item) => `${item},`).join('\n')}
   } from 'jc-builder'
 
-  const createBuilderSchema = ${getGenerics()}(${getProps()}): BuilderSchema => {
+  const createBuilderSchema = ${getGenerics()}(${getProps()}) => {
     ${Object.values(modules).join('\n\n')}
 
     return {
@@ -292,7 +292,7 @@ export const codegenModule = (module: SchemaModule): ModuleCodegen => {
 
   const code = `const get${titleCase(
     module.id
-  )}Module = ${getGenerics()}(${getProps()}): BuilderModule => {
+  )}Module = ${getGenerics()}(${getProps()}) => {
     ${Object.values(links).join('\n')}
 
     ${Object.values(types).join('\n')}

@@ -258,7 +258,7 @@ export type InputObjectType<
   [key in keyof Obj]: InputType<Obj[key]>
 }
 
-export type ToObjectType<Obj extends object> = {
+export type ToObjectType<Obj> = {
   [K in keyof Obj as Obj[K] extends JSONType<any, any, string>
     ? K
     : never]: Obj[K] extends JSONType<any, any, string> ? ToType<Obj[K]> : never
@@ -270,26 +270,13 @@ export type KindObjectType<
   [key in keyof Obj]: KindType<Obj[key]>
 }
 
-export type InputUnionType<
-  TS extends JSONType<any, any, string>[]
-> = TS extends [infer Head, ...infer Tail]
-  ? Head extends JSONType<any, any, string>
-    ? Tail extends JSONType<any, any, string>[]
-      ? InputType<Head> | InputUnionType<Tail>
-      : never
-    : never
-  : never
+export type InputUnionType<TS extends JSONType<any, any, string>[]> = InputType<
+  TS[number]
+>
 
-export type ToUnionType<TS extends JSONType<any, any, string>[]> = TS extends [
-  infer Head,
-  ...infer Tail
-]
-  ? Head extends JSONType<any, any, string>
-    ? Tail extends JSONType<any, any, string>[]
-      ? ToType<Head> | ToUnionType<Tail>
-      : never
-    : never
-  : never
+export type ToUnionType<TS extends JSONType<any, any, string>[]> = ToType<
+  TS[number]
+>
 
 export const createUnion = <
   TS extends JSONType<any, any, string>[],
@@ -339,30 +326,47 @@ export const createUnion = <
 
 export const Union = createUnion
 
-export type InputIntersectionType<
-  TS extends JSONType<any, any, string>[]
-> = TS extends [infer Head, ...infer Tail]
-  ? Head extends JSONType<any, any, string>
-    ? Tail extends JSONType<any, any, string>[]
-      ? InputType<Head> & InputUnionType<Tail>
-      : never
-    : never
+type UnionToIntersection<U> = (
+  U extends infer R ? (x: R) => any : never
+) extends (x: infer V) => any
+  ? V
   : never
 
+// export type InputIntersectionType<
+//   TS extends JSONType<any, any, string>[]
+// > = TS extends [infer Head, ...infer Tail]
+//   ? Head extends JSONType<any, any, string>
+//     ? Tail extends JSONType<any, any, string>[]
+//       ? InputType<Head> & UnionToIntersection<InputUnionType<Tail>>
+//       : never
+//     : never
+//   : never
+
+// export type ToIntersectionType<
+//   TS extends JSONType<any, any, string>[]
+// > = TS extends [infer Head, ...infer Tail]
+//   ? Head extends JSONType<any, any, string>
+//     ? Tail extends JSONType<any, any, string>[]
+//       ? ToType<Head> & UnionToIntersection<ToUnionType<Tail>>
+//       : never
+//     : never
+//   : never
+
+export type TypeFomToObjectType<
+  T extends ToObjectType<any>
+> = T extends ToObjectType<infer O> ? O : never
+
+export type InputIntersectionType<
+  TS extends JSONType<any, any, string>[]
+> = UnionToIntersection<InputType<TS[number]>>
 export type ToIntersectionType<
   TS extends JSONType<any, any, string>[]
-> = TS extends [infer Head, ...infer Tail]
-  ? Head extends JSONType<any, any, string>
-    ? Tail extends JSONType<any, any, string>[]
-      ? ToType<Head> & ToUnionType<Tail>
-      : never
-    : never
-  : never
+> = ToObjectType<UnionToIntersection<TypeFomToObjectType<ToType<TS[number]>>>>
 
 export const createIntersection = <
   TS extends JSONType<any, any, string>[],
-  I extends object = InputIntersectionType<TS>,
-  T extends object = ToIntersectionType<TS>
+  I = InputIntersectionType<TS>,
+  T = ToIntersectionType<TS>
 >(
   ...intersectionTypes: TS
 ): JSONType<I, T, string> => {

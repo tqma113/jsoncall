@@ -7,19 +7,21 @@ import {
   ValidateError,
   ConvertError,
 } from 'jc-builder'
+import { Result, Ok, Err } from './result'
 import { Serialize, Deserialize, SerializationError } from 'jc-serialization'
 import { ResolverError } from './error'
 
 export type Resolver<I, O> = (input: I) => O
 
-export type JSONCall<N extends string> = ((
-  input: string
-) =>
-  | string
+export type CallError =
   | ValidateError
   | ConvertError
   | ResolverError
-  | SerializationError) & {
+  | SerializationError
+
+export type JSONCall<N extends string> = ((
+  input: string
+) => Result<string, CallError>) & {
   name: N
 }
 
@@ -33,17 +35,12 @@ export const createJSONCall = <
   OK extends string
 >(
   type: JSONCallType<N, II, IT, IK, OI, OT, OK>,
-  resolve: Resolver<IT, OT>
-) => (serialize: Serialize<OI>, deserialize: Deserialize<II>): JSONCall<N> => {
+  resolve: Resolver<IT, OT>,
+  serialize: Serialize<any>,
+  deserialize: Deserialize<any>
+): JSONCall<N> => {
   const obj = {
-    [type.name as N]: (
-      data: string
-    ):
-      | string
-      | ValidateError
-      | ConvertError
-      | ResolverError
-      | SerializationError => {
+    [type.name as N]: (data: string): Result<string, CallError> => {
       try {
         const dData = deserialize(data)
         const inputValidateResult = validate(type.input, dData)
@@ -58,21 +55,21 @@ export const createJSONCall = <
               const outputValidateResult = validate(type.output, result)
 
               if (outputValidateResult === true) {
-                return serialize(result)
+                return Ok(serialize(result))
               } else {
-                return outputValidateResult
+                return Err(outputValidateResult)
               }
             } catch (err) {
-              throw new ResolverError(err.message, type.name)
+              throw Err(new ResolverError(err.message, type.name))
             }
           } catch (err) {
-            return new ConvertError(err, name(type.input))
+            return Err(new ConvertError(err, name(type.input)))
           }
         } else {
-          return inputValidateResult
+          return Err(inputValidateResult)
         }
       } catch (err) {
-        return new SerializationError(err, data)
+        return Err(new SerializationError(err, data))
       }
     },
   }

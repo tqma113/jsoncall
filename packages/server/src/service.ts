@@ -10,11 +10,16 @@ import {
   convert,
   ConvertError,
   Naming,
+  AnyObjectType,
+  BuilderSchema,
+  JSONCallType,
+  normalize,
 } from 'jc-builder'
 import { Serialize, Deserialize, SerializationError } from 'jc-serialization'
-import type { ApiCall, ApiCallOutputError } from './api'
+import { ApiCallOutputError, createApi } from './api'
+import { createJSONCall, Resolver } from './call'
 
-// __introspection__ = true is no need since we have tag now.
+// input
 export const IntrospectionCallingType = Naming(
   'IntrospectionCallingType',
   ObjectType({
@@ -66,6 +71,26 @@ export const CallingType = Naming(
   Union(SingleCallingType, BatchCallingType, IntrospectionCallingType)
 )
 export type Calling = ToType<typeof CallingType>
+
+// output
+export const IntrospectionCallingOutputType = Naming(
+  'IntrospectionCallingOutputType',
+  ObjectType({
+    kind: Literal('IntrospectionCallingOutputType' as const),
+    output: AnyObjectType,
+  })
+)
+export type IntrospectionCallingOutput = ToType<
+  typeof IntrospectionCallingOutputType
+>
+export const IntrospectionCallingOutput = (
+  output: object
+): IntrospectionCallingOutput => {
+  return {
+    kind: 'IntrospectionCallingOutputType',
+    output,
+  }
+}
 
 export const CallingSuccessType = Naming(
   'CallingSuccessType',
@@ -119,14 +144,39 @@ export const BatchOutput = (outputs: SingleCallOutput[]): BatchOutput => {
 }
 
 export type Service = (input: string) => string
+export type ResolverI<
+  T extends JSONCallType<string, any, any, string, any, any, string>
+> = T extends JSONCallType<string, any, infer I, string, any, any, string>
+  ? I
+  : never
+export type ResolverO<
+  T extends JSONCallType<string, any, any, string, any, any, string>
+> = T extends JSONCallType<string, any, any, string, any, infer O, string>
+  ? O
+  : never
+export type Resolvers<
+  CS extends Record<
+    string,
+    JSONCallType<string, any, any, string, any, any, string>
+  >
+> = {
+  [K in keyof CS]: Resolver<ResolverI<CS[K]>, ResolverO<CS[K]>>
+}
 
-export const createService = <N extends string>(
-  api: ApiCall<N>,
+export const createService = <
+  CS extends Record<
+    string,
+    JSONCallType<string, any, any, string, any, any, string>
+  >
+>(
+  schema: BuilderSchema<CS>,
   serialize: Serialize<object>,
   deserialize: Deserialize<object>
-) => (input: string): string => {
-  let result = ''
-
+) => (resolvers: Resolvers<CS>) => (input: string): string => {
+  const calls = getKeys(schema.calls).map((key) =>
+    createJSONCall(schema.calls[key], resolvers[key], serialize, deserialize)
+  )
+  const api = createApi(...calls)
   try {
     const inputObject = deserialize(input)
     const inputValidateResult = validate(CallingType, inputObject)
@@ -138,24 +188,23 @@ export const createService = <N extends string>(
           name: string,
           input: string
         ): SingleCallOutput => {
-          const output = api(name as N, input)
-          if (typeof output === 'string') {
-            return CallingSuccess(output)
+          const result = api(name, input)
+          if (result.isOk) {
+            return CallingSuccess(result.value)
           } else {
-            return CallingFailed(output)
+            return CallingFailed(result.value)
           }
         }
         switch (input.kind) {
           case 'Introspection': {
             // TODO: Introspection
-            break
+            return serialize(IntrospectionCallingOutput(normalize(schema)))
           }
           case 'Single': {
-            result = serialize(handleCalling(input.name, input.input))
-            break
+            return serialize(handleCalling(input.name, input.input))
           }
           case 'Batch': {
-            result = serialize(
+            return serialize(
               BatchOutput(
                 input.callings.map((input) =>
                   handleCalling(input.name, input.input)
@@ -165,16 +214,18 @@ export const createService = <N extends string>(
           }
         }
       } catch (err) {
-        result = serialize(
+        return serialize(
           CallingFailed(new ConvertError(err.message, name(CallingType)))
         )
       }
     } else {
-      result = serialize(CallingFailed(inputValidateResult))
+      return serialize(CallingFailed(inputValidateResult))
     }
   } catch (err) {
-    result = serialize(CallingFailed(new SerializationError(err, input)))
+    return serialize(CallingFailed(new SerializationError(err, input)))
   }
+}
 
-  return result
+function getKeys<T extends {}>(o: T): Array<keyof T> {
+  return Object.keys(o) as Array<keyof T>
 }

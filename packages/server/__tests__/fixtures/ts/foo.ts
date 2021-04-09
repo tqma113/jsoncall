@@ -15,12 +15,18 @@ import {
   JSONType,
   createJSONCallType,
   Naming,
+  JSONCallType,
   createDeriveType,
   ValidateError,
   type,
 } from 'jc-builder'
-import { createJSONCall, Sender, createSender } from '../../../src'
-import type { Serialize, Deserialize } from 'jc-serialization'
+import {
+  createJSONCall,
+  createApi,
+  createService,
+  Resolver,
+} from '../../../src'
+import { Serialize, Deserialize } from 'jc-serialization'
 
 const createBuilderSchema = <I, II>(fooDerives: {
   int: JSONType<any, I, string>
@@ -115,7 +121,7 @@ const createBuilderSchema = <I, II>(fooDerives: {
         Date,
       },
       calls: {},
-    } as const
+    }
   }
   const fooModule = getFooModule(fooDerives)
 
@@ -154,7 +160,7 @@ const createBuilderSchema = <I, II>(fooDerives: {
         fooAndBar,
       },
       calls: {},
-    } as const
+    }
   }
   const barModule = getBarModule()
 
@@ -166,7 +172,7 @@ const createBuilderSchema = <I, II>(fooDerives: {
     const baz = Naming(
       'baz',
       ObjectType({
-        bar: BooleanType,
+        baz: BooleanType,
       })
     )
 
@@ -225,7 +231,7 @@ const createBuilderSchema = <I, II>(fooDerives: {
         barCall,
         fooCall,
       },
-    } as const
+    }
   }
   const bazModule = getBazModule()
 
@@ -237,44 +243,29 @@ const createBuilderSchema = <I, II>(fooDerives: {
       baz: bazModule,
     },
     calls: bazModule.calls,
-  } as const
-}
-
-export type Names = keyof ReturnType<typeof createBuilderSchema>['calls']
-
-export const createCalls = <I, II>(
-  fooDerives: {
-    int: JSONType<any, I, string>
-    Date: JSONType<any, II, string>
-  },
-  serialize: Serialize<any>,
-  deserialize: Deserialize<any>,
-  send: Sender
-) => {
-  const builderSchema = createBuilderSchema(fooDerives)
-  return {
-    fooCall: createJSONCall(
-      builderSchema.calls.fooCall,
-      serialize,
-      deserialize,
-      createSender(send, serialize, deserialize)
-    ),
-    barCall: createJSONCall(
-      builderSchema.calls.barCall,
-      serialize,
-      deserialize,
-      createSender(send, serialize, deserialize)
-    ),
-    bazCall: createJSONCall(
-      builderSchema.calls.bazCall,
-      serialize,
-      deserialize,
-      createSender(send, serialize, deserialize)
-    ),
   }
 }
 
-export default createCalls
+export type ResolverI<
+  T extends JSONCallType<string, any, any, string, any, any, string>
+> = T extends JSONCallType<string, any, infer I, string, any, any, string>
+  ? I
+  : never
+export type ResolverO<
+  T extends JSONCallType<string, any, any, string, any, any, string>
+> = T extends JSONCallType<string, any, any, string, any, infer O, string>
+  ? O
+  : never
+
+export const createCatcher = <I, II>(fooDerives: {
+  int: JSONType<any, I, string>
+  Date: JSONType<any, II, string>
+}) => {
+  const builderSchema = createBuilderSchema(fooDerives)
+  return createService(builderSchema, JSON.stringify, JSON.parse)
+}
+
+export default createCatcher
 
 // const int = createDeriveType(NumberType)(
 //   'int' as const,
@@ -314,4 +305,22 @@ export default createCalls
 //   'Date'
 // )
 
-// const calls = createCalls({ int, Date: DateType }, JSON.stringify, JSON.parse, async (input) => input)
+// const catcher = createCatcher({ int, Date: DateType })
+
+// const app = catcher({
+//   fooCall: ({ foo }) => {
+//     return {
+//       foo
+//     }
+//   },
+//   barCall: ({ bar }) => {
+//     return {
+//       bar
+//     }
+//   },
+//   bazCall: ({ baz }) => {
+//     return {
+//       baz
+//     }
+//   }
+// })

@@ -20,7 +20,14 @@ import { BuilderSchema, BuilderModule, TypeLink } from './module'
 import { JSONType, type, name, desc, origin } from './type'
 import { JSONCallType } from './call'
 
-export const normalize = (builderSchema: BuilderSchema): Schema => {
+export const normalize = <
+  CS extends Record<
+    string,
+    JSONCallType<string, any, any, string, any, any, string>
+  >
+>(
+  builderSchema: BuilderSchema<CS>
+): Schema => {
   const schema = createSchema(builderSchema.entry)
 
   for (const key in builderSchema.modules) {

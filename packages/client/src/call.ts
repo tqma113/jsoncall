@@ -8,10 +8,13 @@ import {
   reverseConverter,
 } from 'jc-builder'
 import { SendError, ServerError } from './error'
+import { Result, Ok, Err } from './result'
 import type { Serialize, Deserialize } from 'jc-serialization'
 import type { CallSender, SyncCallSender } from './sender'
 
 export type JSONCall<I, O> = (input: I) => Promise<O>
+
+export type CallError = ValidateError | ConvertError | SendError | ServerError
 
 export const createJSONCall = <
   N extends string,
@@ -22,15 +25,11 @@ export const createJSONCall = <
   OT,
   OK extends string
 >(
-  type: JSONCallType<N, II, IT, IK, OI, OT, OK>
-) => (
-  serialize: Serialize<II>,
-  deserialize: Deserialize<OI>,
+  type: JSONCallType<N, II, IT, IK, OI, OT, OK>,
+  serialize: Serialize<any>,
+  deserialize: Deserialize<any>,
   send: CallSender<N>
-): JSONCall<
-  IT,
-  OT | ValidateError | ConvertError | SendError | ServerError
-> => {
+): JSONCall<IT, Result<OT, CallError>> => {
   return async (input) => {
     try {
       const rcResult = reverseConverter(type.input, input)
@@ -41,21 +40,21 @@ export const createJSONCall = <
           const outputValidateResult = validate(type.output, result)
           if (outputValidateResult === true) {
             try {
-              return convert(type.output, result)
+              return Ok(convert(type.output, result))
             } catch (err) {
-              return new ConvertError(err, name(type.output))
+              return Err(new ConvertError(err, name(type.output)))
             }
           } else {
-            return new ServerError('Server error', outputValidateResult)
+            return Err(new ServerError('Server error', outputValidateResult))
           }
         } catch (err) {
-          return new SendError(err)
+          return Err(new SendError(err))
         }
       } else {
-        return inputValidateResult
+        return Err(inputValidateResult)
       }
     } catch (err) {
-      return new ConvertError(err, name(type.input))
+      return Err(new ConvertError(err, name(type.input)))
     }
   }
 }
@@ -71,12 +70,11 @@ export const createSyncJSONCall = <
   OT,
   OK extends string
 >(
-  type: JSONCallType<N, II, IT, IK, OI, OT, OK>
-) => <SO, DI>(
-  serialize: Serialize<II>,
-  deserialize: Deserialize<OI>,
+  type: JSONCallType<N, II, IT, IK, OI, OT, OK>,
+  serialize: Serialize<any>,
+  deserialize: Deserialize<any>,
   send: SyncCallSender<N>
-): SyncJSONCall<IT, OI> => {
+): SyncJSONCall<IT, Result<OT, CallError>> => {
   return (input) => {
     try {
       const rcResult = reverseConverter(type.input, input)
@@ -87,21 +85,21 @@ export const createSyncJSONCall = <
           const outputValidateResult = validate(type.output, result)
           if (outputValidateResult === true) {
             try {
-              return convert(type.output, result)
+              return Ok(convert(type.output, result))
             } catch (err) {
-              return new ConvertError(err.message, name(type.output))
+              return Err(new ConvertError(err, name(type.output)))
             }
           } else {
-            return new ServerError('Server error', outputValidateResult)
+            return Err(new ServerError('Server error', outputValidateResult))
           }
         } catch (err) {
-          return err
+          return Err(new SendError(err))
         }
       } else {
-        return inputValidateResult
+        return Err(inputValidateResult)
       }
     } catch (err) {
-      return new ConvertError(err.message, name(type.input))
+      return Err(new ConvertError(err, name(type.input)))
     }
   }
 }

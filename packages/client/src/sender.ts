@@ -21,9 +21,8 @@ export const createSender = <N extends string>(
   serialize: Serialize<object>,
   deserialize: Deserialize<object>
 ): CallSender<N> => async (name: N, input: string) => {
-  let result = ''
-
   const callingInput = serialize(SingleCalling(name, input))
+
   try {
     const output = await send(callingInput)
     try {
@@ -34,8 +33,7 @@ export const createSender = <N extends string>(
           const output = convert(SingleCallOutputType, outputObject)
           switch (output.kind) {
             case 'CallingSuccess': {
-              result = output.output
-              break
+              return output.output
             }
             case 'CallingFailed': {
               throw new Error(output.message)
@@ -53,8 +51,6 @@ export const createSender = <N extends string>(
   } catch (err) {
     throw new SendError(err)
   }
-
-  return result
 }
 
 export const createBatchSender = <N extends string>(
@@ -116,9 +112,8 @@ export const createSyncSender = <N extends string>(
   serialize: Serialize<object>,
   deserialize: Deserialize<object>
 ): SyncCallSender<N> => (name: N, input: string) => {
-  let result = ''
-
   const callingInput = serialize(SingleCalling(name, input))
+
   try {
     const output = send(callingInput)
     try {
@@ -129,8 +124,7 @@ export const createSyncSender = <N extends string>(
           const output = convert(SingleCallOutputType, outputObject)
           switch (output.kind) {
             case 'CallingSuccess': {
-              result = output.output
-              break
+              return output.output
             }
             case 'CallingFailed': {
               throw new Error(output.message)
@@ -148,6 +142,4 @@ export const createSyncSender = <N extends string>(
   } catch (err) {
     throw new SendError(err)
   }
-
-  return result
 }

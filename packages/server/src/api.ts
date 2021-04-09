@@ -1,33 +1,30 @@
-import { ValidateError, ConvertError } from 'jc-builder'
-import { SerializationError } from 'jc-serialization'
-import { JSONCall } from './call'
-import { ResolverError, UnknownCallError } from './error'
+import { JSONCall, CallError } from './call'
+import { UnknownCallError } from './error'
+import { Result, Err } from './result'
 
-export type ApiCallOutputError =
-  | ValidateError
-  | ConvertError
-  | ResolverError
-  | SerializationError
-  | UnknownCallError
+export type ApiCallOutputError = CallError | UnknownCallError
 
-export type ApiCallOutput = string | ApiCallOutputError
-
-export type ApiCall<N extends string> = (
-  name: N,
-  input: string
-) => ApiCallOutput
-
-export const createApi = <CS extends JSONCall<string>[]>(...calls: CS) => (
+export type ApiCall = (
   name: string,
   input: string
-) => {
+) => Result<string, ApiCallOutputError>
+
+export type Names<CS extends JSONCall<string>[]> = CS extends JSONCall<
+  infer N
+>[]
+  ? N
+  : never
+
+export const createApi = <CS extends JSONCall<string>[]>(
+  ...calls: CS
+): ApiCall => (name, input) => {
   for (let call of calls) {
     if (call.name === name) {
       return call(input)
     }
   }
 
-  return new UnknownCallError(name)
+  return Err(new UnknownCallError(name))
 }
 
 // const a = null as unknown as JSONCall<'foo'>

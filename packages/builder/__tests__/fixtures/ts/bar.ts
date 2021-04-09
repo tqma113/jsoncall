@@ -22,14 +22,14 @@ import {
 const createBuilderSchema = <INTI, DATEI>(fooDerives: {
   int: JSONType<any, INTI, string>
   Date: JSONType<any, DATEI, string>
-}): BuilderSchema => {
+}) => {
   const getFooModule = <INTI, DATEI>({
     int,
     Date,
   }: {
     int: JSONType<any, INTI, string>
     Date: JSONType<any, DATEI, string>
-  }): BuilderModule => {
+  }) => {
     const foo1 = Naming('foo1', NumberType, 'number')
     const foo2 = Naming('foo2', BooleanType, 'boolean')
     const foo3 = Naming('foo3', NullType, 'null')
@@ -116,7 +116,7 @@ const createBuilderSchema = <INTI, DATEI>(fooDerives: {
   }
   const fooModule = getFooModule(fooDerives)
 
-  const getBarModule = (): BuilderModule => {
+  const getBarModule = () => {
     const foo = Naming('foo', fooModule.exports.foo6)
 
     const bar = Naming('bar', ObjectType({ bar: StringType }), '{bar: string}')
@@ -153,7 +153,7 @@ const createBuilderSchema = <INTI, DATEI>(fooDerives: {
   }
   const barModule = getBarModule()
 
-  const getBazModule = (): BuilderModule => {
+  const getBazModule = () => {
     const foo = Naming('foo', fooModule.exports.foo6)
     const bar = Naming('bar', barModule.exports.bar)
     const fooAndBar = Naming('fooAndBar', barModule.exports.fooAndBar)
