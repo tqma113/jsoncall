@@ -635,7 +635,7 @@ export const createRecord = <
   item: Type
 ): JSONType<any, T, string> => {
   type I = object
-  const description = `<${type[DESCRIPTION]}>`
+  const description = `<${item[DESCRIPTION]}>`
   const validate: Validator = <I extends object>(input: I) => {
     let result: true | ValidateError = true
     for (let key in input) {

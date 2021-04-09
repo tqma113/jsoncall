@@ -45,7 +45,7 @@ const createBuilderSchema = <INTI, DATEI>(fooDerives: {
       Tuple(NumberType, StringType),
       '(number, string)'
     )
-    const foo8 = Naming('foo8', RecordType(NumberType), '<undefined>')
+    const foo8 = Naming('foo8', RecordType(NumberType), '<number>')
     const foo9 = Naming('foo9', AnyType, 'any')
     const foo10 = Naming('foo10', NoneType, 'none')
     const foo11 = Naming(
