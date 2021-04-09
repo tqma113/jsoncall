@@ -1,7 +1,7 @@
 {
   "name": "jc-codegen",
   "version": "0.0.1",
-  "description": "A builder to construct json call schema in typescript.",
+  "description": "Code generation to json call in typescript.",
   "main": "index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
