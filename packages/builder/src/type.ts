@@ -332,26 +332,6 @@ type UnionToIntersection<U> = (
   ? V
   : never
 
-// export type InputIntersectionType<
-//   TS extends JSONType<any, any, string>[]
-// > = TS extends [infer Head, ...infer Tail]
-//   ? Head extends JSONType<any, any, string>
-//     ? Tail extends JSONType<any, any, string>[]
-//       ? InputType<Head> & UnionToIntersection<InputUnionType<Tail>>
-//       : never
-//     : never
-//   : never
-
-// export type ToIntersectionType<
-//   TS extends JSONType<any, any, string>[]
-// > = TS extends [infer Head, ...infer Tail]
-//   ? Head extends JSONType<any, any, string>
-//     ? Tail extends JSONType<any, any, string>[]
-//       ? ToType<Head> & UnionToIntersection<ToUnionType<Tail>>
-//       : never
-//     : never
-//   : never
-
 export type TypeFomToObjectType<
   T extends ToObjectType<any>
 > = T extends ToObjectType<infer O> ? O : never
