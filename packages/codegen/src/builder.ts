@@ -21,7 +21,7 @@ import {
 } from 'jc-schema'
 import { format, Options } from 'prettier'
 
-export const codegen = (schema: Schema, options?: Options): string => {
+export const builderCodegen = (schema: Schema, options?: Options): string => {
   let importItems: string[] = ['BuilderSchema', 'BuilderModule']
   let generics: string[] = []
   let props: string[] = []
@@ -44,7 +44,7 @@ export const codegen = (schema: Schema, options?: Options): string => {
   }
 
   for (const module of schema.modules) {
-    const { code, derives, buildIn } = codegenModule(module)
+    const { code, derives, buildIn } = builderCodegenModule(module)
     modules[module.id] = code
     importItems.push(...buildIn)
     generics.push(...Object.values(derives))
@@ -94,7 +94,7 @@ export type ModuleCodegen = {
   derives: Record<string, string>
 }
 
-export const codegenModule = (module: SchemaModule): ModuleCodegen => {
+export const builderCodegenModule = (module: SchemaModule): ModuleCodegen => {
   const buildIn: string[] = []
   const links: Record<string, string> = {}
   const types: Record<string, string> = {}

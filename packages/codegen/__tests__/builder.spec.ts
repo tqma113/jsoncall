@@ -2,14 +2,14 @@ import fs from 'fs'
 import path from 'path'
 import {
   normalize,
-  codegen,
   createDeriveType,
   NumberType,
   type,
   ValidateError,
   StringType,
   Union,
-} from '../src'
+} from 'jc-builder'
+import { builderCodegen } from '../src'
 import createBuilderSchema from './fixtures/ts/foo'
 
 describe('codegen', () => {
@@ -52,7 +52,7 @@ describe('codegen', () => {
       'Date'
     )
     const builderSchema = createBuilderSchema({ int, Date: DateType })
-    const code = codegen(normalize(builderSchema), {
+    const code = builderCodegen(normalize(builderSchema), {
       semi: false,
       singleQuote: true,
       printWidth: 80,

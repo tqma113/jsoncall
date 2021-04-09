@@ -1,5 +1,5 @@
 {
-  "name": "jc-builder",
+  "name": "jc-codegen",
   "version": "0.0.1",
   "description": "A builder to construct json call schema in typescript.",
   "main": "index.js",
@@ -8,6 +8,11 @@
   "author": "Ma Tianqi <mtq1997@126.com>",
   "license": "MIT",
   "dependencies": {
-    "jc-schema": "0.0.1"
+    "jc-schema": "0.0.1",
+    "jc-builder": "0.0.1",
+    "jc-client": "0.0.1",
+    "jc-server": "0.0.1",
+    "prettier": "^2.2.1",
+    "@types/prettier": "^2.2.3"
   }
 }

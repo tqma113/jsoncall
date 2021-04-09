@@ -21,6 +21,9 @@
     },
     {
       "path": "./packages/client/tsconfig.json"
+    },
+    {
+      "path": "./packages/codegen/tsconfig.json"
     }
   ],
   "exclude": ["./examples/*"]
