@@ -49,15 +49,22 @@ describe('verification', () => {
     }
     const client = createClient({ int, Date: DateType }, send)
 
-    await client.fooCall({ foo: 123, baz: true })
+    try {
+      await client.fooCall({ foo: 123, baz: true })
+    } catch {}
     expect(input).toBe(
       '{"kind":"Single","name":"fooCall","input":"{\\"foo\\":123,\\"baz\\":true}"}'
     )
-    await client.barCall({ foo: 123, bar: 'bar' })
+
+    try {
+      await client.barCall({ foo: 123, bar: 'bar' })
+    } catch {}
     expect(input).toBe(
       '{"kind":"Single","name":"barCall","input":"{\\"foo\\":123,\\"bar\\":\\"bar\\"}"}'
     )
-    await client.bazCall({ foo: 123, bar: 'bar', baz: true })
+    try {
+      await client.bazCall({ foo: 123, bar: 'bar', baz: true })
+    } catch {}
     expect(input).toBe(
       '{"kind":"Single","name":"bazCall","input":"{\\"foo\\":123,\\"bar\\":\\"bar\\",\\"baz\\":true}"}'
     )
