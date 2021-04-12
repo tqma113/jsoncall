@@ -304,8 +304,10 @@ export const createUnion = <
 
   const reverseConverter: Converter<T, I> = (input) => {
     for (let unionType of unionTypes.reverse()) {
-      if (unionType[VALIDATE](input) === true) {
+      try {
         return unionType[REVERSECONVERTER](input)
+      } catch {
+        continue
       }
     }
   }
