@@ -3,6 +3,275 @@ import path from 'path'
 import { createLexer } from '../src/lexer'
 
 describe('lexer', () => {
+  it('<SOF>', () => {
+    const moduleId = 'foo'
+    const content = ``
+    const lexer = createLexer({ content, moduleId })
+
+    expect(lexer.token).toMatchObject({
+      word: void 0,
+      kind: '<SOF>',
+    })
+  })
+
+  it('<EOF>', () => {
+    const moduleId = 'foo'
+    const content = ``
+    const lexer = createLexer({ content, moduleId })
+
+    expect(lexer.token).toMatchObject({
+      word: void 0,
+      kind: '<SOF>',
+    })
+
+    expect(lexer.next()).toMatchObject({ word: void 0, kind: '<EOF>' })
+  })
+
+  it('comment', () => {
+    const moduleId = 'foo'
+    const content = `#foo`
+    const lexer = createLexer({ content, moduleId })
+
+    expect(lexer.next()).toMatchObject({
+      word: 'foo',
+      kind: 'comment',
+    })
+  })
+
+  it('operator', () => {
+    const moduleId = 'foo'
+    const content = `{}[]()<>|&==>,:`
+    const lexer = createLexer({ content, moduleId })
+
+    expect(lexer.next()).toMatchObject({
+      word: '{',
+      kind: 'operator',
+    })
+    expect(lexer.next()).toMatchObject({
+      word: '}',
+      kind: 'operator',
+    })
+    expect(lexer.next()).toMatchObject({
+      word: '[',
+      kind: 'operator',
+    })
+    expect(lexer.next()).toMatchObject({
+      word: ']',
+      kind: 'operator',
+    })
+    expect(lexer.next()).toMatchObject({
+      word: '(',
+      kind: 'operator',
+    })
+    expect(lexer.next()).toMatchObject({
+      word: ')',
+      kind: 'operator',
+    })
+    expect(lexer.next()).toMatchObject({
+      word: '<',
+      kind: 'operator',
+    })
+    expect(lexer.next()).toMatchObject({
+      word: '>',
+      kind: 'operator',
+    })
+    expect(lexer.next()).toMatchObject({
+      word: '|',
+      kind: 'operator',
+    })
+    expect(lexer.next()).toMatchObject({
+      word: '&',
+      kind: 'operator',
+    })
+    expect(lexer.next()).toMatchObject({
+      word: '=',
+      kind: 'operator',
+    })
+    expect(lexer.next()).toMatchObject({
+      word: '=>',
+      kind: 'operator',
+    })
+    expect(lexer.next()).toMatchObject({
+      word: ',',
+      kind: 'operator',
+    })
+    expect(lexer.next()).toMatchObject({
+      word: ':',
+      kind: 'operator',
+    })
+  })
+
+  it('keyword', () => {
+    const moduleId = 'foo'
+    const content = `type call derive from import export as`
+    const lexer = createLexer({ content, moduleId })
+
+    expect(lexer.next()).toMatchObject({
+      word: 'type',
+      kind: 'keyword',
+    })
+    expect(lexer.next()).toMatchObject({
+      word: 'call',
+      kind: 'keyword',
+    })
+    expect(lexer.next()).toMatchObject({
+      word: 'derive',
+      kind: 'keyword',
+    })
+    expect(lexer.next()).toMatchObject({
+      word: 'from',
+      kind: 'keyword',
+    })
+    expect(lexer.next()).toMatchObject({
+      word: 'import',
+      kind: 'keyword',
+    })
+    expect(lexer.next()).toMatchObject({
+      word: 'export',
+      kind: 'keyword',
+    })
+    expect(lexer.next()).toMatchObject({
+      word: 'as',
+      kind: 'keyword',
+    })
+  })
+
+  it('primitive type', () => {
+    const moduleId = 'foo'
+    const content = `number string null boolean`
+    const lexer = createLexer({ content, moduleId })
+
+    expect(lexer.next()).toMatchObject({
+      word: 'number',
+      kind: 'primitive type',
+    })
+    expect(lexer.next()).toMatchObject({
+      word: 'string',
+      kind: 'primitive type',
+    })
+    expect(lexer.next()).toMatchObject({
+      word: 'null',
+      kind: 'primitive type',
+    })
+    expect(lexer.next()).toMatchObject({
+      word: 'boolean',
+      kind: 'primitive type',
+    })
+  })
+
+  it('special type', () => {
+    const moduleId = 'foo'
+    const content = `any none`
+    const lexer = createLexer({ content, moduleId })
+
+    expect(lexer.next()).toMatchObject({
+      word: 'any',
+      kind: 'special type',
+    })
+    expect(lexer.next()).toMatchObject({
+      word: 'none',
+      kind: 'special type',
+    })
+  })
+
+  describe('string', () => {
+    it('sample', () => {
+      const moduleId = 'foo'
+      const content = `"foo"`
+      const lexer = createLexer({ content, moduleId })
+
+      expect(lexer.next()).toMatchObject({
+        word: 'foo',
+        kind: 'string',
+      })
+    })
+
+    it('special', () => {
+      const moduleId = 'foo'
+      const content = `"'foo"`
+      const lexer = createLexer({ content, moduleId })
+
+      expect(lexer.next()).toMatchObject({
+        word: "'foo",
+        kind: 'string',
+      })
+    })
+  })
+
+  describe('number', () => {
+    it('integer', () => {
+      const moduleId = 'foo'
+      const content = `123`
+      const lexer = createLexer({ content, moduleId })
+
+      expect(lexer.next()).toMatchObject({
+        word: '123',
+        kind: 'number',
+      })
+    })
+
+    it('float', () => {
+      const moduleId = 'foo'
+      const content = `123.123`
+      const lexer = createLexer({ content, moduleId })
+
+      expect(lexer.next()).toMatchObject({
+        word: '123.123',
+        kind: 'number',
+      })
+    })
+
+    it('exponential', () => {
+      const moduleId = 'foo'
+      const content = `123.123e10`
+      const lexer = createLexer({ content, moduleId })
+
+      expect(lexer.next()).toMatchObject({
+        word: '123.123e10',
+        kind: 'number',
+      })
+    })
+  })
+
+  it('boolean', () => {
+    const moduleId = 'foo'
+    const content = `true false`
+    const lexer = createLexer({ content, moduleId })
+
+    expect(lexer.next()).toMatchObject({
+      word: 'true',
+      kind: 'boolean',
+    })
+    expect(lexer.next()).toMatchObject({
+      word: 'false',
+      kind: 'boolean',
+    })
+  })
+
+  describe('name', () => {
+    it('sample', () => {
+      const moduleId = 'foo'
+      const content = `foo`
+      const lexer = createLexer({ content, moduleId })
+
+      expect(lexer.next()).toMatchObject({
+        word: 'foo',
+        kind: 'name',
+      })
+    })
+
+    it('underline', () => {
+      const moduleId = 'foo'
+      const content = `_foo`
+      const lexer = createLexer({ content, moduleId })
+
+      expect(lexer.next()).toMatchObject({
+        word: '_foo',
+        kind: 'name',
+      })
+    })
+  })
+
   it('sample', () => {
     const moduleId = path.resolve(__dirname, './fixtures/base.jc')
     const content = fs.readFileSync(moduleId, 'utf-8')
