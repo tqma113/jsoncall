@@ -9,10 +9,10 @@ import {
   StringType,
   Union,
 } from 'jc-builder'
-import { builderCodegen } from '../src'
+import { serverCodegen } from '../src'
 import createBuilderSchema from './fixtures/ts/foo'
 
-describe('builderCodegen', () => {
+describe('serverCodegen', () => {
   it('sample', () => {
     const int = createDeriveType(NumberType)(
       'int' as const,
@@ -52,7 +52,7 @@ describe('builderCodegen', () => {
       'Date'
     )
     const builderSchema = createBuilderSchema({ int, Date: DateType })
-    const code = builderCodegen(normalize(builderSchema), {
+    const code = serverCodegen(normalize(builderSchema), {
       semi: false,
       singleQuote: true,
       printWidth: 80,
@@ -60,7 +60,7 @@ describe('builderCodegen', () => {
 
     expect(code).toBe(
       fs.readFileSync(
-        path.resolve(__dirname, './fixtures/ts/createBuilderSchema.ts'),
+        path.resolve(__dirname, './fixtures/ts/createServerService.ts'),
         'utf-8'
       )
     )

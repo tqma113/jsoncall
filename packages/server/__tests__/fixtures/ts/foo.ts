@@ -26,7 +26,6 @@ import {
   createService,
   Resolver,
 } from '../../../src'
-import { Serialize, Deserialize } from 'jc-serialization'
 
 const createBuilderSchema = <I, II>(fooDerives: {
   int: JSONType<any, I, string>
@@ -246,18 +245,7 @@ const createBuilderSchema = <I, II>(fooDerives: {
   }
 }
 
-export type ResolverI<
-  T extends JSONCallType<string, any, any, string, any, any, string>
-> = T extends JSONCallType<string, any, infer I, string, any, any, string>
-  ? I
-  : never
-export type ResolverO<
-  T extends JSONCallType<string, any, any, string, any, any, string>
-> = T extends JSONCallType<string, any, any, string, any, infer O, string>
-  ? O
-  : never
-
-export const createCatcher = <I, II>(fooDerives: {
+export const createServerService = <I, II>(fooDerives: {
   int: JSONType<any, I, string>
   Date: JSONType<any, II, string>
 }) => {
@@ -265,7 +253,7 @@ export const createCatcher = <I, II>(fooDerives: {
   return createService(builderSchema, JSON.stringify, JSON.parse)
 }
 
-export default createCatcher
+export default createServerService
 
 // const int = createDeriveType(NumberType)(
 //   'int' as const,

@@ -22,21 +22,40 @@ import {
 import { format, Options } from 'prettier'
 
 export const builderCodegen = (schema: Schema, options?: Options): string => {
-  let importItems: string[] = ['BuilderSchema', 'BuilderModule']
-  let generics: string[] = []
-  let props: string[] = []
-  let modules: Record<string, string> = {}
+  const { importItems, code } = builderCodegenSchema(schema)
 
-  const getModuleProps = (
-    id: string,
-    derives: Record<string, string>
-  ): string => {
+  return format(
+    `import {
+    ${importItems.map((item) => `${item},`).join('\n')}
+  } from 'jc-builder'
+  
+  export ${code}`,
+    { parser: 'typescript', ...options }
+  )
+}
+
+export type SchemaCodegen = {
+  importItems: string[]
+  generics: string[]
+  props: Record<string, string>
+  code: string
+  calls: string[]
+}
+
+export const builderCodegenSchema = (schema: Schema): SchemaCodegen => {
+  let importItems: string[] = []
+  let generics: string[] = []
+  let props: Record<string, string> = {}
+  let modules: Record<string, string> = {}
+  let calls: string[] = []
+
+  const getModuleProps = (derives: Record<string, string>): string => {
     const keys = getKeys(derives)
     if (keys.length === 0) return ''
 
     importItems.push('JSONType')
 
-    return `${id}Derives: {
+    return `{
       ${keys
         .map((key) => `${key}: JSONType<any, ${derives[key]}, string>`)
         .join('\n')}
@@ -44,31 +63,26 @@ export const builderCodegen = (schema: Schema, options?: Options): string => {
   }
 
   for (const module of schema.modules) {
-    const { code, derives, buildIn } = builderCodegenModule(module)
+    const { code, derives, buildIn, calls: moduleCalls } = builderCodegenModule(
+      module
+    )
     modules[module.id] = code
     importItems.push(...buildIn)
     generics.push(...Object.values(derives))
-    props.push(getModuleProps(module.id, derives))
+    const ps = getModuleProps(derives)
+    if (ps) {
+      props[module.id] = ps
+    }
+    if (module.id === schema.entry) {
+      calls = moduleCalls
+    }
   }
 
   importItems = Array.from(new Set(importItems))
 
-  const getGenerics = (): string => {
-    if (generics.length === 0) return ''
-    return `<${generics.join(', ')}>`
-  }
-
-  const getProps = (): string => {
-    if (props.length === 0) return ''
-    return props.join('\n')
-  }
-
-  return format(
-    `import {
-    ${importItems.map((item) => `${item},`).join('\n')}
-  } from 'jc-builder'
-
-  const createBuilderSchema = ${getGenerics()}(${getProps()}) => {
+  const code = `const createBuilderSchema = ${genGenerics(generics)}(${genProps(
+    props
+  )}) => {
     ${Object.values(modules).join('\n\n')}
 
     return {
@@ -80,18 +94,22 @@ export const builderCodegen = (schema: Schema, options?: Options): string => {
       },
       calls: ${schema.entry}Module.calls
     }
-  }
+  }`
 
-  export default createBuilderSchema
-  `,
-    { parser: 'typescript', ...options }
-  )
+  return {
+    importItems,
+    generics,
+    props,
+    code,
+    calls,
+  }
 }
 
 export type ModuleCodegen = {
   buildIn: string[]
   code: string
   derives: Record<string, string>
+  calls: string[]
 }
 
 export const builderCodegenModule = (module: SchemaModule): ModuleCodegen => {
@@ -348,7 +366,27 @@ export const builderCodegenModule = (module: SchemaModule): ModuleCodegen => {
     code,
     buildIn,
     derives,
+    calls: Object.keys(calls),
   }
+}
+
+export const genGenerics = (generics: string[]): string => {
+  if (generics.length === 0) return ''
+  return `<${generics.join(', ')}>`
+}
+
+export const genProps = (props: Record<string, string>): string => {
+  if (Object.keys(props).length === 0) return ''
+  return Object.entries(props)
+    .map(([key, value]) => `${key}Derives: ${value}`)
+    .join('\n')
+}
+
+export const genPropsNames = (props: Record<string, string>): string => {
+  if (Object.keys(props).length === 0) return ''
+  return Object.keys(props)
+    .map((key) => `${key}Derives`)
+    .join(', ')
 }
 
 function titleCase(input: string) {

@@ -1,4 +1,5 @@
 import {
+  Naming,
   NumberType,
   BooleanType,
   NullType,
@@ -14,60 +15,56 @@ import {
   Literal,
   JSONType,
   createJSONCallType,
-  Naming,
-  createDeriveType,
-  ValidateError,
-  type,
 } from 'jc-builder'
-import { createJSONCall, Sender, createSender } from '../../../src'
+import { createJSONCall, Sender, createSender } from 'jc-client'
 import type { Serialize, Deserialize } from 'jc-serialization'
 
-const createBuilderSchema = <I, II>(fooDerives: {
-  int: JSONType<any, I, string>
-  Date: JSONType<any, II, string>
+const createBuilderSchema = <INTI, DATEI>(fooDerives: {
+  int: JSONType<any, INTI, string>
+  Date: JSONType<any, DATEI, string>
 }) => {
-  const getFooModule = <I, II>({
+  const getFooModule = <INTI, DATEI>({
     int,
     Date,
   }: {
-    int: JSONType<any, I, string>
-    Date: JSONType<any, II, string>
+    int: JSONType<any, INTI, string>
+    Date: JSONType<any, DATEI, string>
   }) => {
-    const foo1 = Naming('foo1', NumberType)
-    const foo2 = Naming('foo2', BooleanType)
-    const foo3 = Naming('foo3', NullType)
-    const foo4 = Naming('foo4', StringType)
-
-    const foo5 = Naming('foo5', ListType(NumberType))
+    const foo1 = Naming('foo1', NumberType, 'number')
+    const foo2 = Naming('foo2', BooleanType, 'boolean')
+    const foo3 = Naming('foo3', NullType, 'null')
+    const foo4 = Naming('foo4', StringType, 'string')
+    const foo5 = Naming('foo5', ListType(NumberType), '[number]')
     const foo6 = Naming(
       'foo6',
-      ObjectType({
-        foo: NumberType,
-      })
+      ObjectType({ foo: NumberType }),
+      '{foo: number}'
     )
-    const foo7 = Naming('foo7', Tuple(NumberType, StringType))
-    const foo8 = Naming('foo8', RecordType(NumberType))
-
-    const foo9 = Naming('foo9', AnyType)
-    const foo10 = Naming('foo10', NoneType)
-
-    const foo11 = Naming('foo11', Union(NumberType, StringType))
+    const foo7 = Naming(
+      'foo7',
+      Tuple(NumberType, StringType),
+      '(number, string)'
+    )
+    const foo8 = Naming('foo8', RecordType(NumberType), '<number>')
+    const foo9 = Naming('foo9', AnyType, 'any')
+    const foo10 = Naming('foo10', NoneType, 'none')
+    const foo11 = Naming(
+      'foo11',
+      Union(NumberType, StringType),
+      'number | string'
+    )
     const foo12 = Naming(
       'foo12',
       Intersection(
-        ObjectType({
-          foo: StringType,
-        }),
-        ObjectType({
-          bar: NumberType,
-        })
-      )
+        ObjectType({ foo: StringType }),
+        ObjectType({ bar: NumberType })
+      ),
+      '{foo: string} & {bar: number}'
     )
-
-    const foo13 = Naming('foo13', Literal('foo13'))
-    const foo14 = Naming('foo14', Literal(0))
-    const foo15 = Naming('foo15', Literal(true))
-    const foo16 = Naming('foo16', Literal(false))
+    const foo13 = Naming('foo13', Literal('foo13'), '"foo13"')
+    const foo14 = Naming('foo14', Literal(0), '0')
+    const foo15 = Naming('foo15', Literal(true), 'true')
+    const foo16 = Naming('foo16', Literal(false), 'false')
 
     return {
       id: 'foo',
@@ -115,21 +112,19 @@ const createBuilderSchema = <I, II>(fooDerives: {
         Date,
       },
       calls: {},
-    } as const
+    }
   }
   const fooModule = getFooModule(fooDerives)
 
   const getBarModule = () => {
     const foo = Naming('foo', fooModule.exports.foo6)
 
-    const bar = Naming(
-      'bar',
-      ObjectType({
-        bar: StringType,
-      })
+    const bar = Naming('bar', ObjectType({ bar: StringType }), '{bar: string}')
+    const fooAndBar = Naming(
+      'fooAndBar',
+      Intersection(foo, bar),
+      '{foo: number} & {bar: string}'
     )
-
-    const fooAndBar = Naming('fooAndBar', Intersection(foo, bar))
 
     return {
       id: 'bar',
@@ -154,7 +149,7 @@ const createBuilderSchema = <I, II>(fooDerives: {
         fooAndBar,
       },
       calls: {},
-    } as const
+    }
   }
   const barModule = getBarModule()
 
@@ -165,15 +160,18 @@ const createBuilderSchema = <I, II>(fooDerives: {
 
     const baz = Naming(
       'baz',
-      ObjectType({
-        bar: BooleanType,
-      })
+      ObjectType({ baz: BooleanType }),
+      '{baz: boolean}'
     )
-
-    const fooAndBaz = Naming('fooAndBaz', Intersection(foo, baz))
+    const fooAndBaz = Naming(
+      'fooAndBaz',
+      Intersection(foo, baz),
+      '{foo: number} & {baz: boolean}'
+    )
     const fooAndBarAndBaz = Naming(
       'fooAndBarAndBaz',
-      Intersection(foo, bar, baz)
+      Intersection(foo, bar, baz),
+      '{foo: number} & {bar: string} & {baz: boolean}'
     )
 
     const bazCall = createJSONCallType('bazCall', fooAndBarAndBaz, baz)
@@ -225,7 +223,7 @@ const createBuilderSchema = <I, II>(fooDerives: {
         barCall,
         fooCall,
       },
-    } as const
+    }
   }
   const bazModule = getBazModule()
 
@@ -237,79 +235,36 @@ const createBuilderSchema = <I, II>(fooDerives: {
       baz: bazModule,
     },
     calls: bazModule.calls,
-  } as const
-}
-
-export const createCalls = <I, II>(
-  fooDerives: {
-    int: JSONType<any, I, string>
-    Date: JSONType<any, II, string>
-  },
-  serialize: Serialize<any>,
-  deserialize: Deserialize<any>,
-  send: Sender
-) => {
-  const builderSchema = createBuilderSchema(fooDerives)
-  return {
-    fooCall: createJSONCall(
-      builderSchema.calls.fooCall,
-      serialize,
-      deserialize,
-      createSender(send, serialize, deserialize)
-    ),
-    barCall: createJSONCall(
-      builderSchema.calls.barCall,
-      serialize,
-      deserialize,
-      createSender(send, serialize, deserialize)
-    ),
-    bazCall: createJSONCall(
-      builderSchema.calls.bazCall,
-      serialize,
-      deserialize,
-      createSender(send, serialize, deserialize)
-    ),
   }
 }
 
-export default createCalls
+export const createClient = <INTI, DATEI>(
+  fooDerives: {
+    int: JSONType<any, INTI, string>
+    Date: JSONType<any, DATEI, string>
+  },
+  send: Sender
+) => {
+  const builderSchema = createBuilderSchema(fooDerives)
 
-// const int = createDeriveType(NumberType)(
-//   'int' as const,
-//   type(NumberType),
-//   (input) => {
-//     if (Number.isInteger(input)) {
-//       return true
-//     } else {
-//       return new ValidateError('int', JSON.stringify(input))
-//     }
-//   },
-//   (input) => {
-//     return input
-//   },
-//   (input) => {
-//     return input
-//   },
-//   'int'
-// )
-// const DateType = createDeriveType(Union(StringType, NumberType))(
-//   'Date' as const,
-//   type(Union(StringType, NumberType)),
-//   (input) => {
-//     const date = new Date(input)
-//     if (isNaN(date.getTime())) {
-//       return true
-//     } else {
-//       return new ValidateError('Date', JSON.stringify(input))
-//     }
-//   },
-//   (input) => {
-//     return new Date(input)
-//   },
-//   (input) => {
-//     return input.getTime()
-//   },
-//   'Date'
-// )
-
-// const calls = createCalls({ int, Date: DateType }, JSON.stringify, JSON.parse, async (input) => input)
+  return {
+    bazCall: createJSONCall(
+      builderSchema.calls.bazCall,
+      JSON.stringify,
+      JSON.parse,
+      createSender(send, JSON.stringify, JSON.parse)
+    ),
+    barCall: createJSONCall(
+      builderSchema.calls.barCall,
+      JSON.stringify,
+      JSON.parse,
+      createSender(send, JSON.stringify, JSON.parse)
+    ),
+    fooCall: createJSONCall(
+      builderSchema.calls.fooCall,
+      JSON.stringify,
+      JSON.parse,
+      createSender(send, JSON.stringify, JSON.parse)
+    ),
+  }
+}

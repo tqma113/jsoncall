@@ -1,6 +1,4 @@
 import {
-  BuilderSchema,
-  BuilderModule,
   Naming,
   NumberType,
   BooleanType,
@@ -19,7 +17,7 @@ import {
   createJSONCallType,
 } from 'jc-builder'
 
-const createBuilderSchema = <INTI, DATEI>(fooDerives: {
+export const createBuilderSchema = <INTI, DATEI>(fooDerives: {
   int: JSONType<any, INTI, string>
   Date: JSONType<any, DATEI, string>
 }) => {
@@ -160,18 +158,18 @@ const createBuilderSchema = <INTI, DATEI>(fooDerives: {
 
     const baz = Naming(
       'baz',
-      ObjectType({ bar: BooleanType }),
-      '{bar: boolean}'
+      ObjectType({ baz: BooleanType }),
+      '{baz: boolean}'
     )
     const fooAndBaz = Naming(
       'fooAndBaz',
       Intersection(foo, baz),
-      '{foo: number} & {bar: boolean}'
+      '{foo: number} & {baz: boolean}'
     )
     const fooAndBarAndBaz = Naming(
       'fooAndBarAndBaz',
       Intersection(foo, bar, baz),
-      '{foo: number} & {bar: string} & {bar: boolean}'
+      '{foo: number} & {bar: string} & {baz: boolean}'
     )
 
     const bazCall = createJSONCallType('bazCall', fooAndBarAndBaz, baz)
@@ -237,5 +235,3 @@ const createBuilderSchema = <INTI, DATEI>(fooDerives: {
     calls: bazModule.calls,
   }
 }
-
-export default createBuilderSchema
