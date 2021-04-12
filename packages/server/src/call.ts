@@ -2,7 +2,7 @@ import {
   JSONCallType,
   validate,
   convert,
-  reverseConverter,
+  contraverte,
   name,
   ValidateError,
   ConvertError,
@@ -51,7 +51,7 @@ export const createJSONCall = <
 
             try {
               const resolveResult = resolve(convertResult)
-              const result = reverseConverter(type.output, resolveResult)
+              const result = contraverte(type.output, resolveResult)
               const outputValidateResult = validate(type.output, result)
 
               if (outputValidateResult === true) {

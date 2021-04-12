@@ -24,7 +24,7 @@ export type Converter<I, T> = (input: I) => T
 export const JSON_TYPE_SYMBOL = Symbol('JSON_TYPE_SYMBOL')
 export const VALIDATE = Symbol('VALIDATE')
 export const CONVERT = Symbol('CONVERT')
-export const REVERSECONVERTER = Symbol('REVERSECONVERTER')
+export const CONTRAVERTE = Symbol('CONTRAVERTE')
 export const NAME = Symbol('NAME')
 export const DESCRIPTION = Symbol('DESCRIPTION')
 export const TYPE = Symbol('TYPE')
@@ -43,7 +43,7 @@ export type JSONType<I, T, K extends string> = {
   [DESCRIPTION]: string
   [VALIDATE]: Validator
   [CONVERT]: Converter<I, T>
-  [REVERSECONVERTER]: Converter<T, I>
+  [CONTRAVERTE]: Converter<T, I>
   [ORIGIN]: JSONType<I, T, K> | null
 }
 
@@ -52,7 +52,7 @@ export const createJSONType = <I, T, K extends string>(
   type: Type,
   validate: Validator,
   convert: Converter<I, T>,
-  reverseConverter: Converter<T, I>,
+  contraverte: Converter<T, I>,
   description: string,
   origin: JSONType<I, T, K> | null = null
 ): JSONType<I, T, K> => {
@@ -62,7 +62,7 @@ export const createJSONType = <I, T, K extends string>(
     [TYPE]: type,
     [VALIDATE]: validate,
     [CONVERT]: convert,
-    [REVERSECONVERTER]: reverseConverter,
+    [CONTRAVERTE]: contraverte,
     [DESCRIPTION]: description,
     [ORIGIN]: origin,
   }
@@ -76,11 +76,11 @@ export const convert = <I, T>(type: JSONType<I, T, string>, input: I): T => {
   return type[CONVERT](input)
 }
 
-export const reverseConverter = <I, T>(
+export const contraverte = <I, T>(
   type: JSONType<I, T, string>,
   input: T
 ): I => {
-  return type[REVERSECONVERTER](input)
+  return type[CONTRAVERTE](input)
 }
 
 export const name = <K extends string>(type: JSONType<any, any, K>): K => {
@@ -113,7 +113,7 @@ export const Naming = <I, T, K extends string>(
     createNameType(name),
     type[VALIDATE],
     type[CONVERT],
-    type[REVERSECONVERTER],
+    type[CONTRAVERTE],
     description || type[DESCRIPTION],
     type
   )
@@ -302,10 +302,10 @@ export const createUnion = <
     }
   }
 
-  const reverseConverter: Converter<T, I> = (input) => {
+  const contraverte: Converter<T, I> = (input) => {
     for (let unionType of unionTypes.reverse()) {
       try {
-        return unionType[REVERSECONVERTER](input)
+        return unionType[CONTRAVERTE](input)
       } catch {
         continue
       }
@@ -321,7 +321,7 @@ export const createUnion = <
     createUnionType([...unionTypes.map(type)]),
     validate,
     convert,
-    reverseConverter,
+    contraverte,
     description
   )
 }
@@ -373,11 +373,11 @@ export const createIntersection = <
     }, {} as T)
   }
 
-  const reverseConverter: Converter<T, I> = (input) => {
+  const contraverte: Converter<T, I> = (input) => {
     return intersectionTypes.reduce((cur, intersectionType) => {
       return {
         ...cur,
-        ...intersectionType[REVERSECONVERTER](input),
+        ...intersectionType[CONTRAVERTE](input),
       }
     }, {} as I)
   }
@@ -391,7 +391,7 @@ export const createIntersection = <
     createIntersectType([...intersectionTypes.map(type)]),
     validate,
     convert,
-    reverseConverter,
+    contraverte,
     description
   )
 }
@@ -421,18 +421,11 @@ export const createDeriveType = <FI, FT, FK extends string>(
     return curConvert(from[CONVERT](input))
   }
 
-  const reverseConverter: Converter<T, FI> = (input) => {
-    return from[REVERSECONVERTER](curReverseConverter(input))
+  const contraverte: Converter<T, FI> = (input) => {
+    return from[CONTRAVERTE](curReverseConverter(input))
   }
 
-  return createJSONType(
-    name,
-    type,
-    validate,
-    convert,
-    reverseConverter,
-    description
-  )
+  return createJSONType(name, type, validate, convert, contraverte, description)
 }
 
 const createTypeFromAnyList = createDeriveType(AnyListType)
@@ -459,8 +452,8 @@ export const createList = <
     return input.map(item[CONVERT])
   }
 
-  const reverseConverter: Converter<FT[], any[]> = (input) => {
-    return input.map(item[REVERSECONVERTER])
+  const contraverte: Converter<FT[], any[]> = (input) => {
+    return input.map(item[CONTRAVERTE])
   }
 
   return createTypeFromAnyList(
@@ -468,7 +461,7 @@ export const createList = <
     createListType(type(item)),
     validate,
     convert,
-    reverseConverter,
+    contraverte,
     `[${item[DESCRIPTION]}]`
   )
 }
@@ -512,10 +505,10 @@ export const createTuple = <TS extends JSONType<any, any, string>[]>(
     return result
   }
 
-  const reverseConverter: Converter<ToTupleType<TS>, any[]> = (input) => {
+  const contraverte: Converter<ToTupleType<TS>, any[]> = (input) => {
     let result: any[] = []
     for (let index = 0; index < tupleTypes.length; index++) {
-      result[index] = tupleTypes[index][REVERSECONVERTER](input[index])
+      result[index] = tupleTypes[index][CONTRAVERTE](input[index])
     }
     return result
   }
@@ -529,7 +522,7 @@ export const createTuple = <TS extends JSONType<any, any, string>[]>(
     createTupleType([...tupleTypes.map(type)]),
     validate,
     convert,
-    reverseConverter,
+    contraverte,
     description
   )
 }
@@ -584,11 +577,11 @@ export const createObject = <
     return result
   }
 
-  const reverseConverter: Converter<T, I> = (input) => {
+  const contraverte: Converter<T, I> = (input) => {
     let result: I = {} as I
     for (let key in objectType) {
       // @ts-ignore
-      result[key] = objectType[key][REVERSECONVERTER](input[key])
+      result[key] = objectType[key][CONTRAVERTE](input[key])
     }
     return result
   }
@@ -606,7 +599,7 @@ export const createObject = <
     createObjectType(fileds),
     validate,
     convert,
-    reverseConverter,
+    contraverte,
     description
   )
 }
@@ -642,11 +635,11 @@ export const createRecord = <
     return result
   }
 
-  const reverseConverter: Converter<T, I> = (input) => {
+  const contraverte: Converter<T, I> = (input) => {
     let result: I = {}
     for (let key in input) {
       // @ts-ignore
-      result[key] = item[REVERSECONVERTER](input[key])
+      result[key] = item[CONTRAVERTE](input[key])
     }
     return result
   }
@@ -656,7 +649,7 @@ export const createRecord = <
     createRecordType(type(item)),
     validate,
     convert,
-    reverseConverter,
+    contraverte,
     description
   )
 }
@@ -673,7 +666,7 @@ export class StructType implements JSONType<object, any, string> {
   [DESCRIPTION]: string;
   [VALIDATE]: Validator<object>;
   [CONVERT]: Converter<object, any>;
-  [REVERSECONVERTER]: Converter<any, object>;
+  [CONTRAVERTE]: Converter<any, object>;
   [STRUCT_TYPE] = STRUCT_TYPE;
 
   [NAME] = 'Struct';
@@ -689,7 +682,7 @@ export class StructType implements JSONType<object, any, string> {
     return input
   };
 
-  [REVERSECONVERTER] = (input: any): object => {
+  [CONTRAVERTE] = (input: any): object => {
     return input
   }
 }
@@ -747,7 +740,7 @@ function getKeys<T extends {}>(o: T): Array<keyof T> {
 
 // const convert: Converter<string, Date> = (input) => {}
 
-// const reverseConverter: Converter<Date, string> = (input) => {}
+// const contraverte: Converter<Date, string> = (input) => {}
 
 // const createTypeFromString = createDeriveType(StringType)
 
@@ -755,7 +748,7 @@ function getKeys<T extends {}>(o: T): Array<keyof T> {
 //   `Date` as const,
 //   validate,
 //   convert,
-//   reverseConverter
+//   contraverte
 // )
 
 // const createTypeFromDateType = createDeriveType(DateType)
