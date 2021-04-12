@@ -36,17 +36,19 @@ export const createJSONCall = <
       const inputValidateResult = validate(type.input, rcResult)
       if (inputValidateResult === true) {
         try {
-          const result = deserialize(await send(type.name, serialize(rcResult)))
-          const outputValidateResult = validate(type.output, result)
-          if (outputValidateResult === true) {
-            try {
-              return Ok(convert(type.output, result))
-            } catch (err) {
-              return Err(new ConvertError(err, name(type.output)))
+          return send(type.name, serialize(rcResult)).then((resultStr) => {
+            const result = deserialize(resultStr)
+            const outputValidateResult = validate(type.output, result)
+            if (outputValidateResult === true) {
+              try {
+                return Ok(convert(type.output, result))
+              } catch (err) {
+                return Err(new ConvertError(err, name(type.output)))
+              }
+            } else {
+              return Err(new ServerError('Server error', outputValidateResult))
             }
-          } else {
-            return Err(new ServerError('Server error', outputValidateResult))
-          }
+          })
         } catch (err) {
           return Err(new SendError(err))
         }

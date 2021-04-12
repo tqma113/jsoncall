@@ -21,7 +21,7 @@ export const clientCodegen = (schema: Schema, options?: Options): string => {
     `import {
     ${importItems.map((item) => `${item},`).join('\n')}
   } from 'jc-builder'
-  import { createJSONCall, Sender, createSender } from 'jc-client'
+  import { createJSONCall, createSyncJSONCall, Sender, SyncSender, createSender, createBatchSender, createSyncSender } from 'jc-client'
 
   ${code}
 
@@ -30,6 +30,7 @@ export const clientCodegen = (schema: Schema, options?: Options): string => {
     send: Sender
   ) => {
     const builderSchema = createBuilderSchema(${genPropsNames(props)})
+    const callSender = createSender(send, JSON.stringify, JSON.parse)
 
     return {
       ${calls
@@ -38,7 +39,49 @@ export const clientCodegen = (schema: Schema, options?: Options): string => {
         builderSchema.calls.${key},
         JSON.stringify,
         JSON.parse,
-        createSender(send, JSON.stringify, JSON.parse)
+        callSender
+      ),`
+        )
+        .join('')}
+    }
+  }
+
+  export const createBatchClient = ${genGenerics(generics)}(
+    ${propsStr}
+    send: Sender
+  ) => {
+    const builderSchema = createBuilderSchema(${genPropsNames(props)})
+    const callSender = createBatchSender(send, JSON.stringify, JSON.parse)
+
+    return {
+      ${calls
+        .map(
+          (key) => `${key}: createJSONCall(
+        builderSchema.calls.${key},
+        JSON.stringify,
+        JSON.parse,
+        callSender
+      ),`
+        )
+        .join('')}
+    }
+  }
+
+  export const createSyncClient = ${genGenerics(generics)}(
+    ${propsStr}
+    send: SyncSender
+  ) => {
+    const builderSchema = createBuilderSchema(${genPropsNames(props)})
+    const callSender = createSyncSender(send, JSON.stringify, JSON.parse)
+
+    return {
+      ${calls
+        .map(
+          (key) => `${key}: createSyncJSONCall(
+        builderSchema.calls.${key},
+        JSON.stringify,
+        JSON.parse,
+        callSender
       ),`
         )
         .join('')}

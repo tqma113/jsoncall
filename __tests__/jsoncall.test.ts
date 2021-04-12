@@ -4,10 +4,10 @@ import { check, rename } from 'jc-schema'
 import { bundle } from 'jc-lang'
 import { serverCodegen, clientCodegen } from 'jc-codegen'
 import { nodeModuleResolver } from './node'
-import { client } from './fixtures/helpers'
+import { client, batchClient, syncClient } from './fixtures/helpers'
 
 describe('jsoncall', () => {
-  it('sample', async () => {
+  it('async', async () => {
     const moduleId = path.resolve(__dirname, './fixtures/jc/baz.jc')
     const schema = rename(
       bundle(moduleId, nodeModuleResolver),
@@ -43,6 +43,84 @@ describe('jsoncall', () => {
     ).toMatchObject({ bar: 'bar' })
     expect(
       (await client.bazCall({ foo: 123, bar: 'bar', baz: true })).value
+    ).toMatchObject({ baz: true })
+  })
+
+  it('batch', async () => {
+    const moduleId = path.resolve(__dirname, './fixtures/jc/baz.jc')
+    const schema = rename(
+      bundle(moduleId, nodeModuleResolver),
+      (id, isExist) => {
+        return path.basename(id).replace('.jc', '')
+      }
+    )
+
+    expect(check(schema)).toBe(null)
+
+    fs.writeFileSync(
+      path.resolve(__dirname, './fixtures/ts/createServerService.ts'),
+      serverCodegen(schema, {
+        semi: false,
+        singleQuote: true,
+        printWidth: 80,
+      })
+    )
+    fs.writeFileSync(
+      path.resolve(__dirname, './fixtures/ts/createClient.ts'),
+      clientCodegen(schema, {
+        semi: false,
+        singleQuote: true,
+        printWidth: 80,
+      })
+    )
+
+    const results = await Promise.all([
+      batchClient.fooCall({ foo: 123, baz: true }),
+      batchClient.barCall({ foo: 123, bar: 'bar' }),
+      batchClient.bazCall({ foo: 123, bar: 'bar', baz: true }),
+    ])
+
+    expect(results[0].value).toMatchObject({ foo: 123 })
+    expect(results[1].value).toMatchObject({ bar: 'bar' })
+    expect(results[2].value).toMatchObject({ baz: true })
+  })
+
+  it('sync', async () => {
+    const moduleId = path.resolve(__dirname, './fixtures/jc/baz.jc')
+    const schema = rename(
+      bundle(moduleId, nodeModuleResolver),
+      (id, isExist) => {
+        return path.basename(id).replace('.jc', '')
+      }
+    )
+
+    expect(check(schema)).toBe(null)
+
+    fs.writeFileSync(
+      path.resolve(__dirname, './fixtures/ts/createServerService.ts'),
+      serverCodegen(schema, {
+        semi: false,
+        singleQuote: true,
+        printWidth: 80,
+      })
+    )
+    fs.writeFileSync(
+      path.resolve(__dirname, './fixtures/ts/createClient.ts'),
+      clientCodegen(schema, {
+        semi: false,
+        singleQuote: true,
+        printWidth: 80,
+      })
+    )
+
+    expect(syncClient.fooCall({ foo: 123, baz: true }).value).toMatchObject({
+      foo: 123,
+    })
+    expect(syncClient.barCall({ foo: 123, bar: 'bar' }).value).toMatchObject({
+      bar: 'bar',
+    })
+    expect(
+      syncClient.bazCall({ foo: 123, bar: 'bar', baz: true }).value
     ).toMatchObject({ baz: true })
   })
 })

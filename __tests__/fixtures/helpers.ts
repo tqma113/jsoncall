@@ -6,9 +6,12 @@ import {
   Union,
   StringType,
 } from 'jc-builder'
-import { Sender } from 'jc-client'
 import { createServerService } from './ts/createServerService'
-import { createClient } from './ts/createClient'
+import {
+  createClient,
+  createBatchClient,
+  createSyncClient,
+} from './ts/createClient'
 
 const int = createDeriveType(NumberType)(
   'int' as const,
@@ -66,8 +69,18 @@ const app = service({
     }
   },
 })
-const send: Sender = async (input) => {
-  return app(input)
-}
 
-export const client = createClient({ int, Date: DateType }, send)
+export const client = createClient({ int, Date: DateType }, async (input) => {
+  return app(input)
+})
+
+export const batchClient = createBatchClient(
+  { int, Date: DateType },
+  async (input) => {
+    return app(input)
+  }
+)
+
+export const syncClient = createSyncClient({ int, Date: DateType }, (input) => {
+  return app(input)
+})

@@ -61,7 +61,7 @@ export const createBatchSender = <N extends string>(
   const batchCall = async (
     callings: Readonly<SingleCalling[]>
   ): Promise<string[]> => {
-    let input = serialize(BatchCalling(callings as SingleCalling[]))
+    const input = serialize(BatchCalling(callings as SingleCalling[]))
     try {
       const outputStr = await send(input)
       try {
@@ -96,7 +96,7 @@ export const createBatchSender = <N extends string>(
 
   const dataLoader = new DataLoader(batchCall)
 
-  return async (name: N, input: string) => {
+  return (name: N, input: string) => {
     return dataLoader.load(SingleCalling(name, input))
   }
 }

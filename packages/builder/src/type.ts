@@ -296,7 +296,7 @@ export const createUnion = <
 
   const convert: Converter<I, T> = (input) => {
     for (let unionType of unionTypes.reverse()) {
-      if (unionType[VALIDATE](input)) {
+      if (unionType[VALIDATE](input) === true) {
         return unionType[CONVERT](input)
       }
     }
@@ -304,7 +304,7 @@ export const createUnion = <
 
   const reverseConverter: Converter<T, I> = (input) => {
     for (let unionType of unionTypes.reverse()) {
-      if (unionType[VALIDATE](input)) {
+      if (unionType[VALIDATE](input) === true) {
         return unionType[REVERSECONVERTER](input)
       }
     }

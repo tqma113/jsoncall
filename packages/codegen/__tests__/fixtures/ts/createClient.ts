@@ -16,7 +16,15 @@ import {
   JSONType,
   createJSONCallType,
 } from 'jc-builder'
-import { createJSONCall, Sender, createSender } from 'jc-client'
+import {
+  createJSONCall,
+  createSyncJSONCall,
+  Sender,
+  SyncSender,
+  createSender,
+  createBatchSender,
+  createSyncSender,
+} from 'jc-client'
 
 const createBuilderSchema = <INTI, DATEI>(fooDerives: {
   int: JSONType<any, INTI, string>
@@ -241,25 +249,90 @@ export const createClient = <INTI, DATEI>(
   send: Sender
 ) => {
   const builderSchema = createBuilderSchema(fooDerives)
+  const callSender = createSender(send, JSON.stringify, JSON.parse)
 
   return {
     bazCall: createJSONCall(
       builderSchema.calls.bazCall,
       JSON.stringify,
       JSON.parse,
-      createSender(send, JSON.stringify, JSON.parse)
+      callSender
     ),
     barCall: createJSONCall(
       builderSchema.calls.barCall,
       JSON.stringify,
       JSON.parse,
-      createSender(send, JSON.stringify, JSON.parse)
+      callSender
     ),
     fooCall: createJSONCall(
       builderSchema.calls.fooCall,
       JSON.stringify,
       JSON.parse,
-      createSender(send, JSON.stringify, JSON.parse)
+      callSender
+    ),
+  }
+}
+
+export const createBatchClient = <INTI, DATEI>(
+  fooDerives: {
+    int: JSONType<any, INTI, string>
+    Date: JSONType<any, DATEI, string>
+  },
+  send: Sender
+) => {
+  const builderSchema = createBuilderSchema(fooDerives)
+  const callSender = createBatchSender(send, JSON.stringify, JSON.parse)
+
+  return {
+    bazCall: createJSONCall(
+      builderSchema.calls.bazCall,
+      JSON.stringify,
+      JSON.parse,
+      callSender
+    ),
+    barCall: createJSONCall(
+      builderSchema.calls.barCall,
+      JSON.stringify,
+      JSON.parse,
+      callSender
+    ),
+    fooCall: createJSONCall(
+      builderSchema.calls.fooCall,
+      JSON.stringify,
+      JSON.parse,
+      callSender
+    ),
+  }
+}
+
+export const createSyncClient = <INTI, DATEI>(
+  fooDerives: {
+    int: JSONType<any, INTI, string>
+    Date: JSONType<any, DATEI, string>
+  },
+  send: SyncSender
+) => {
+  const builderSchema = createBuilderSchema(fooDerives)
+  const callSender = createSyncSender(send, JSON.stringify, JSON.parse)
+
+  return {
+    bazCall: createSyncJSONCall(
+      builderSchema.calls.bazCall,
+      JSON.stringify,
+      JSON.parse,
+      callSender
+    ),
+    barCall: createSyncJSONCall(
+      builderSchema.calls.barCall,
+      JSON.stringify,
+      JSON.parse,
+      callSender
+    ),
+    fooCall: createSyncJSONCall(
+      builderSchema.calls.fooCall,
+      JSON.stringify,
+      JSON.parse,
+      callSender
     ),
   }
 }
