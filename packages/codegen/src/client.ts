@@ -1,3 +1,7 @@
+import { check, Schema } from 'jc-schema'
+import { name as getName, validate, convert, ConvertError } from 'jc-builder'
+import { IntrospectionCalling, IntrospectionCallingOutputType } from 'jc-server'
+import { SerializationError } from 'jc-serialization'
 import { format, Options } from 'prettier'
 import {
   builderCodegenSchema,
@@ -5,7 +9,7 @@ import {
   genProps,
   genPropsNames,
 } from './builder'
-import type { Schema } from 'jc-schema'
+import type { Sender, SyncSender } from 'jc-client'
 
 export const clientCodegen = (schema: Schema, options?: Options): string => {
   const { importItems, code, generics, props, calls } = builderCodegenSchema(
@@ -90,4 +94,37 @@ export const clientCodegen = (schema: Schema, options?: Options): string => {
   `,
     { parser: 'typescript', ...options }
   )
+}
+
+export const introspectionClientCodegen = async (
+  send: Sender | SyncSender,
+  options?: Options
+): Promise<string> => {
+  const output = await send(JSON.stringify(IntrospectionCalling()))
+
+  try {
+    const outputObject = JSON.parse(output)
+    const validateResult = validate(
+      IntrospectionCallingOutputType,
+      outputObject
+    )
+    if (validateResult === true) {
+      try {
+        const output = convert(IntrospectionCallingOutputType, outputObject)
+        const schema = output.output as Schema
+        const result = check(schema)
+        if (result === null) {
+          return clientCodegen(schema, options)
+        } else {
+          throw result
+        }
+      } catch (err) {
+        throw new ConvertError(err, getName(IntrospectionCallingOutputType))
+      }
+    } else {
+      throw validateResult
+    }
+  } catch (err) {
+    throw new SerializationError(err, output)
+  }
 }
