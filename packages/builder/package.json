@@ -7,7 +7,7 @@
   "types": "dist/index.d.ts",
   "author": "Ma Tianqi <mtq1997@126.com>",
   "license": "MIT",
-  "dependencies": {
+  "peerDependencies": {
     "jc-schema": "0.0.1"
   }
 }
