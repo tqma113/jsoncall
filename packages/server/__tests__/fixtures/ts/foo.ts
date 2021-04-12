@@ -236,11 +236,7 @@ const createBuilderSchema = <I, II>(fooDerives: {
 
   return {
     entry: 'baz',
-    modules: {
-      foo: fooModule,
-      bar: barModule,
-      baz: bazModule,
-    },
+    modules: [fooModule, barModule, bazModule],
     calls: bazModule.calls,
   }
 }

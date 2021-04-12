@@ -79,7 +79,9 @@ export const createModuleAccessor = (
       importStatement.path.path.word,
       fromModule.source.moduleId
     )
-    const module = bundler.modules.get(moduleId)
+    const module = bundler.modules.find(
+      (module) => module.source.moduleId === moduleId
+    )
 
     if (module) {
       const schemaModule = bundler.schema.modules.find(
@@ -105,8 +107,9 @@ export const createModuleAccessor = (
           source,
           document,
         }
-        bundler.modules.set(moduleId, module)
-        return [module, access(module)]
+        const schemaModule = access(module)
+        bundler.modules.push(module)
+        return [module, schemaModule]
       } catch (err) {
         throw new SemanticError(
           `Can't access module: ${moduleId}`,
@@ -118,9 +121,6 @@ export const createModuleAccessor = (
   }
 
   const access = (module: Module) => {
-    const schemaModule = createSchemaModule(module.source.moduleId)
-    bundler.schema.modules.push(schemaModule)
-
     const accessPrimitiveTypeNode = (
       primitiveTypeNode: PrimitiveTypeNode
     ): PrimitiveType => {
@@ -404,7 +404,9 @@ export const createModuleAccessor = (
       document.statements.forEach(accessStatement)
     }
 
+    const schemaModule = createSchemaModule(module.source.moduleId)
     accessDocument(module.document)
+    bundler.schema.modules.push(schemaModule)
 
     return schemaModule
   }

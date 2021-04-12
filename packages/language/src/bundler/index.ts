@@ -18,7 +18,7 @@ export type Module = {
 
 export type Bundler = {
   entry: string
-  modules: Map<string, Module>
+  modules: Module[]
   schema: Schema
   bundle: () => Schema
 }
@@ -39,7 +39,6 @@ export const createBundler = (
         source,
         document,
       }
-      bundler.modules.set(moduleId, module)
       return module
     } catch (err) {
       throw new BundleError(`Can't access entry module`, moduleId)
@@ -50,6 +49,7 @@ export const createBundler = (
     const entryModule = loadEntry(bundler.entry)
 
     access(bundler, entryModule, moduleResolver)
+    bundler.modules.push(entryModule)
 
     const checkResult = check(bundler.schema)
     if (checkResult !== null) {
@@ -61,7 +61,7 @@ export const createBundler = (
 
   let bundler: Bundler = {
     entry,
-    modules: new Map(),
+    modules: [],
     schema: createSchema(entry),
     bundle,
   }

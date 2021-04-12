@@ -87,11 +87,11 @@ export const builderCodegenSchema = (schema: Schema): SchemaCodegen => {
 
     return {
       entry: '${schema.entry}',
-      modules: {
+      modules: [
         ${getKeys(modules)
-          .map((key) => `${key}: ${key}Module,`)
+          .map((key) => `${key}Module,`)
           .join('\n')}
-      },
+      ],
       calls: ${schema.entry}Module.calls
     }
   }`

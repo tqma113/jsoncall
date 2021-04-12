@@ -8,7 +8,7 @@ export type BuilderSchema<
   >
 > = {
   entry: string
-  modules: Record<string, BuilderModule>
+  modules: BuilderModule[]
   calls: CS
 }
 

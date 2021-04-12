@@ -14,7 +14,9 @@ import { createClient } from './fixtures/ts/createClient'
 
 describe('verification', () => {
   it('createBuilderSchema', () => {
-    check(normalize(createBuilderSchema({ int, Date: DateType })))
+    expect(check(normalize(createBuilderSchema({ int, Date: DateType })))).toBe(
+      null
+    )
   })
 
   it('createServerService', () => {

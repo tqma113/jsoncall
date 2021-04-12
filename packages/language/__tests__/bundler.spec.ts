@@ -29,15 +29,7 @@ describe('bundler', () => {
     expect(schema.entry).toMatch('baz.jc')
     expect(schema.modules.length).toBe(3)
 
-    const module0 = schema.modules[0]
-    expect(module0.id).toMatch('baz.jc')
-    expect(module0.linkDefinations.length).toBe(2)
-    expect(module0.typeDefinations.length).toBe(3)
-    expect(module0.callDefinations.length).toBe(3)
-    expect(module0.deriveDefinations.length).toBe(0)
-    expect(module0.exportDefination?.names.length).toBe(6)
-
-    const module1 = schema.modules[1]
+    const module1 = schema.modules[0]
     expect(module1.id).toMatch('foo.jc')
     expect(module1.linkDefinations.length).toBe(0)
     expect(module1.typeDefinations.length).toBe(16)
@@ -45,7 +37,7 @@ describe('bundler', () => {
     expect(module1.deriveDefinations.length).toBe(2)
     expect(module1.exportDefination?.names.length).toBe(18)
 
-    const module2 = schema.modules[2]
+    const module2 = schema.modules[1]
     expect(module2.id).toMatch('bar.jc')
     expect(module2.linkDefinations.length).toBe(1)
     expect(module2.typeDefinations.length).toBe(2)
@@ -53,18 +45,13 @@ describe('bundler', () => {
     expect(module2.deriveDefinations.length).toBe(0)
     expect(module2.exportDefination?.names.length).toBe(2)
 
-    expect(check(schema)).toBe(null)
-  })
-
-  it('circular', () => {
-    const moduleId = path.resolve(
-      __dirname,
-      './fixtures/circularDependency/foo.jc'
-    )
-    const schema = bundle(moduleId, nodeModuleResolver)
-
-    expect(schema.entry).toMatch('foo.jc')
-    expect(schema.modules.length).toBe(2)
+    const module0 = schema.modules[2]
+    expect(module0.id).toMatch('baz.jc')
+    expect(module0.linkDefinations.length).toBe(2)
+    expect(module0.typeDefinations.length).toBe(3)
+    expect(module0.callDefinations.length).toBe(3)
+    expect(module0.deriveDefinations.length).toBe(0)
+    expect(module0.exportDefination?.names.length).toBe(6)
 
     expect(check(schema)).toBe(null)
   })

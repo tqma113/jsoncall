@@ -1,4 +1,5 @@
 import {
+  Naming,
   NumberType,
   BooleanType,
   NullType,
@@ -6,63 +7,51 @@ import {
   ListType,
   ObjectType,
   Tuple,
-  RecordType,
   AnyType,
   NoneType,
   Union,
   Intersection,
   Literal,
-  JSONType,
   createJSONCallType,
-  Naming,
+  JSONType,
 } from 'jc-builder'
+import { createService } from 'jc-server'
 
-const createBuilderSchema = <I, II>(fooDerives: {
-  int: JSONType<any, I, string>
-  Date: JSONType<any, II, string>
+const createBuilderSchema = <INTI, DATEI>(fooDerives: {
+  int: JSONType<any, INTI, string>
+  Date: JSONType<any, DATEI, string>
 }) => {
-  const getFooModule = <I, II>({
+  const getFooModule = <INTI, DATEI>({
     int,
     Date,
   }: {
-    int: JSONType<any, I, string>
-    Date: JSONType<any, II, string>
+    int: JSONType<any, INTI, string>
+    Date: JSONType<any, DATEI, string>
   }) => {
-    const foo1 = Naming('foo1', NumberType)
-    const foo2 = Naming('foo2', BooleanType)
-    const foo3 = Naming('foo3', NullType)
-    const foo4 = Naming('foo4', StringType)
-
-    const foo5 = Naming('foo5', ListType(NumberType))
-    const foo6 = Naming(
-      'foo6',
-      ObjectType({
-        foo: NumberType,
-      })
-    )
-    const foo7 = Naming('foo7', Tuple(NumberType, StringType))
-    const foo8 = Naming('foo8', RecordType(NumberType))
-
-    const foo9 = Naming('foo9', AnyType)
-    const foo10 = Naming('foo10', NoneType)
-
-    const foo11 = Naming('foo11', Union(NumberType, StringType))
-    const foo12 = Naming(
-      'foo12',
+    const foo1 = Naming('foo1', NumberType, '')
+    const foo2 = Naming('foo2', BooleanType, '')
+    const foo3 = Naming('foo3', NullType, '')
+    const foo4 = Naming('foo4', StringType, '')
+    const foo5 = Naming('foo5', ListType(NumberType), '')
+    const foo6 = Naming('foo6', ObjectType({ foo: NumberType }), '')
+    const foo7 = Naming('foo7', Tuple(NumberType, StringType), '')
+    const foo8 = Naming('foo8', AnyType, '')
+    const foo9 = Naming('foo9', NoneType, '')
+    const foo10 = Naming('foo10', Union(NumberType, StringType), '')
+    const foo11 = Naming(
+      'foo11',
       Intersection(
-        ObjectType({
-          foo: StringType,
-        }),
-        ObjectType({
-          bar: NumberType,
-        })
-      )
+        ObjectType({ foo: StringType }),
+        ObjectType({ bar: NumberType })
+      ),
+      ''
     )
+    const foo12 = Naming('foo12', Literal('foo12'), '')
+    const foo13 = Naming('foo13', Literal(0), '')
+    const foo14 = Naming('foo14', Literal(true), '')
+    const foo15 = Naming('foo15', Literal(false), '')
 
-    const foo13 = Naming('foo13', Literal('foo13'))
-    const foo14 = Naming('foo14', Literal(0))
-    const foo15 = Naming('foo15', Literal(true))
-    const foo16 = Naming('foo16', Literal(false))
+    const fooCall = createJSONCallType('fooCall', NumberType, StringType)
 
     return {
       id: 'foo',
@@ -83,7 +72,6 @@ const createBuilderSchema = <I, II>(fooDerives: {
         foo13,
         foo14,
         foo15,
-        foo16,
       },
       derives: {
         int,
@@ -105,11 +93,12 @@ const createBuilderSchema = <I, II>(fooDerives: {
         foo13,
         foo14,
         foo15,
-        foo16,
         int,
         Date,
       },
-      calls: {},
+      calls: {
+        fooCall,
+      },
     }
   }
   const fooModule = getFooModule(fooDerives)
@@ -117,14 +106,12 @@ const createBuilderSchema = <I, II>(fooDerives: {
   const getBarModule = () => {
     const foo = Naming('foo', fooModule.exports.foo6)
 
-    const bar = Naming(
-      'bar',
-      ObjectType({
-        bar: StringType,
-      })
+    const bar = Naming('bar', ObjectType({ bar: StringType }), ' bar')
+    const fooAndBar = Naming(
+      'fooAndBar',
+      Intersection(foo, bar),
+      ' foo and bar'
     )
-
-    const fooAndBar = Naming('fooAndBar', Intersection(foo, bar))
 
     return {
       id: 'bar',
@@ -158,17 +145,16 @@ const createBuilderSchema = <I, II>(fooDerives: {
     const bar = Naming('bar', barModule.exports.bar)
     const fooAndBar = Naming('fooAndBar', barModule.exports.fooAndBar)
 
-    const baz = Naming(
-      'baz',
-      ObjectType({
-        baz: BooleanType,
-      })
+    const baz = Naming('baz', ObjectType({ baz: BooleanType }), ' baz')
+    const fooAndBaz = Naming(
+      'fooAndBaz',
+      Intersection(foo, baz),
+      ' foo and baz'
     )
-
-    const fooAndBaz = Naming('fooAndBaz', Intersection(foo, baz))
     const fooAndBarAndBaz = Naming(
       'fooAndBarAndBaz',
-      Intersection(foo, bar, baz)
+      Intersection(foo, Intersection(bar, baz)),
+      ' foo, bar and baz'
     )
 
     const bazCall = createJSONCallType('bazCall', fooAndBarAndBaz, baz)
@@ -208,12 +194,12 @@ const createBuilderSchema = <I, II>(fooDerives: {
       },
       derives: {},
       exports: {
-        foo,
-        bar,
-        baz,
+        fooAndBarAndBaz,
         fooAndBar,
         fooAndBaz,
-        fooAndBarAndBaz,
+        baz,
+        bar,
+        foo,
       },
       calls: {
         bazCall,
@@ -231,4 +217,10 @@ const createBuilderSchema = <I, II>(fooDerives: {
   }
 }
 
-export default createBuilderSchema
+export const createServerService = <INTI, DATEI>(fooDerives: {
+  int: JSONType<any, INTI, string>
+  Date: JSONType<any, DATEI, string>
+}) => {
+  const builderSchema = createBuilderSchema(fooDerives)
+  return createService(builderSchema, JSON.stringify, JSON.parse)
+}

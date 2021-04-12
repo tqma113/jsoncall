@@ -30,8 +30,8 @@ export const normalize = <
 ): Schema => {
   const schema = createSchema(builderSchema.entry)
 
-  for (const key in builderSchema.modules) {
-    schema.modules.push(normalizeModule(builderSchema.modules[key]))
+  for (const module of builderSchema.modules) {
+    schema.modules.push(normalizeModule(module))
   }
 
   return schema

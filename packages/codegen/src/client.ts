@@ -22,7 +22,6 @@ export const clientCodegen = (schema: Schema, options?: Options): string => {
     ${importItems.map((item) => `${item},`).join('\n')}
   } from 'jc-builder'
   import { createJSONCall, Sender, createSender } from 'jc-client'
-  import type { Serialize, Deserialize } from 'jc-serialization'
 
   ${code}
 

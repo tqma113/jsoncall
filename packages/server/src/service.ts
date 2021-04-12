@@ -17,7 +17,7 @@ import {
 } from 'jc-builder'
 import { Serialize, Deserialize, SerializationError } from 'jc-serialization'
 import { ApiCallOutputError, createApi } from './api'
-import { createJSONCall, Resolver } from './call'
+import { createJSONCall, Resolver, JSONCall } from './call'
 
 // input
 export const IntrospectionCallingType = Naming(
@@ -173,10 +173,16 @@ export const createService = <
   serialize: Serialize<object>,
   deserialize: Deserialize<object>
 ) => (resolvers: Resolvers<CS>) => (input: string): string => {
-  const calls = getKeys(schema.calls).map((key) =>
-    createJSONCall(schema.calls[key], resolvers[key], serialize, deserialize)
-  )
-  const api = createApi(...calls)
+  const calls = getKeys(schema.calls).reduce((cur, key) => {
+    cur[key] = createJSONCall(
+      schema.calls[key],
+      resolvers[key],
+      serialize,
+      deserialize
+    )
+    return cur
+  }, {} as Record<keyof CS, JSONCall<string>>)
+  const api = createApi(calls)
   try {
     const inputObject = deserialize(input)
     const inputValidateResult = validate(CallingType, inputObject)
