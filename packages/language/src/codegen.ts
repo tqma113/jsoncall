@@ -149,13 +149,13 @@ export const codegenType = (type: Type, depth: number = 0): string => {
     ObjectTypeFiled: ObjectTypeFiled,
     depth: number = 1
   ): string => {
-    const prefix = Array(depth).fill('  ').join()
+    const prefix = Array(depth).fill('  ').join('')
     const comments =
       ObjectTypeFiled.description !== null
         ? `${ObjectTypeFiled.description
             .split('\n')
-            .map((comment) => `#${comment}`)
-            .join('\n')}\n`
+            .map((comment) => `${prefix}#${comment}\n`)
+            .join('')}`
         : ''
 
     return `${comments}${prefix}${ObjectTypeFiled.name}: ${codegenType(

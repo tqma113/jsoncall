@@ -330,11 +330,10 @@ describe('parser', () => {
     })
   })
 
-  describe('complex', () => {
-    describe('parseObjectTypeNode', () => {
-      it('field with comment block', () => {
-        const moduleId = 'parseObjectTypeNode.jc'
-        const content = `{
+  describe('with comment block', () => {
+    it('parseObjectTypeNode', () => {
+      const moduleId = 'parseObjectTypeNode.jc'
+      const content = `{
           # foo1 comment
           # foo2 comment
           foo: number,
@@ -344,133 +343,126 @@ describe('parser', () => {
           bar: string 
         }`
 
-        const parser = createParser({ moduleId, content })
-        parser.expectToken(TokenKind.SOF)
+      const parser = createParser({ moduleId, content })
+      parser.expectToken(TokenKind.SOF)
 
-        expect(parser.parseObjectTypeNode()).toMatchObject({
-          fields: [
-            {
-              name: { name: { kind: 'name', word: 'foo' } },
-              type: {
-                primitiveType: { kind: 'primitive type', word: 'number' },
-              },
-              comment: {
-                comments: [
-                  { kind: 'comment', word: ' foo1 comment' },
-                  { kind: 'comment', word: ' foo2 comment' },
-                ],
-              },
+      expect(parser.parseObjectTypeNode()).toMatchObject({
+        fields: [
+          {
+            name: { name: { kind: 'name', word: 'foo' } },
+            type: {
+              primitiveType: { kind: 'primitive type', word: 'number' },
             },
-            {
-              name: { name: { kind: 'name', word: 'bar' } },
-              type: {
-                primitiveType: { kind: 'primitive type', word: 'string' },
-              },
-              comment: {
-                comments: [
-                  { kind: 'comment', word: ' bar1 comment' },
-                  { kind: 'comment', word: ' bar2 comment' },
-                ],
-              },
+            comment: {
+              comments: [
+                { kind: 'comment', word: ' foo1 comment' },
+                { kind: 'comment', word: ' foo2 comment' },
+              ],
             },
-          ],
-        })
+          },
+          {
+            name: { name: { kind: 'name', word: 'bar' } },
+            type: {
+              primitiveType: { kind: 'primitive type', word: 'string' },
+            },
+            comment: {
+              comments: [
+                { kind: 'comment', word: ' bar1 comment' },
+                { kind: 'comment', word: ' bar2 comment' },
+              ],
+            },
+          },
+        ],
       })
     })
 
-    describe('parseTypeDeclaration', () => {
-      it('with comment block', () => {
-        const moduleId = 'parseTypeDeclaration.jc'
-        const content = `
+    it('parseTypeDeclaration', () => {
+      const moduleId = 'parseTypeDeclaration.jc'
+      const content = `
         # foo1 comment
         # foo2 comment
         type foo = number
         `
 
-        const parser = createParser({ moduleId, content })
-        parser.expectToken(TokenKind.SOF)
+      const parser = createParser({ moduleId, content })
+      parser.expectToken(TokenKind.SOF)
 
-        expect(
-          parser.parseTypeDeclaration(parser.parseCommentBlock())
-        ).toMatchObject({
-          name: {
-            name: { kind: 'name', word: 'foo' },
-          },
-          type: {
-            primitiveType: { kind: 'primitive type', word: 'number' },
-          },
-          comment: {
-            comments: [
-              { kind: 'comment', word: ' foo1 comment' },
-              { kind: 'comment', word: ' foo2 comment' },
-            ],
-          },
-        })
+      expect(
+        parser.parseTypeDeclaration(parser.parseCommentBlock())
+      ).toMatchObject({
+        name: {
+          name: { kind: 'name', word: 'foo' },
+        },
+        type: {
+          primitiveType: { kind: 'primitive type', word: 'number' },
+        },
+        comment: {
+          comments: [
+            { kind: 'comment', word: ' foo1 comment' },
+            { kind: 'comment', word: ' foo2 comment' },
+          ],
+        },
       })
     })
 
-    describe('parseDeriveDeclaration', () => {
-      it('with comment block', () => {
-        const moduleId = 'parseDeriveDeclaration.jc'
-        const content = `
+    it('parseDeriveDeclaration', () => {
+      const moduleId = 'parseDeriveDeclaration.jc'
+      const content = `
         # foo1 comment
         # foo2 comment
         derive Date from string
         `
 
-        const parser = createParser({ moduleId, content })
-        parser.expectToken(TokenKind.SOF)
+      const parser = createParser({ moduleId, content })
+      parser.expectToken(TokenKind.SOF)
 
-        expect(
-          parser.parseDeriveDeclaration(parser.parseCommentBlock())
-        ).toMatchObject({
-          name: {
-            name: { kind: 'name', word: 'Date' },
-          },
-          type: {
-            primitiveType: { kind: 'primitive type', word: 'string' },
-          },
-          comment: {
-            comments: [
-              { kind: 'comment', word: ' foo1 comment' },
-              { kind: 'comment', word: ' foo2 comment' },
-            ],
-          },
-        })
+      expect(
+        parser.parseDeriveDeclaration(parser.parseCommentBlock())
+      ).toMatchObject({
+        name: {
+          name: { kind: 'name', word: 'Date' },
+        },
+        type: {
+          primitiveType: { kind: 'primitive type', word: 'string' },
+        },
+        comment: {
+          comments: [
+            { kind: 'comment', word: ' foo1 comment' },
+            { kind: 'comment', word: ' foo2 comment' },
+          ],
+        },
       })
     })
 
-    describe('parseCallDeclaration', () => {
-      it('with comment block', () => {
-        const moduleId = 'parseCallDeclaration.jc'
-        const content = `
+    it('parseCallDeclaration', () => {
+      const moduleId = 'parseCallDeclaration.jc'
+      const content = `
         # foo1 comment
         # foo2 comment
         call fooCall: number => string
         `
 
-        const parser = createParser({ moduleId, content })
-        parser.expectToken(TokenKind.SOF)
+      const parser = createParser({ moduleId, content })
+      parser.expectToken(TokenKind.SOF)
 
-        expect(
-          parser.parseCallDeclaration(parser.parseCommentBlock())
-        ).toMatchObject({
-          name: {
-            name: { kind: 'name', word: 'fooCall' },
-          },
-          input: {
-            primitiveType: { kind: 'primitive type', word: 'number' },
-          },
-          output: {
-            primitiveType: { kind: 'primitive type', word: 'string' },
-          },
-          comment: {
-            comments: [
-              { kind: 'comment', word: ' foo1 comment' },
-              { kind: 'comment', word: ' foo2 comment' },
-            ],
-          },
-        })
+      expect(
+        parser.parseCallDeclaration(parser.parseCommentBlock())
+      ).toMatchObject({
+        name: {
+          name: { kind: 'name', word: 'fooCall' },
+        },
+        input: {
+          primitiveType: { kind: 'primitive type', word: 'number' },
+        },
+        output: {
+          primitiveType: { kind: 'primitive type', word: 'string' },
+        },
+        comment: {
+          comments: [
+            { kind: 'comment', word: ' foo1 comment' },
+            { kind: 'comment', word: ' foo2 comment' },
+          ],
+        },
       })
     })
   })
