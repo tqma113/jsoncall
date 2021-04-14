@@ -7,6 +7,7 @@ import {
   ListType,
   ObjectType,
   Tuple,
+  RecordType,
   AnyType,
   NoneType,
   Union,
@@ -43,21 +44,22 @@ const createBuilderSchema = <INTI, DATEI>(fooDerives: {
     const foo5 = Naming('foo5', ListType(NumberType), '')
     const foo6 = Naming('foo6', ObjectType({ foo: NumberType }), '')
     const foo7 = Naming('foo7', Tuple(NumberType, StringType), '')
-    const foo8 = Naming('foo8', AnyType, '')
-    const foo9 = Naming('foo9', NoneType, '')
-    const foo10 = Naming('foo10', Union(NumberType, StringType), '')
-    const foo11 = Naming(
-      'foo11',
+    const foo8 = Naming('foo8', RecordType(NumberType), '')
+    const foo9 = Naming('foo9', AnyType, '')
+    const foo10 = Naming('foo10', NoneType, '')
+    const foo11 = Naming('foo11', Union(NumberType, StringType), '')
+    const foo12 = Naming(
+      'foo12',
       Intersection(
         ObjectType({ foo: StringType }),
         ObjectType({ bar: NumberType })
       ),
       ''
     )
-    const foo12 = Naming('foo12', Literal('foo12'), '')
-    const foo13 = Naming('foo13', Literal(0), '')
-    const foo14 = Naming('foo14', Literal(true), '')
-    const foo15 = Naming('foo15', Literal(false), '')
+    const foo13 = Naming('foo13', Literal('foo13'), '')
+    const foo14 = Naming('foo14', Literal(0), '')
+    const foo15 = Naming('foo15', Literal(true), '')
+    const foo16 = Naming('foo16', Literal(false), '')
 
     const fooCall = createJSONCallType('fooCall', NumberType, StringType)
 
@@ -80,6 +82,7 @@ const createBuilderSchema = <INTI, DATEI>(fooDerives: {
         foo13,
         foo14,
         foo15,
+        foo16,
       },
       derives: {
         int,

@@ -17,6 +17,8 @@ import {
   createTupleType,
   createRecordType,
   createUnionType,
+  createIntersectType,
+  createNameType,
 } from 'jc-schema'
 import {
   bundle,
@@ -340,6 +342,43 @@ describe('codegen', () => {
           )
         ).toBe('string | number | boolean')
       })
+    })
+
+    describe('IntersectType', () => {
+      it('sample', () => {
+        expect(
+          codegenType(
+            createIntersectType([
+              createPrimitiveType(PrimitiveTypeEnum.String),
+              createPrimitiveType(PrimitiveTypeEnum.Number),
+            ])
+          )
+        ).toBe('string & number')
+      })
+
+      it('single', () => {
+        expect(
+          codegenType(
+            createIntersectType([createPrimitiveType(PrimitiveTypeEnum.String)])
+          )
+        ).toBe('string')
+      })
+
+      it('mutiple', () => {
+        expect(
+          codegenType(
+            createIntersectType([
+              createPrimitiveType(PrimitiveTypeEnum.String),
+              createPrimitiveType(PrimitiveTypeEnum.Number),
+              createPrimitiveType(PrimitiveTypeEnum.Boolean),
+            ])
+          )
+        ).toBe('string & number & boolean')
+      })
+    })
+
+    it('NameType', () => {
+      expect(codegenType(createNameType('foo'))).toBe('foo')
     })
   })
 })

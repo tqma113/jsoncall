@@ -14,7 +14,7 @@ type foo6 = {
 
 type foo7 = (number, string)
 
-type foo8 = (number, string)
+type foo8 = <number>
 
 type foo9 = any
 
