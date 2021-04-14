@@ -55,6 +55,7 @@ export type Type =
   | LiteralType
   | ListType
   | ObjectType
+  | StructType
   | TupleType
   | RecordType
   | UnionType
@@ -107,6 +108,17 @@ export type ObjectTypeFiled = {
   name: string
   type: Type
   description: string | null
+}
+
+export type RecursiveField = {
+  kind: 'RecursiveField'
+  name: string
+  description: string | null
+}
+
+export type StructType = {
+  kind: 'StructType'
+  fields: (ObjectTypeFiled | RecursiveField)[]
 }
 
 export type TupleType = {
@@ -260,6 +272,26 @@ export const createObjectTypeFiled = (
     name,
     type,
     description,
+  }
+}
+
+export const createRecursiveField = (
+  name: string,
+  description: string | null
+): RecursiveField => {
+  return {
+    kind: 'RecursiveField',
+    name,
+    description,
+  }
+}
+
+export const createStructType = (
+  fields: (ObjectTypeFiled | RecursiveField)[]
+): StructType => {
+  return {
+    kind: 'StructType',
+    fields,
   }
 }
 

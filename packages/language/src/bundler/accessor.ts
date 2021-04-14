@@ -32,6 +32,10 @@ import {
   createDeriveDefination,
   RecordType,
   createRecordType,
+  RecursiveField,
+  createRecursiveField,
+  createStructType,
+  StructType,
 } from 'jc-schema'
 import {
   ASTNodeKind,
@@ -51,6 +55,8 @@ import {
   ListTypeNode,
   ObjectTypeNode,
   ObjectFieldNode,
+  SimpleFieldNode,
+  RecursiveFieldNode,
   TupleTypeNode,
   RecordTypeNode,
   UnionNode,
@@ -165,17 +171,45 @@ export const createModuleAccessor = (
 
     const accessObjectTypeNode = (
       objectTypeNode: ObjectTypeNode
-    ): ObjectType => {
-      return createObjectType(objectTypeNode.fields.map(accessObjectFieldNode))
+    ): ObjectType | StructType => {
+      const fields = objectTypeNode.fields.map(accessObjectFieldNode)
+      const simpleFields = fields.filter(
+        (field) => field.kind === 'ObjectTypeFiled'
+      ) as ObjectTypeFiled[]
+      if (fields.some((field) => field.kind === 'RecursiveField')) {
+        return createStructType(fields)
+      } else {
+        return createObjectType(simpleFields)
+      }
     }
 
     const accessObjectFieldNode = (
       objectFieldNode: ObjectFieldNode
+    ): ObjectTypeFiled | RecursiveField => {
+      switch (objectFieldNode.kind) {
+        case ASTNodeKind.SimpleFieldNode:
+          return accessSimpleFieldNode(objectFieldNode)
+        case ASTNodeKind.RecursiveFieldNode:
+          return accessRecursiveFieldNode(objectFieldNode)
+      }
+    }
+
+    const accessSimpleFieldNode = (
+      simpleFieldNode: SimpleFieldNode
     ): ObjectTypeFiled => {
       return createObjectTypeFiled(
-        objectFieldNode.name.name.word,
-        accessTypeNode(objectFieldNode.type),
-        accessCommentBlock(objectFieldNode.comment)
+        simpleFieldNode.name.name.word,
+        accessTypeNode(simpleFieldNode.type),
+        accessCommentBlock(simpleFieldNode.comment)
+      )
+    }
+
+    const accessRecursiveFieldNode = (
+      recursiveFieldNode: RecursiveFieldNode
+    ): RecursiveField => {
+      return createRecursiveField(
+        recursiveFieldNode.name.name.word,
+        accessCommentBlock(recursiveFieldNode.comment)
       )
     }
 

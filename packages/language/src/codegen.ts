@@ -10,7 +10,9 @@ import type {
   LiteralType,
   ListType,
   ObjectType,
+  StructType,
   ObjectTypeFiled,
+  RecursiveField,
   TupleType,
   RecordType,
   UnionType,
@@ -146,22 +148,57 @@ export const codegenType = (type: Type, depth: number = 0): string => {
   }
 
   const codegeObjectTypeField = (
-    ObjectTypeFiled: ObjectTypeFiled,
+    objectTypeFiled: ObjectTypeFiled,
     depth: number = 1
   ): string => {
     const prefix = Array(depth).fill('  ').join('')
     const comments =
-      ObjectTypeFiled.description !== null
-        ? `${ObjectTypeFiled.description
+      objectTypeFiled.description !== null
+        ? `${objectTypeFiled.description
             .split('\n')
             .map((comment) => `${prefix}#${comment}\n`)
             .join('')}`
         : ''
 
-    return `${comments}${prefix}${ObjectTypeFiled.name}: ${codegenType(
-      ObjectTypeFiled.type,
+    return `${comments}${prefix}${objectTypeFiled.name}: ${codegenType(
+      objectTypeFiled.type,
       depth
     )}`
+  }
+
+  const codegenStructType = (
+    structType: StructType,
+    depth: number = 1
+  ): string => {
+    const prefix = Array(depth).fill('  ').join()
+    const fields = structType.fields
+      .map((field) => {
+        switch (field.kind) {
+          case 'ObjectTypeFiled':
+            return codegeObjectTypeField(field, depth + 1)
+          case 'RecursiveField':
+            return codegeRecursiveField(field, depth + 1)
+        }
+      })
+      .join(',\n')
+
+    return `{\n${fields}\n${prefix}}`
+  }
+
+  const codegeRecursiveField = (
+    recursiveField: RecursiveField,
+    depth: number = 1
+  ): string => {
+    const prefix = Array(depth).fill('  ').join('')
+    const comments =
+      recursiveField.description !== null
+        ? `${recursiveField.description
+            .split('\n')
+            .map((comment) => `${prefix}#${comment}\n`)
+            .join('')}`
+        : ''
+
+    return `${comments}${prefix}${recursiveField.name}: self`
   }
 
   const codegenTupleType = (tupleType: TupleType): string => {
@@ -197,6 +234,9 @@ export const codegenType = (type: Type, depth: number = 0): string => {
     }
     case 'ObjectType': {
       return codegeObjectType(type)
+    }
+    case 'StructType': {
+      return codegenStructType(type)
     }
     case 'TupleType': {
       return codegenTupleType(type)

@@ -26,6 +26,7 @@ export enum KeywordEnum {
   Import                =         'import',
   Export                =         'export',
   As                    =         'as',
+  Self                  =         'self',
 }
 
 // prettier-ignore

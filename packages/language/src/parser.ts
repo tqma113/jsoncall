@@ -38,7 +38,8 @@ import {
   createNumberLiteralNode,
   createBooleanLiteralNode,
   createObjectTypeNode,
-  createObjectFieldNode,
+  createSimpleFieldNode,
+  createRecursiveFieldNode,
   createPathNode,
   ObjectFieldNode,
   CommentBlock,
@@ -484,11 +485,17 @@ export const createParser = (source: Source): Parser => {
 
     expectOperator(OperatorEnum.Colon)
 
-    const node = parseTypeNode()
+    if (expectOptionalKeyword(KeywordEnum.Self)) {
+      expectOptionalOperator(OperatorEnum.Comma)
 
-    expectOptionalOperator(OperatorEnum.Comma)
+      return createRecursiveFieldNode(name, comment, loc(start))
+    } else {
+      const node = parseTypeNode()
 
-    return createObjectFieldNode(name, node, comment, loc(start))
+      expectOptionalOperator(OperatorEnum.Comma)
+
+      return createSimpleFieldNode(name, node, comment, loc(start))
+    }
   }
 
   const parseTupleTypeNode = (): TupleTypeNode => {

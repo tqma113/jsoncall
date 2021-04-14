@@ -13,6 +13,7 @@ import {
   LiteralType,
   ListType,
   ObjectType,
+  StructType,
   TupleType,
   UnionType,
   IntersectType,
@@ -195,6 +196,29 @@ export const check = (schema: Schema): SchemaError | null => {
         return null
       }
 
+      const checkStructType = (structType: StructType): SchemaError | null => {
+        const fields: string[] = []
+
+        for (const field of structType.fields) {
+          if (fields.includes(field.name)) {
+            return new SchemaError(
+              `Field: ${field.name} has been exist`,
+              module.id
+            )
+          } else {
+            fields.push(field.name)
+            if (field.kind === 'ObjectTypeFiled') {
+              const result = checkType(field.type, names)
+
+              if (result !== null) return result
+            }
+            return null
+          }
+        }
+
+        return null
+      }
+
       const checkTupleType = (tupleType: TupleType): SchemaError | null => {
         for (const type of tupleType.types) {
           const result = checkType(type, names)
@@ -257,6 +281,9 @@ export const check = (schema: Schema): SchemaError | null => {
         }
         case 'ObjectType': {
           return checkObjectType(type)
+        }
+        case 'StructType': {
+          return checkStructType(type)
         }
         case 'TupleType': {
           return checkTupleType(type)

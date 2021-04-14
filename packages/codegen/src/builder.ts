@@ -11,6 +11,7 @@ import {
   LiteralType,
   ListType,
   ObjectType,
+  StructType,
   TupleType,
   RecordType,
   UnionType,
@@ -202,6 +203,20 @@ export const builderCodegenModule = (module: SchemaModule): ModuleCodegen => {
       )}})`
     }
 
+    const codegenStructType = (structType: StructType): string => {
+      buildIn.push('Struct', 'StructType', 'StructField', 'Union', 'NullType')
+      return `Struct(class S extends StructType{${structType.fields.map(
+        (field) => {
+          switch (field.kind) {
+            case 'ObjectTypeFiled':
+              return `${field.name}: ${codegenType(field.type)},`
+            case 'RecursiveField':
+              return `${field.name}: Union(StructField(S), NullType),`
+          }
+        }
+      )}})`
+    }
+
     const codegenTupleType = (tupleType: TupleType): string => {
       buildIn.push('Tuple')
       return `Tuple(${tupleType.types
@@ -229,6 +244,10 @@ export const builderCodegenModule = (module: SchemaModule): ModuleCodegen => {
     }
 
     const codegenNameType = (nameType: NameType): string => {
+      // recursive type
+      if (nameType.name === 'Self') {
+      }
+
       return nameType.name
     }
 
@@ -247,6 +266,9 @@ export const builderCodegenModule = (module: SchemaModule): ModuleCodegen => {
       }
       case 'ObjectType': {
         return codegenObjectType(type)
+      }
+      case 'StructType': {
+        return codegenStructType(type)
       }
       case 'TupleType': {
         return codegenTupleType(type)

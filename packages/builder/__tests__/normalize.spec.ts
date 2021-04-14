@@ -283,7 +283,7 @@ describe('normalize', () => {
 
       it('Struct', () => {
         class NestObjClass extends StructType {
-          next = Union(StructField(NestObjClass), NullType)
+          next = StructField(NestObjClass)
 
           foo = NumberType
         }
@@ -294,16 +294,7 @@ describe('normalize', () => {
           fields: [
             {
               name: 'next',
-              type: {
-                types: [
-                  {
-                    name: 'NestObjClass',
-                  },
-                  {
-                    type: 'null',
-                  },
-                ],
-              },
+              kind: 'RecursiveField',
             },
             {
               name: 'foo',

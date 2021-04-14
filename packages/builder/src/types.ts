@@ -10,10 +10,13 @@ import {
   createListType,
   createTupleType,
   createObjectType,
+  createStructType,
   createRecordType,
   ObjectTypeFiled,
+  RecursiveField,
   createObjectTypeFiled,
   createNameType,
+  createRecursiveField,
 } from 'jc-schema'
 import { ValidateError } from './error'
 
@@ -724,20 +727,21 @@ export const StructField = <
   type I = object
 
   const validate: Validator = <I extends object>(input: I) => {
-    return createObject(getInstance(Ctro))[VALIDATE](input)
+    return Union(ObjectType(getInstance(Ctro)), NullType)[VALIDATE](input)
   }
 
   const convert: Converter<I, T> = (input) => {
-    return createObject(getInstance(Ctro))[CONVERT](input) as T
+    return Union(ObjectType(getInstance(Ctro)), NullType)[CONVERT](input) as T
   }
 
   const contraverte: Converter<T, I> = (input) => {
-    return createObject(getInstance(Ctro))[CONVERT](input) as I
+    return Union(ObjectType(getInstance(Ctro)), NullType)[CONVERT](input) as I
   }
 
   return createJSONType(
     Ctro.name,
-    createNameType(Ctro.name),
+    // recursive type
+    createNameType('Self'),
     validate,
     convert,
     contraverte,
@@ -746,7 +750,31 @@ export const StructField = <
 }
 
 export const Struct = <O extends StructType>(Ctro: new () => O) => {
-  return ObjectType(getInstance(Ctro))
+  const objectType = getInstance(Ctro)
+
+  const fileds: (ObjectTypeFiled | RecursiveField)[] = []
+  for (const key in objectType) {
+    const field = objectType[key]
+    if (isJSONType(field)) {
+      const fieldType = type(field)
+      if (fieldType.kind === 'NameType' && fieldType.name === 'Self') {
+        fileds.push(createRecursiveField(key, null))
+      } else {
+        fileds.push(createObjectTypeFiled(key, fieldType, null))
+      }
+    }
+  }
+
+  const objType = ObjectType(objectType)
+
+  return createJSONType(
+    objType[NAME],
+    createStructType(fileds),
+    objType[VALIDATE],
+    objType[CONVERT],
+    objType[CONTRAVERTE],
+    objType[DESCRIPTION]
+  )
 }
 
 export function description(value: string) {

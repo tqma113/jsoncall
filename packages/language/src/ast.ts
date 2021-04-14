@@ -18,7 +18,8 @@ export enum ASTNodeKind {
 
   ListTypeNode          = 'list type node',
   ObjectTypeNode        = 'object type node',
-  ObjectFieldNode       = 'object field node',
+  SimpleFieldNode       = 'simple field node',
+  RecursiveFieldNode    = 'recursive field node',
   TupleTypeNode         = 'tuple type node',
   RecordTypeNode        = 'record type node',
 
@@ -69,13 +70,19 @@ export type ObjectTypeNode = BaseNode & {
   fields: ObjectFieldNode[]
 }
 
-export type ObjectFieldNode = BaseNode &
+export type ObjectFieldNode = SimpleFieldNode | RecursiveFieldNode
+
+export type SimpleFieldNode = BaseNode &
   WithComments & {
-    kind: ASTNodeKind.ObjectFieldNode
+    kind: ASTNodeKind.SimpleFieldNode
     name: NameNode
     type: TypeNode
   }
-
+export type RecursiveFieldNode = BaseNode &
+  WithComments & {
+    kind: ASTNodeKind.RecursiveFieldNode
+    name: NameNode
+  }
 export type TupleTypeNode = BaseNode & {
   kind: ASTNodeKind.TupleTypeNode
   fields: TypeNode[]
@@ -236,16 +243,29 @@ export const createObjectTypeNode = (
   }
 }
 
-export const createObjectFieldNode = (
+export const createSimpleFieldNode = (
   name: NameNode,
   type: TypeNode,
   comment: CommentBlock,
   location: Location
-): ObjectFieldNode => {
+): SimpleFieldNode => {
   return {
-    kind: ASTNodeKind.ObjectFieldNode,
+    kind: ASTNodeKind.SimpleFieldNode,
     name,
     type,
+    location,
+    comment,
+  }
+}
+
+export const createRecursiveFieldNode = (
+  name: NameNode,
+  comment: CommentBlock,
+  location: Location
+): RecursiveFieldNode => {
+  return {
+    kind: ASTNodeKind.RecursiveFieldNode,
+    name,
     location,
     comment,
   }

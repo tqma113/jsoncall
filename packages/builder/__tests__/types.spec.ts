@@ -794,13 +794,13 @@ describe('type', () => {
       })
 
       it('recursive nest', () => {
-        class NestObjClass extends StructType {
-          next = Union(StructField(NestObjClass), NullType)
+        const NestObj = Struct(
+          class S extends StructType {
+            next = Union(StructField(S), NullType)
 
-          foo = NumberType
-        }
-
-        const NestObj = Struct(NestObjClass)
+            foo = NumberType
+          }
+        )
 
         expect(validate(NestObj, { foo: 0, next: null })).toBeTruthy()
         expect(
