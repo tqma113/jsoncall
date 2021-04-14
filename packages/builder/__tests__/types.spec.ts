@@ -16,6 +16,7 @@ import {
   Intersection,
   Struct,
   StructType,
+  StructField,
   validate,
   convert,
   contraverte,
@@ -452,6 +453,36 @@ describe('type', () => {
           accept: undefined,
         })
       })
+
+      it('any', () => {
+        const AnyListType = ListType(AnyType)
+
+        expect(validate(AnyListType, 'foo')).toMatchObject({
+          expected: 'list',
+          accept: '"foo"',
+        })
+        expect(validate(AnyListType, 0)).toMatchObject({
+          expected: 'list',
+          accept: '0',
+        })
+        expect(validate(AnyListType, true)).toMatchObject({
+          expected: 'list',
+          accept: 'true',
+        })
+        expect(validate(AnyListType, null)).toMatchObject({
+          expected: 'list',
+          accept: 'null',
+        })
+        expect(validate(AnyListType, {})).toMatchObject({
+          expected: 'list',
+          accept: '{}',
+        })
+        expect(validate(AnyListType, [])).toBeTruthy()
+        expect(validate(AnyListType, undefined)).toMatchObject({
+          expected: 'list',
+          accept: undefined,
+        })
+      })
     })
 
     describe('Tuple', () => {
@@ -502,6 +533,40 @@ describe('type', () => {
           accept: undefined,
         })
       })
+
+      it('none', () => {
+        const NoneTuple = Tuple()
+
+        expect(validate(NoneTuple, [])).toBeTruthy()
+
+        expect(validate(NoneTuple, [0])).toMatchObject({
+          expected: '()',
+          accept: '[0]',
+        })
+        expect(validate(NoneTuple, [0, 'foo'])).toMatchObject({
+          expected: '()',
+          accept: '[0,"foo"]',
+        })
+      })
+
+      it('single', () => {
+        const NoneTuple = Tuple(NumberType)
+
+        expect(validate(NoneTuple, [0])).toBeTruthy()
+
+        expect(validate(NoneTuple, [])).toMatchObject({
+          expected: '(number)',
+          accept: '[]',
+        })
+        expect(validate(NoneTuple, ['foo'])).toMatchObject({
+          expected: '(number)',
+          accept: '["foo"]',
+        })
+        expect(validate(NoneTuple, [0, 'foo'])).toMatchObject({
+          expected: '(number)',
+          accept: '[0,"foo"]',
+        })
+      })
     })
 
     describe('ObjectType', () => {
@@ -540,6 +605,15 @@ describe('type', () => {
           accept: undefined,
         })
       })
+
+      it('nest', () => {
+        const NestObj = ObjectType({
+          foo: NumberType,
+          bar: ObjectType({ bar: NumberType }),
+        })
+
+        expect(validate(NestObj, { foo: 0, bar: { bar: 0 } })).toBeTruthy()
+      })
     })
 
     describe('Union', () => {
@@ -569,6 +643,40 @@ describe('type', () => {
           expected: 'number | string',
           accept: undefined,
         })
+      })
+
+      it('single', () => {
+        const NumberT = Union(NumberType)
+
+        expect(validate(NumberT, 'foo')).toMatchObject({
+          expected: 'number',
+          accept: '"foo"',
+        })
+        expect(validate(NumberT, 0)).toBeTruthy()
+        expect(validate(NumberT, true)).toMatchObject({
+          expected: 'number',
+          accept: 'true',
+        })
+        expect(validate(NumberT, null)).toMatchObject({
+          expected: 'number',
+          accept: 'null',
+        })
+        expect(validate(NumberT, {})).toMatchObject({
+          expected: 'number',
+          accept: '{}',
+        })
+        expect(validate(NumberT, [])).toMatchObject({
+          expected: 'number',
+          accept: '[]',
+        })
+        expect(validate(NumberT, undefined)).toMatchObject({
+          expected: 'number',
+          accept: undefined,
+        })
+      })
+
+      it('none', () => {
+        expect(Union).toThrow()
       })
     })
 
@@ -605,6 +713,40 @@ describe('type', () => {
           expected: '{foo: number} & {bar: string}',
           accept: undefined,
         })
+      })
+
+      it('single', () => {
+        const NumberT = Intersection(NumberType)
+
+        expect(validate(NumberT, 'foo')).toMatchObject({
+          expected: 'number',
+          accept: '"foo"',
+        })
+        expect(validate(NumberT, 0)).toBeTruthy()
+        expect(validate(NumberT, true)).toMatchObject({
+          expected: 'number',
+          accept: 'true',
+        })
+        expect(validate(NumberT, null)).toMatchObject({
+          expected: 'number',
+          accept: 'null',
+        })
+        expect(validate(NumberT, {})).toMatchObject({
+          expected: 'number',
+          accept: '{}',
+        })
+        expect(validate(NumberT, [])).toMatchObject({
+          expected: 'number',
+          accept: '[]',
+        })
+        expect(validate(NumberT, undefined)).toMatchObject({
+          expected: 'number',
+          accept: undefined,
+        })
+      })
+
+      it('none', () => {
+        expect(Intersection).toThrow()
       })
     })
 
@@ -649,6 +791,27 @@ describe('type', () => {
           expected: 'object',
           accept: undefined,
         })
+      })
+
+      it('recursive nest', () => {
+        class NestObjClass extends StructType {
+          next = Union(StructField(NestObjClass), NullType)
+
+          foo = NumberType
+        }
+
+        const NestObj = Struct(NestObjClass)
+
+        expect(validate(NestObj, { foo: 0, next: null })).toBeTruthy()
+        expect(
+          validate(NestObj, { foo: 0, next: { foo: 0, next: null } })
+        ).toBeTruthy()
+        expect(
+          validate(NestObj, {
+            foo: 0,
+            next: { foo: 0, next: { foo: 0, next: null } },
+          })
+        ).toBeTruthy()
       })
     })
   })

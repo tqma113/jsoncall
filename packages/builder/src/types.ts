@@ -285,6 +285,10 @@ export const createUnion = <
 >(
   ...unionTypes: TS
 ): JSONType<I, T, string> => {
+  if (unionTypes.length === 0) {
+    throw new Error('Union type needs more than one item type.')
+  }
+
   const validate: Validator<I> = (input) => {
     for (let unionType of unionTypes.reverse()) {
       if (unionType[VALIDATE](input) === true) {
@@ -352,6 +356,10 @@ export const createIntersection = <
 >(
   ...intersectionTypes: TS
 ): JSONType<I, T, string> => {
+  if (intersectionTypes.length === 0) {
+    throw new Error('Intersection type needs more than one item type.')
+  }
+
   const validate: Validator<I> = (input) => {
     if (
       intersectionTypes.every((intersectionType) => {
@@ -695,9 +703,50 @@ export type Fields<T extends StructType> = {
     : never]: T[K]
 }
 
-export const Struct = <T extends StructType>(Ctro: new () => T) => {
-  const struct = new Ctro()
-  return ObjectType((struct as unknown) as Fields<T>)
+const instances = new WeakMap<new () => any, any>()
+const getInstance = <T>(Ctro: new () => T): T => {
+  const instance = instances.get(Ctro)
+  if (instance) {
+    return instance
+  } else {
+    const struct = new Ctro()
+    instances.set(Ctro, struct)
+    return struct
+  }
+}
+
+export const StructField = <
+  O extends StructType,
+  T extends object = ToObjectType<O>
+>(
+  Ctro: new () => O
+) => {
+  type I = object
+
+  const validate: Validator = <I extends object>(input: I) => {
+    return createObject(getInstance(Ctro))[VALIDATE](input)
+  }
+
+  const convert: Converter<I, T> = (input) => {
+    return createObject(getInstance(Ctro))[CONVERT](input) as T
+  }
+
+  const contraverte: Converter<T, I> = (input) => {
+    return createObject(getInstance(Ctro))[CONVERT](input) as I
+  }
+
+  return createJSONType(
+    Ctro.name,
+    createNameType(Ctro.name),
+    validate,
+    convert,
+    contraverte,
+    Ctro.name
+  )
+}
+
+export const Struct = <O extends StructType>(Ctro: new () => O) => {
+  return ObjectType(getInstance(Ctro))
 }
 
 export function description(value: string) {

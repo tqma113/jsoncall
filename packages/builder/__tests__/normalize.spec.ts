@@ -7,6 +7,10 @@ import {
   ValidateError,
   StringType,
   Union,
+  Struct,
+  StructField,
+  StructType,
+  NullType,
 } from '../src'
 import createBuilderSchema from './fixtures/ts/foo'
 
@@ -274,6 +278,40 @@ describe('normalize', () => {
               },
             ],
           },
+        })
+      })
+
+      it('Struct', () => {
+        class NestObjClass extends StructType {
+          next = Union(StructField(NestObjClass), NullType)
+
+          foo = NumberType
+        }
+
+        const NestObj = Struct(NestObjClass)
+
+        expect(type(NestObj)).toMatchObject({
+          fields: [
+            {
+              name: 'next',
+              type: {
+                types: [
+                  {
+                    name: 'NestObjClass',
+                  },
+                  {
+                    type: 'null',
+                  },
+                ],
+              },
+            },
+            {
+              name: 'foo',
+              type: {
+                type: 'number',
+              },
+            },
+          ],
         })
       })
     })

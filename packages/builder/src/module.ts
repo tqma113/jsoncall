@@ -1,4 +1,4 @@
-import type { JSONType } from './type'
+import type { JSONType } from './types'
 import type { JSONCallType } from './call'
 
 export type BuilderSchema<

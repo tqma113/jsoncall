@@ -1,4 +1,4 @@
-export * from './type'
+export * from './types'
 export * from './call'
 export * from './module'
 export * from './normalize'

@@ -17,7 +17,7 @@ import {
   createNameType,
 } from 'jc-schema'
 import { BuilderSchema, BuilderModule, TypeLink } from './module'
-import { JSONType, type, name, desc, origin } from './type'
+import { JSONType, type, name, desc, origin } from './types'
 import { JSONCallType } from './call'
 
 export const normalize = <

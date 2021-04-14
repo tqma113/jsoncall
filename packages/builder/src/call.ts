@@ -1,4 +1,4 @@
-import type { JSONType } from './type'
+import type { JSONType } from './types'
 
 export const JSON_CALL_TYPE_SYMBOL = Symbol('JSON_CALL_TYPE_SYMBOL')
 
