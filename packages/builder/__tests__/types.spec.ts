@@ -16,7 +16,6 @@ import {
   Intersection,
   Struct,
   StructType,
-  StructField,
   validate,
   convert,
   contraverte,
@@ -26,29 +25,30 @@ import {
 
 describe('type', () => {
   it('base', () => {
-    const NumberString = createJSONType(
-      'NumberString',
-      createNameType('NumberString'),
-      (input) => {
-        if (typeof input === 'string') {
-          const result = Number(input)
-          if (!isNaN(result)) {
-            return true
+    const NumberString = () =>
+      createJSONType(
+        'NumberString',
+        () => createNameType('NumberString'),
+        (input) => {
+          if (typeof input === 'string') {
+            const result = Number(input)
+            if (!isNaN(result)) {
+              return true
+            } else {
+              return new ValidateError('NumberString', JSON.stringify(input))
+            }
           } else {
-            return new ValidateError('NumberString', JSON.stringify(input))
+            return new ValidateError('string', JSON.stringify(input))
           }
-        } else {
-          return new ValidateError('string', JSON.stringify(input))
-        }
-      },
-      (input: string): number => {
-        return Number(input)
-      },
-      (input: number): string => {
-        return '' + input
-      },
-      'NumberString'
-    )
+        },
+        (input: string): number => {
+          return Number(input)
+        },
+        (input: number): string => {
+          return '' + input
+        },
+        () => 'NumberString'
+      )
 
     expect(validate(NumberString, '123')).toBeTruthy()
 
@@ -752,55 +752,56 @@ describe('type', () => {
 
     describe('Struct', () => {
       it('simple', () => {
-        class FooAndBarClass extends StructType {
+        class FooAndBar extends StructType {
           foo = NumberType
 
           bar = StringType
         }
 
-        const FooAndBar = Struct(FooAndBarClass)
-
         expect(validate(FooAndBar, { foo: 0, bar: 'bar' })).toBeTruthy()
+
+        expect(validate(FooAndBar, {})).toMatchObject({
+          expected: 'number',
+          accept: '{}',
+        })
 
         expect(validate(FooAndBar, { foo: 0, bar: 1 })).toMatchObject({
           expected: 'string',
           accept: '1',
         })
 
-        expect(validate(FooAndBar, 'foo')).toMatchObject({
+        expect(validate(FooAndBar, 'foo' as any)).toMatchObject({
           expected: 'object',
           accept: '"foo"',
         })
-        expect(validate(FooAndBar, 0)).toMatchObject({
+        expect(validate(FooAndBar, 0 as any)).toMatchObject({
           expected: 'object',
           accept: '0',
         })
-        expect(validate(FooAndBar, true)).toMatchObject({
+        expect(validate(FooAndBar, true as any)).toMatchObject({
           expected: 'object',
           accept: 'true',
         })
-        expect(validate(FooAndBar, null)).toMatchObject({
+        expect(validate(FooAndBar, null as any)).toMatchObject({
           expected: 'object',
           accept: 'null',
         })
-        expect(validate(FooAndBar, [])).toMatchObject({
+        expect(validate(FooAndBar, [] as any)).toMatchObject({
           expected: 'object',
           accept: '[]',
         })
-        expect(validate(FooAndBar, undefined)).toMatchObject({
+        expect(validate(FooAndBar, undefined as any)).toMatchObject({
           expected: 'object',
           accept: undefined,
         })
       })
 
       it('recursive nest', () => {
-        class NestObjClass extends StructType {
-          next = Union(StructField(NestObjClass), NullType)
+        class NestObj extends StructType {
+          next = Union(NestObj, NullType)
 
           foo = NumberType
         }
-
-        const NestObj = Struct(NestObjClass)
 
         expect(validate(NestObj, { foo: 0, next: null })).toBeTruthy()
         expect(
@@ -812,6 +813,23 @@ describe('type', () => {
             next: { foo: 0, next: { foo: 0, next: null } },
           })
         ).toBeTruthy()
+        expect(
+          validate(NestObj, {
+            foo: 0,
+          })
+        ).toMatchObject({
+          expected: 'NestObj | null',
+          accept: '{"foo":0}',
+        })
+        expect(
+          validate(NestObj, {
+            foo: 0,
+            next: 0,
+          })
+        ).toMatchObject({
+          expected: '{next: NestObj | null,\nfoo: number} | null',
+          accept: '0',
+        })
       })
     })
   })

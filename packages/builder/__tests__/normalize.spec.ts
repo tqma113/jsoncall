@@ -7,51 +7,51 @@ import {
   ValidateError,
   StringType,
   Union,
-  Struct,
-  StructField,
   StructType,
   NullType,
 } from '../src'
 import createBuilderSchema from './fixtures/ts/foo'
 
 describe('normalize', () => {
-  const int = createDeriveType(NumberType)(
-    '' as const,
-    type(NumberType),
-    (input) => {
-      if (Number.isInteger(input)) {
-        return true
-      } else {
-        return new ValidateError('int', JSON.stringify(input))
-      }
-    },
-    (input) => {
-      return input
-    },
-    (input) => {
-      return input
-    },
-    'int'
-  )
-  const DateType = createDeriveType(Union(StringType, NumberType))(
-    '' as const,
-    type(Union(StringType, NumberType)),
-    (input) => {
-      const date = new Date(input)
-      if (isNaN(date.getTime())) {
-        return true
-      } else {
-        return new ValidateError('Date', JSON.stringify(input))
-      }
-    },
-    (input) => {
-      return new Date(input)
-    },
-    (input) => {
-      return input.getTime()
-    },
-    'Date'
-  )
+  const int = () =>
+    createDeriveType(NumberType)(
+      '' as const,
+      () => type(NumberType),
+      (input) => {
+        if (Number.isInteger(input)) {
+          return true
+        } else {
+          return new ValidateError('int', JSON.stringify(input))
+        }
+      },
+      (input) => {
+        return input
+      },
+      (input) => {
+        return input
+      },
+      () => 'int'
+    )
+  const DateType = () =>
+    createDeriveType(Union(StringType, NumberType))(
+      '' as const,
+      () => type(Union(StringType, NumberType)),
+      (input) => {
+        const date = new Date(input)
+        if (isNaN(date.getTime())) {
+          return true
+        } else {
+          return new ValidateError('Date', JSON.stringify(input))
+        }
+      },
+      (input) => {
+        return new Date(input)
+      },
+      (input) => {
+        return input.getTime()
+      },
+      () => 'Date'
+    )
   const builderSchema = createBuilderSchema({ int, Date: DateType })
   const schema = normalize(builderSchema)
 
@@ -282,13 +282,11 @@ describe('normalize', () => {
       })
 
       it('Struct', () => {
-        class NestObjClass extends StructType {
-          next = Union(StructField(NestObjClass), NullType)
+        class NestObj extends StructType {
+          next = Union(NestObj, NullType)
 
           foo = NumberType
         }
-
-        const NestObj = Struct(NestObjClass)
 
         expect(type(NestObj)).toMatchObject({
           fields: [
@@ -297,7 +295,7 @@ describe('normalize', () => {
               type: {
                 types: [
                   {
-                    name: 'NestObjClass',
+                    name: 'NestObj',
                   },
                   {
                     type: 'null',
