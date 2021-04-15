@@ -14,9 +14,8 @@ import { createClient } from './fixtures/ts/createClient'
 
 describe('verification', () => {
   it('createBuilderSchema', () => {
-    expect(check(normalize(createBuilderSchema({ int, Date: DateType })))).toBe(
-      null
-    )
+    const schema = normalize(createBuilderSchema({ int, Date: DateType }))
+    expect(check(schema)).toBe(null)
   })
 
   it('createServerService', () => {
@@ -73,7 +72,7 @@ describe('verification', () => {
 
 const int = () =>
   createDeriveType(NumberType)(
-    'int' as const,
+    '' as const,
     () => type(NumberType),
     (input) => {
       if (Number.isInteger(input)) {
@@ -92,7 +91,7 @@ const int = () =>
   )
 const DateType = () =>
   createDeriveType(Union(StringType, NumberType))(
-    'Date' as const,
+    '' as const,
     () => type(Union(StringType, NumberType)),
     (input) => {
       const date = new Date(input)

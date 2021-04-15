@@ -72,6 +72,7 @@ export const check = (schema: Schema): SchemaError | null => {
       } else {
         names.push(typeDefination.name)
       }
+
       return null
     }
 
@@ -86,6 +87,7 @@ export const check = (schema: Schema): SchemaError | null => {
       } else {
         names.push(deriveDefination.name)
       }
+
       return null
     }
 
@@ -306,13 +308,19 @@ export const check = (schema: Schema): SchemaError | null => {
 
     // check type
     for (const typeDefination of module.typeDefinations) {
-      const result = checkType(typeDefination.type, names)
+      const result = checkType(
+        typeDefination.type,
+        names.filter((name) => name !== typeDefination.name)
+      )
 
       if (result !== null) return result
     }
 
     for (const deriveDefination of module.deriveDefinations) {
-      const result = checkType(deriveDefination.type, names)
+      const result = checkType(
+        deriveDefination.type,
+        names.filter((name) => name !== deriveDefination.name)
+      )
 
       if (result !== null) return result
     }

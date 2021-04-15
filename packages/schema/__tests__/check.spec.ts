@@ -1,5 +1,13 @@
 import path from 'path'
 import {
+  createLiteralType,
+  createNameType,
+  createObjectType,
+  createObjectTypeFiled,
+  createSpecialType,
+  SpecialTypeEnum,
+} from '../dist'
+import {
   createSchema,
   createSchemaModule,
   createLinkDefination,
@@ -352,6 +360,214 @@ describe('check', () => {
   })
 
   describe('type', () => {
-    it.todo('all')
+    describe('PrimitiveType', () => {
+      it('error', () => {
+        const foo = path.resolve(__dirname, './foo.jc')
+
+        const schema = createSchema(foo)
+
+        const fooModule = createSchemaModule(foo)
+        fooModule.typeDefinations.push(
+          createTypeDefination('foo6', createPrimitiveType('error' as any), '')
+        )
+        fooModule.exportDefination = createExportDefination(['foo6'])
+
+        schema.modules.push(fooModule)
+
+        expect(check(schema)).toBeInstanceOf(Error)
+      })
+
+      it('pass', () => {
+        const foo = path.resolve(__dirname, './foo.jc')
+
+        const schema = createSchema(foo)
+
+        const fooModule = createSchemaModule(foo)
+        fooModule.typeDefinations.push(
+          createTypeDefination(
+            'foo6',
+            createPrimitiveType(PrimitiveTypeEnum.Number),
+            ''
+          )
+        )
+        fooModule.exportDefination = createExportDefination(['foo6'])
+
+        schema.modules.push(fooModule)
+
+        expect(check(schema)).toBe(null)
+      })
+    })
+
+    describe('SpecialType', () => {
+      it('error', () => {
+        const foo = path.resolve(__dirname, './foo.jc')
+
+        const schema = createSchema(foo)
+
+        const fooModule = createSchemaModule(foo)
+        fooModule.typeDefinations.push(
+          createTypeDefination('foo6', createSpecialType('error' as any), '')
+        )
+        fooModule.exportDefination = createExportDefination(['foo6'])
+
+        schema.modules.push(fooModule)
+
+        expect(check(schema)).toBeInstanceOf(Error)
+      })
+
+      it('pass', () => {
+        const foo = path.resolve(__dirname, './foo.jc')
+
+        const schema = createSchema(foo)
+
+        const fooModule = createSchemaModule(foo)
+        fooModule.typeDefinations.push(
+          createTypeDefination(
+            'foo6',
+            createSpecialType(SpecialTypeEnum.Any),
+            ''
+          )
+        )
+        fooModule.exportDefination = createExportDefination(['foo6'])
+
+        schema.modules.push(fooModule)
+
+        expect(check(schema)).toBe(null)
+      })
+    })
+
+    describe('LiteralType', () => {
+      it('error', () => {
+        const foo = path.resolve(__dirname, './foo.jc')
+
+        const schema = createSchema(foo)
+
+        const fooModule = createSchemaModule(foo)
+        fooModule.typeDefinations.push(
+          createTypeDefination('foo6', createLiteralType({} as any), '')
+        )
+        fooModule.exportDefination = createExportDefination(['foo6'])
+
+        schema.modules.push(fooModule)
+
+        expect(check(schema)).toBeInstanceOf(Error)
+      })
+
+      it('pass', () => {
+        const foo = path.resolve(__dirname, './foo.jc')
+
+        const schema = createSchema(foo)
+
+        const fooModule = createSchemaModule(foo)
+        fooModule.typeDefinations.push(
+          createTypeDefination('foo6', createLiteralType('foo6'), '')
+        )
+        fooModule.exportDefination = createExportDefination(['foo6'])
+
+        schema.modules.push(fooModule)
+
+        expect(check(schema)).toBe(null)
+      })
+    })
+
+    describe('ObjectType', () => {
+      it('error', () => {
+        const foo = path.resolve(__dirname, './foo.jc')
+
+        const schema = createSchema(foo)
+
+        const fooModule = createSchemaModule(foo)
+        fooModule.typeDefinations.push(
+          createTypeDefination(
+            'foo6',
+            createObjectType([
+              createObjectTypeFiled(
+                'foo',
+                createPrimitiveType(PrimitiveTypeEnum.Number),
+                null
+              ),
+              createObjectTypeFiled(
+                'foo',
+                createPrimitiveType(PrimitiveTypeEnum.Number),
+                null
+              ),
+            ]),
+            ''
+          )
+        )
+        fooModule.exportDefination = createExportDefination(['foo6'])
+
+        schema.modules.push(fooModule)
+
+        expect(check(schema)).toBeInstanceOf(Error)
+      })
+
+      it('pass', () => {
+        const foo = path.resolve(__dirname, './foo.jc')
+
+        const schema = createSchema(foo)
+
+        const fooModule = createSchemaModule(foo)
+        fooModule.typeDefinations.push(
+          createTypeDefination(
+            'foo6',
+            createObjectType([
+              createObjectTypeFiled(
+                'foo',
+                createPrimitiveType(PrimitiveTypeEnum.Number),
+                null
+              ),
+            ]),
+            ''
+          )
+        )
+        fooModule.exportDefination = createExportDefination(['foo6'])
+
+        schema.modules.push(fooModule)
+
+        expect(check(schema)).toBe(null)
+      })
+    })
+
+    describe('NameType', () => {
+      it('error', () => {
+        const foo = path.resolve(__dirname, './foo.jc')
+
+        const schema = createSchema(foo)
+
+        const fooModule = createSchemaModule(foo)
+        fooModule.typeDefinations.push(
+          createTypeDefination('foo6', createNameType('foo6'), '')
+        )
+        fooModule.exportDefination = createExportDefination(['foo6'])
+
+        schema.modules.push(fooModule)
+
+        expect(check(schema)).toBeInstanceOf(Error)
+      })
+
+      it('pass', () => {
+        const foo = path.resolve(__dirname, './foo.jc')
+
+        const schema = createSchema(foo)
+
+        const fooModule = createSchemaModule(foo)
+        fooModule.typeDefinations.push(
+          createTypeDefination(
+            'foo5',
+            createPrimitiveType(PrimitiveTypeEnum.Number),
+            ''
+          )
+        )
+        fooModule.typeDefinations.push(
+          createTypeDefination('foo6', createNameType('foo5'), '')
+        )
+        fooModule.exportDefination = createExportDefination(['foo6'])
+
+        schema.modules.push(fooModule)
+
+        expect(check(schema)).toBe(null)
+      })
+    })
   })
 })

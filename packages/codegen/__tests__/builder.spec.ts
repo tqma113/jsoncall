@@ -16,7 +16,7 @@ describe('builderCodegen', () => {
   it('sample', () => {
     const int = () =>
       createDeriveType(NumberType)(
-        'int' as const,
+        '' as const,
         () => type(NumberType),
         (input) => {
           if (Number.isInteger(input)) {
@@ -35,7 +35,7 @@ describe('builderCodegen', () => {
       )
     const DateType = () =>
       createDeriveType(Union(StringType, NumberType))(
-        'Date' as const,
+        '' as const,
         () => type(Union(StringType, NumberType)),
         (input) => {
           const date = new Date(input)
