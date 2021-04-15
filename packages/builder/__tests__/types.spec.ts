@@ -761,7 +761,7 @@ describe('type', () => {
 
         expect(validate(FooAndBar, {})).toMatchObject({
           expected: 'number',
-          accept: '{}',
+          accept: undefined,
         })
 
         expect(validate(FooAndBar, { foo: 0, bar: 1 })).toMatchObject({
@@ -815,10 +815,25 @@ describe('type', () => {
         expect(
           validate(NestObj, {
             foo: 0,
+            next: { foo: 0, next: { foo: 0, next: { foo: 0, next: null } } },
+          })
+        ).toBeTruthy()
+        expect(
+          validate(NestObj, {
+            foo: 0,
+            next: {
+              foo: 0,
+              next: { foo: 0, next: { foo: 0, next: { foo: 0, next: null } } },
+            },
+          })
+        ).toBeTruthy()
+        expect(
+          validate(NestObj, {
+            foo: 0,
           })
         ).toMatchObject({
-          expected: 'NestObj | null',
-          accept: '{"foo":0}',
+          expected: '{next: NestObj | null,foo: number} | null',
+          accept: undefined,
         })
         expect(
           validate(NestObj, {
@@ -826,8 +841,35 @@ describe('type', () => {
             next: 0,
           })
         ).toMatchObject({
-          expected: '{next: NestObj | null,\nfoo: number} | null',
+          expected: '{next: NestObj | null,foo: number} | null',
           accept: '0',
+        })
+        expect(
+          validate(NestObj, {
+            foo: 0,
+            next: {
+              foo: 0,
+              next: 0,
+            },
+          })
+        ).toMatchObject({
+          expected: '{next: NestObj | null,foo: number} | null',
+          accept: '{"foo":0,"next":0}',
+        })
+        expect(
+          validate(NestObj, {
+            foo: 0,
+            next: {
+              foo: 0,
+              next: {
+                foo: 0,
+                next: 0,
+              },
+            },
+          })
+        ).toMatchObject({
+          expected: '{next: NestObj | null,foo: number} | null',
+          accept: '{"foo":0,"next":{"foo":0,"next":0}}',
         })
       })
     })

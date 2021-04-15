@@ -356,6 +356,7 @@ export const createUnion = <
           return true
         }
       }
+      // TODO: this solution interrupts the error pop
       return new ValidateError(description(), JSON.stringify(input))
     }
 
@@ -613,32 +614,20 @@ export const createObject = <
   const description = () =>
     `{${getKeys(objectType)
       .map((key) => `${key}: ${desc(objectType[key] as any)}`)
-      .join(',\n')}}` as const
+      .join(',')}}` as const
 
   const v: Validator = <I extends object>(input: I) => {
     let result: true | ValidateError = true
     for (let key in objectType) {
-      // console.trace({ key })
       const field = objectType[key]
       const jsonType = getInstance(field as any)
       if (isBaseJSONType(jsonType)) {
-        if (key in input) {
-          // @ts-ignore
-          result = validate(field, input[key])
-          if (result !== true) {
-            result.message += ` in object.${key}`
-            return result
-          }
-        } else {
-          const error = new ValidateError(
-            desc(field as any),
-            JSON.stringify(input)
-          )
-          error.message += ` in ${name}`
-          return error
+        // @ts-ignore
+        result = validate(field, input[key])
+        if (result !== true) {
+          result.message += ` in object.${key}`
+          return result
         }
-      } else {
-        console.trace({ key, field })
       }
     }
     return true
@@ -767,6 +756,11 @@ export class StructType implements BaseJSONType<object, any, string> {
 
   [CONTRAVERTE] = (input: any): object => {
     return input
+  }
+
+  constructor() {
+    // @ts-ignore
+    return ObjectType(this)
   }
 }
 
