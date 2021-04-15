@@ -1,9 +1,10 @@
 import {
   Type,
-  createPrimitiveType,
+  ObjectTypeFiled,
   PrimitiveTypeEnum,
-  createSpecialType,
   SpecialTypeEnum,
+  createPrimitiveType,
+  createSpecialType,
   createLiteralType,
   createUnionType,
   createIntersectType,
@@ -11,7 +12,6 @@ import {
   createTupleType,
   createObjectType,
   createRecordType,
-  ObjectTypeFiled,
   createObjectTypeFiled,
   createNameType,
 } from 'jc-schema'
@@ -797,11 +797,6 @@ function getInstance<T extends JSONType<any, any, string>>(Ctro: T): Base<T> {
       return jsonType
     }
   }
-}
-
-export const Struct = <O extends StructType>(Ctro: new () => O) => {
-  // @ts-ignore
-  return () => ObjectType(getInstance(Ctro))()
 }
 
 function getKeys<T extends {}>(o: T): Array<keyof T> {

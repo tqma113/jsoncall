@@ -1,12 +1,12 @@
 import {
   Schema,
   SchemaModule,
+  Type,
   TypeDefination,
   LinkDefination,
   DeriveDefination,
   ExportDefination,
   CallDefination,
-  Type,
   createTypeDefination,
   createDeriveDefination,
   createLinkDefination,

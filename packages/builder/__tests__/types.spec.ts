@@ -14,7 +14,6 @@ import {
   Literal,
   Union,
   Intersection,
-  Struct,
   StructType,
   validate,
   convert,
