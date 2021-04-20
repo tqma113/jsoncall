@@ -29,6 +29,7 @@ primaryType:
 	| nullType
 	| listType
 	| objectType
+	| recordType
     | tupleType
     | numberLiteral
     | booleanLiteral
@@ -51,6 +52,8 @@ tupleType: '(' ')'
 objectType: '{' objectField* '}';
 
 objectField: name ':' type;
+
+recordType: '<' type* '>';
 
 numberLiteral: NUMBER;
 
@@ -108,6 +111,7 @@ PUNCTUATOR: '!'
     | '[' | ']'
     | '{' | '}'
     | '|'
+    | '<' | '>'
     ;
 
 // no leading zeros
