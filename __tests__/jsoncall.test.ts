@@ -2,9 +2,10 @@ import fs from 'fs'
 import path from 'path'
 import { check, rename } from 'jc-schema'
 import { bundle } from 'jc-lang'
+import { introspection } from 'jc-client'
 import { serverCodegen, clientCodegen } from 'jc-codegen'
 import { nodeModuleResolver } from './node'
-import { client, batchClient, syncClient } from './fixtures/helpers'
+import { client, batchClient, syncClient, app } from './fixtures/helpers'
 
 describe('jsoncall', () => {
   it('async', async () => {
@@ -122,5 +123,14 @@ describe('jsoncall', () => {
     expect(
       syncClient.bazCall({ foo: 123, bar: 'bar', baz: true }).value
     ).toMatchObject({ baz: true })
+  })
+
+  it('introspection', async () => {
+    const schema = await introspection(
+      async (input) => app(input),
+      JSON.stringify,
+      JSON.parse
+    )
+    expect(check(schema)).toBe(null)
   })
 })

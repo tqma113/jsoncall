@@ -13,7 +13,7 @@ import {
   createSyncClient,
 } from './ts/createClient'
 
-const int = () =>
+export const int = () =>
   createDeriveType(NumberType)(
     '' as const,
     () => type(NumberType),
@@ -32,7 +32,7 @@ const int = () =>
     },
     () => 'int'
   )
-const DateType = () =>
+export const DateType = () =>
   createDeriveType(Union(StringType, NumberType))(
     '' as const,
     () => type(Union(StringType, NumberType)),
@@ -53,8 +53,8 @@ const DateType = () =>
     () => 'Date'
   )
 
-const service = createServerService({ int, Date: DateType })
-const app = service({
+export const service = createServerService({ int, Date: DateType })
+export const app = service({
   fooCall: ({ foo }) => {
     return {
       foo,
@@ -83,6 +83,4 @@ export const batchClient = createBatchClient(
   }
 )
 
-export const syncClient = createSyncClient({ int, Date: DateType }, (input) => {
-  return app(input)
-})
+export const syncClient = createSyncClient({ int, Date: DateType }, app)
