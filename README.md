@@ -7,7 +7,7 @@ A schema for description of json call.
 | 类型安全   | ❌|❌|✅|❌|✅|
 |Validation|❌|✅|✅|  |✅|
 |自定义类型|❌|✅|✅| |✅|
-|encode/decode|❌|❌|❌| |✅|
+|encode/decode|❌|✅|❌| |✅|
 |schema|❌|✅|✅| |✅|
 |跨语言/平台|✅|✅|❌|✅|✅|
 
