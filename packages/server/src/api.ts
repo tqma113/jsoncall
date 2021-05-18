@@ -15,14 +15,14 @@ export type Names<CS extends JSONCall<string>[]> = CS extends JSONCall<
   ? N
   : never
 
-export const createApi = <CS extends Record<string, JSONCall<string>>>(
-  calls: CS
-): ApiCall => (name, input) => {
-  for (let key in calls) {
-    if (key === name) {
-      return calls[key](input)
+export const createApi =
+  <CS extends Record<string, JSONCall<string>>>(calls: CS): ApiCall =>
+  (name, input) => {
+    for (let key in calls) {
+      if (key === name) {
+        return calls[key](input)
+      }
     }
-  }
 
-  return Err(new UnknownCallError(name))
-}
+    return Err(new UnknownCallError(name))
+  }

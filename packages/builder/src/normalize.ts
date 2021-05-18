@@ -2,18 +2,18 @@ import {
   Schema,
   SchemaModule,
   Type,
-  TypeDefination,
-  LinkDefination,
-  DeriveDefination,
-  ExportDefination,
-  CallDefination,
-  createTypeDefination,
-  createDeriveDefination,
-  createLinkDefination,
-  createExportDefination,
+  TypeDefinition,
+  LinkDefinition,
+  DeriveDefinition,
+  ExportDefinition,
+  CallDefinition,
+  createTypeDefinition,
+  createDeriveDefinition,
+  createLinkDefinition,
+  createExportDefinition,
   createSchema,
   createSchemaModule,
-  createCallDefination,
+  createCallDefinition,
   createNameType,
 } from 'jc-schema'
 import { BuilderSchema, BuilderModule, TypeLink } from './module'
@@ -41,12 +41,12 @@ export const normalizeModule = (builderModule: BuilderModule): SchemaModule => {
   const module = createSchemaModule(builderModule.id)
 
   for (const link of builderModule.links) {
-    module.linkDefinations.push(normalizeLinkDefination(link))
+    module.linkDefinitions.push(normalizeLinkDefinition(link))
   }
 
   for (const key in builderModule.types) {
-    module.typeDefinations.push(
-      normalizeTypeDefination(
+    module.typeDefinitions.push(
+      normalizeTypeDefinition(
         key,
         builderModule.types[key],
         desc(builderModule.types[key])
@@ -55,14 +55,14 @@ export const normalizeModule = (builderModule: BuilderModule): SchemaModule => {
   }
 
   for (const key in builderModule.calls) {
-    module.callDefinations.push(
-      normalizeCallDefination(builderModule.calls[key])
+    module.callDefinitions.push(
+      normalizeCallDefinition(builderModule.calls[key])
     )
   }
 
   for (const key in builderModule.derives) {
-    module.deriveDefinations.push(
-      normalizeDeriveDefination(
+    module.deriveDefinitions.push(
+      normalizeDeriveDefinition(
         key,
         builderModule.derives[key],
         desc(builderModule.derives[key])
@@ -70,44 +70,44 @@ export const normalizeModule = (builderModule: BuilderModule): SchemaModule => {
     )
   }
 
-  module.exportDefination = normalizeExportDefinations(builderModule.exports)
+  module.exportDefinition = normalizeExportDefinitions(builderModule.exports)
 
   return module
 }
 
-export const normalizeTypeDefination = (
+export const normalizeTypeDefinition = (
   name: string,
   type: JSONType<any, any, string>,
   description: string | null
-): TypeDefination => {
-  return createTypeDefination(name, normalizeType(type, true), description)
+): TypeDefinition => {
+  return createTypeDefinition(name, normalizeType(type, true), description)
 }
 
-export const normalizeDeriveDefination = (
+export const normalizeDeriveDefinition = (
   name: string,
   type: JSONType<any, any, string>,
   description: string | null
-): DeriveDefination => {
-  return createDeriveDefination(name, normalizeType(type), description)
+): DeriveDefinition => {
+  return createDeriveDefinition(name, normalizeType(type), description)
 }
 
-export const normalizeLinkDefination = (link: TypeLink): LinkDefination => {
-  return createLinkDefination(
+export const normalizeLinkDefinition = (link: TypeLink): LinkDefinition => {
+  return createLinkDefinition(
     link.module,
     link.types.map(({ type, as }) => [type, as])
   )
 }
 
-export const normalizeExportDefinations = (
+export const normalizeExportDefinitions = (
   record: Record<string, JSONType<any, any, string>>
-): ExportDefination => {
-  return createExportDefination(Object.keys(record))
+): ExportDefinition => {
+  return createExportDefinition(Object.keys(record))
 }
 
-export const normalizeCallDefination = (
+export const normalizeCallDefinition = (
   callType: JSONCallType<string, any, any, string, any, any, string>
-): CallDefination => {
-  return createCallDefination(
+): CallDefinition => {
+  return createCallDefinition(
     callType.name,
     normalizeType(callType.input),
     normalizeType(callType.output),

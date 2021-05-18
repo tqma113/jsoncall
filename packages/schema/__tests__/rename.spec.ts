@@ -3,9 +3,9 @@ import {
   rename,
   createSchema,
   createSchemaModule,
-  createLinkDefination,
-  createTypeDefination,
-  createExportDefination,
+  createLinkDefinition,
+  createTypeDefinition,
+  createExportDefinition,
   createPrimitiveType,
   Namer,
   check,
@@ -21,37 +21,37 @@ describe('rename', () => {
     const prev = createSchema(foo)
 
     const fooModule = createSchemaModule(foo)
-    fooModule.typeDefinations.push(
-      createTypeDefination(
+    fooModule.typeDefinitions.push(
+      createTypeDefinition(
         'foo6',
         createPrimitiveType(PrimitiveTypeEnum.Number),
         ''
       )
     )
-    fooModule.exportDefination = createExportDefination(['foo6'])
+    fooModule.exportDefinition = createExportDefinition(['foo6'])
 
     const barModule = createSchemaModule(bar)
-    barModule.linkDefinations.push(createLinkDefination(foo, [['foo6', 'foo']]))
-    barModule.typeDefinations.push(
-      createTypeDefination(
+    barModule.linkDefinitions.push(createLinkDefinition(foo, [['foo6', 'foo']]))
+    barModule.typeDefinitions.push(
+      createTypeDefinition(
         'bar',
         createPrimitiveType(PrimitiveTypeEnum.Number),
         ''
       )
     )
-    barModule.typeDefinations.push(
-      createTypeDefination(
+    barModule.typeDefinitions.push(
+      createTypeDefinition(
         'fooAndBar',
         createPrimitiveType(PrimitiveTypeEnum.String),
         ''
       )
     )
-    barModule.exportDefination = createExportDefination(['bar', 'fooAndBar'])
+    barModule.exportDefinition = createExportDefinition(['bar', 'fooAndBar'])
 
     const bazModule = createSchemaModule(baz)
-    bazModule.linkDefinations.push(createLinkDefination(foo, [['foo6', 'foo']]))
-    bazModule.linkDefinations.push(
-      createLinkDefination(bar, [
+    bazModule.linkDefinitions.push(createLinkDefinition(foo, [['foo6', 'foo']]))
+    bazModule.linkDefinitions.push(
+      createLinkDefinition(bar, [
         ['bar', 'bar'],
         ['fooAndBar', 'fooAndBar'],
       ])

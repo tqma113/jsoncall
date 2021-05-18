@@ -10,14 +10,14 @@ import {
 import {
   createSchema,
   createSchemaModule,
-  createLinkDefination,
-  createTypeDefination,
-  createExportDefination,
+  createLinkDefinition,
+  createTypeDefinition,
+  createExportDefinition,
   createPrimitiveType,
-  createDeriveDefination,
+  createDeriveDefinition,
   check,
   PrimitiveTypeEnum,
-  createCallDefination,
+  createCallDefinition,
 } from '../src'
 
 describe('check', () => {
@@ -46,8 +46,8 @@ describe('check', () => {
         const schema = createSchema(foo)
 
         const fooModule = createSchemaModule(foo)
-        fooModule.linkDefinations.push(
-          createLinkDefination('bar', [['foo6', 'foo']])
+        fooModule.linkDefinitions.push(
+          createLinkDefinition('bar', [['foo6', 'foo']])
         )
 
         schema.modules.push(fooModule)
@@ -62,18 +62,18 @@ describe('check', () => {
         const schema = createSchema(foo)
 
         const fooModule = createSchemaModule(foo)
-        fooModule.typeDefinations.push(
-          createTypeDefination(
+        fooModule.typeDefinitions.push(
+          createTypeDefinition(
             'foo6',
             createPrimitiveType(PrimitiveTypeEnum.Number),
             ''
           )
         )
-        fooModule.exportDefination = createExportDefination(['foo6'])
+        fooModule.exportDefinition = createExportDefinition(['foo6'])
 
         const barModule = createSchemaModule(bar)
-        barModule.linkDefinations.push(
-          createLinkDefination(foo, [['foo6', 'foo']])
+        barModule.linkDefinitions.push(
+          createLinkDefinition(foo, [['foo6', 'foo']])
         )
 
         schema.modules.push(fooModule)
@@ -93,8 +93,8 @@ describe('check', () => {
         const fooModule = createSchemaModule(foo)
 
         const barModule = createSchemaModule(bar)
-        barModule.linkDefinations.push(
-          createLinkDefination(foo, [['foo6', 'foo']])
+        barModule.linkDefinitions.push(
+          createLinkDefinition(foo, [['foo6', 'foo']])
         )
 
         schema.modules.push(fooModule)
@@ -110,18 +110,18 @@ describe('check', () => {
         const schema = createSchema(foo)
 
         const fooModule = createSchemaModule(foo)
-        fooModule.typeDefinations.push(
-          createTypeDefination(
+        fooModule.typeDefinitions.push(
+          createTypeDefinition(
             'foo6',
             createPrimitiveType(PrimitiveTypeEnum.Number),
             ''
           )
         )
-        fooModule.exportDefination = createExportDefination(['foo6'])
+        fooModule.exportDefinition = createExportDefinition(['foo6'])
 
         const barModule = createSchemaModule(bar)
-        barModule.linkDefinations.push(
-          createLinkDefination(foo, [['foo6', 'foo']])
+        barModule.linkDefinitions.push(
+          createLinkDefinition(foo, [['foo6', 'foo']])
         )
 
         schema.modules.push(fooModule)
@@ -132,28 +132,28 @@ describe('check', () => {
     })
   })
 
-  describe('type defination', () => {
+  describe('type Definition', () => {
     it('error', () => {
       const foo = path.resolve(__dirname, './foo.jc')
 
       const schema = createSchema(foo)
 
       const fooModule = createSchemaModule(foo)
-      fooModule.typeDefinations.push(
-        createTypeDefination(
+      fooModule.typeDefinitions.push(
+        createTypeDefinition(
           'foo6',
           createPrimitiveType(PrimitiveTypeEnum.Number),
           ''
         )
       )
-      fooModule.typeDefinations.push(
-        createTypeDefination(
+      fooModule.typeDefinitions.push(
+        createTypeDefinition(
           'foo6',
           createPrimitiveType(PrimitiveTypeEnum.String),
           ''
         )
       )
-      fooModule.exportDefination = createExportDefination(['foo6'])
+      fooModule.exportDefinition = createExportDefinition(['foo6'])
 
       schema.modules.push(fooModule)
 
@@ -166,14 +166,14 @@ describe('check', () => {
       const schema = createSchema(foo)
 
       const fooModule = createSchemaModule(foo)
-      fooModule.typeDefinations.push(
-        createTypeDefination(
+      fooModule.typeDefinitions.push(
+        createTypeDefinition(
           'foo6',
           createPrimitiveType(PrimitiveTypeEnum.Number),
           ''
         )
       )
-      fooModule.exportDefination = createExportDefination(['foo6'])
+      fooModule.exportDefinition = createExportDefinition(['foo6'])
 
       schema.modules.push(fooModule)
 
@@ -181,28 +181,28 @@ describe('check', () => {
     })
   })
 
-  describe('derive defination', () => {
+  describe('derive Definition', () => {
     it('error', () => {
       const foo = path.resolve(__dirname, './foo.jc')
 
       const schema = createSchema(foo)
 
       const fooModule = createSchemaModule(foo)
-      fooModule.typeDefinations.push(
-        createTypeDefination(
+      fooModule.typeDefinitions.push(
+        createTypeDefinition(
           'foo6',
           createPrimitiveType(PrimitiveTypeEnum.Number),
           ''
         )
       )
-      fooModule.deriveDefinations.push(
-        createDeriveDefination(
+      fooModule.deriveDefinitions.push(
+        createDeriveDefinition(
           'foo6',
           createPrimitiveType(PrimitiveTypeEnum.String),
           ''
         )
       )
-      fooModule.exportDefination = createExportDefination(['foo6'])
+      fooModule.exportDefinition = createExportDefinition(['foo6'])
 
       schema.modules.push(fooModule)
 
@@ -215,14 +215,14 @@ describe('check', () => {
       const schema = createSchema(foo)
 
       const fooModule = createSchemaModule(foo)
-      fooModule.typeDefinations.push(
-        createTypeDefination(
+      fooModule.typeDefinitions.push(
+        createTypeDefinition(
           'foo6',
           createPrimitiveType(PrimitiveTypeEnum.Number),
           ''
         )
       )
-      fooModule.exportDefination = createExportDefination(['foo6'])
+      fooModule.exportDefinition = createExportDefinition(['foo6'])
 
       schema.modules.push(fooModule)
 
@@ -230,29 +230,29 @@ describe('check', () => {
     })
   })
 
-  describe('call defination', () => {
+  describe('call Definition', () => {
     it('error', () => {
       const foo = path.resolve(__dirname, './foo.jc')
 
       const schema = createSchema(foo)
 
       const fooModule = createSchemaModule(foo)
-      fooModule.typeDefinations.push(
-        createTypeDefination(
+      fooModule.typeDefinitions.push(
+        createTypeDefinition(
           'foo6',
           createPrimitiveType(PrimitiveTypeEnum.Number),
           ''
         )
       )
-      fooModule.callDefinations.push(
-        createCallDefination(
+      fooModule.callDefinitions.push(
+        createCallDefinition(
           'foo6',
           createPrimitiveType(PrimitiveTypeEnum.Number),
           createPrimitiveType(PrimitiveTypeEnum.String),
           ''
         )
       )
-      fooModule.exportDefination = createExportDefination(['foo6'])
+      fooModule.exportDefinition = createExportDefinition(['foo6'])
 
       schema.modules.push(fooModule)
 
@@ -265,14 +265,14 @@ describe('check', () => {
       const schema = createSchema(foo)
 
       const fooModule = createSchemaModule(foo)
-      fooModule.typeDefinations.push(
-        createTypeDefination(
+      fooModule.typeDefinitions.push(
+        createTypeDefinition(
           'foo6',
           createPrimitiveType(PrimitiveTypeEnum.Number),
           ''
         )
       )
-      fooModule.exportDefination = createExportDefination(['foo6'])
+      fooModule.exportDefinition = createExportDefinition(['foo6'])
 
       schema.modules.push(fooModule)
 
@@ -280,7 +280,7 @@ describe('check', () => {
     })
   })
 
-  describe('export defination', () => {
+  describe('export Definition', () => {
     describe('repeat', () => {
       it('error', () => {
         const foo = path.resolve(__dirname, './foo.jc')
@@ -288,14 +288,14 @@ describe('check', () => {
         const schema = createSchema(foo)
 
         const fooModule = createSchemaModule(foo)
-        fooModule.typeDefinations.push(
-          createTypeDefination(
+        fooModule.typeDefinitions.push(
+          createTypeDefinition(
             'foo6',
             createPrimitiveType(PrimitiveTypeEnum.Number),
             ''
           )
         )
-        fooModule.exportDefination = createExportDefination(['foo6', 'foo6'])
+        fooModule.exportDefinition = createExportDefinition(['foo6', 'foo6'])
 
         schema.modules.push(fooModule)
 
@@ -308,14 +308,14 @@ describe('check', () => {
         const schema = createSchema(foo)
 
         const fooModule = createSchemaModule(foo)
-        fooModule.typeDefinations.push(
-          createTypeDefination(
+        fooModule.typeDefinitions.push(
+          createTypeDefinition(
             'foo6',
             createPrimitiveType(PrimitiveTypeEnum.Number),
             ''
           )
         )
-        fooModule.exportDefination = createExportDefination(['foo6'])
+        fooModule.exportDefinition = createExportDefinition(['foo6'])
 
         schema.modules.push(fooModule)
 
@@ -330,7 +330,7 @@ describe('check', () => {
         const schema = createSchema(foo)
 
         const fooModule = createSchemaModule(foo)
-        fooModule.exportDefination = createExportDefination(['foo6'])
+        fooModule.exportDefinition = createExportDefinition(['foo6'])
 
         schema.modules.push(fooModule)
 
@@ -343,14 +343,14 @@ describe('check', () => {
         const schema = createSchema(foo)
 
         const fooModule = createSchemaModule(foo)
-        fooModule.typeDefinations.push(
-          createTypeDefination(
+        fooModule.typeDefinitions.push(
+          createTypeDefinition(
             'foo6',
             createPrimitiveType(PrimitiveTypeEnum.Number),
             ''
           )
         )
-        fooModule.exportDefination = createExportDefination(['foo6'])
+        fooModule.exportDefinition = createExportDefinition(['foo6'])
 
         schema.modules.push(fooModule)
 
@@ -367,10 +367,10 @@ describe('check', () => {
         const schema = createSchema(foo)
 
         const fooModule = createSchemaModule(foo)
-        fooModule.typeDefinations.push(
-          createTypeDefination('foo6', createPrimitiveType('error' as any), '')
+        fooModule.typeDefinitions.push(
+          createTypeDefinition('foo6', createPrimitiveType('error' as any), '')
         )
-        fooModule.exportDefination = createExportDefination(['foo6'])
+        fooModule.exportDefinition = createExportDefinition(['foo6'])
 
         schema.modules.push(fooModule)
 
@@ -383,14 +383,14 @@ describe('check', () => {
         const schema = createSchema(foo)
 
         const fooModule = createSchemaModule(foo)
-        fooModule.typeDefinations.push(
-          createTypeDefination(
+        fooModule.typeDefinitions.push(
+          createTypeDefinition(
             'foo6',
             createPrimitiveType(PrimitiveTypeEnum.Number),
             ''
           )
         )
-        fooModule.exportDefination = createExportDefination(['foo6'])
+        fooModule.exportDefinition = createExportDefinition(['foo6'])
 
         schema.modules.push(fooModule)
 
@@ -405,10 +405,10 @@ describe('check', () => {
         const schema = createSchema(foo)
 
         const fooModule = createSchemaModule(foo)
-        fooModule.typeDefinations.push(
-          createTypeDefination('foo6', createSpecialType('error' as any), '')
+        fooModule.typeDefinitions.push(
+          createTypeDefinition('foo6', createSpecialType('error' as any), '')
         )
-        fooModule.exportDefination = createExportDefination(['foo6'])
+        fooModule.exportDefinition = createExportDefinition(['foo6'])
 
         schema.modules.push(fooModule)
 
@@ -421,14 +421,14 @@ describe('check', () => {
         const schema = createSchema(foo)
 
         const fooModule = createSchemaModule(foo)
-        fooModule.typeDefinations.push(
-          createTypeDefination(
+        fooModule.typeDefinitions.push(
+          createTypeDefinition(
             'foo6',
             createSpecialType(SpecialTypeEnum.Any),
             ''
           )
         )
-        fooModule.exportDefination = createExportDefination(['foo6'])
+        fooModule.exportDefinition = createExportDefinition(['foo6'])
 
         schema.modules.push(fooModule)
 
@@ -443,10 +443,10 @@ describe('check', () => {
         const schema = createSchema(foo)
 
         const fooModule = createSchemaModule(foo)
-        fooModule.typeDefinations.push(
-          createTypeDefination('foo6', createLiteralType({} as any), '')
+        fooModule.typeDefinitions.push(
+          createTypeDefinition('foo6', createLiteralType({} as any), '')
         )
-        fooModule.exportDefination = createExportDefination(['foo6'])
+        fooModule.exportDefinition = createExportDefinition(['foo6'])
 
         schema.modules.push(fooModule)
 
@@ -459,10 +459,10 @@ describe('check', () => {
         const schema = createSchema(foo)
 
         const fooModule = createSchemaModule(foo)
-        fooModule.typeDefinations.push(
-          createTypeDefination('foo6', createLiteralType('foo6'), '')
+        fooModule.typeDefinitions.push(
+          createTypeDefinition('foo6', createLiteralType('foo6'), '')
         )
-        fooModule.exportDefination = createExportDefination(['foo6'])
+        fooModule.exportDefinition = createExportDefinition(['foo6'])
 
         schema.modules.push(fooModule)
 
@@ -477,8 +477,8 @@ describe('check', () => {
         const schema = createSchema(foo)
 
         const fooModule = createSchemaModule(foo)
-        fooModule.typeDefinations.push(
-          createTypeDefination(
+        fooModule.typeDefinitions.push(
+          createTypeDefinition(
             'foo6',
             createObjectType([
               createObjectTypeFiled(
@@ -495,7 +495,7 @@ describe('check', () => {
             ''
           )
         )
-        fooModule.exportDefination = createExportDefination(['foo6'])
+        fooModule.exportDefinition = createExportDefinition(['foo6'])
 
         schema.modules.push(fooModule)
 
@@ -508,8 +508,8 @@ describe('check', () => {
         const schema = createSchema(foo)
 
         const fooModule = createSchemaModule(foo)
-        fooModule.typeDefinations.push(
-          createTypeDefination(
+        fooModule.typeDefinitions.push(
+          createTypeDefinition(
             'foo6',
             createObjectType([
               createObjectTypeFiled(
@@ -521,7 +521,7 @@ describe('check', () => {
             ''
           )
         )
-        fooModule.exportDefination = createExportDefination(['foo6'])
+        fooModule.exportDefinition = createExportDefinition(['foo6'])
 
         schema.modules.push(fooModule)
 
@@ -536,10 +536,10 @@ describe('check', () => {
         const schema = createSchema(foo)
 
         const fooModule = createSchemaModule(foo)
-        fooModule.typeDefinations.push(
-          createTypeDefination('foo6', createNameType('foo6'), '')
+        fooModule.typeDefinitions.push(
+          createTypeDefinition('foo6', createNameType('foo6'), '')
         )
-        fooModule.exportDefination = createExportDefination(['foo6'])
+        fooModule.exportDefinition = createExportDefinition(['foo6'])
 
         schema.modules.push(fooModule)
 
@@ -552,17 +552,17 @@ describe('check', () => {
         const schema = createSchema(foo)
 
         const fooModule = createSchemaModule(foo)
-        fooModule.typeDefinations.push(
-          createTypeDefination(
+        fooModule.typeDefinitions.push(
+          createTypeDefinition(
             'foo5',
             createPrimitiveType(PrimitiveTypeEnum.Number),
             ''
           )
         )
-        fooModule.typeDefinations.push(
-          createTypeDefination('foo6', createNameType('foo5'), '')
+        fooModule.typeDefinitions.push(
+          createTypeDefinition('foo6', createNameType('foo5'), '')
         )
-        fooModule.exportDefination = createExportDefination(['foo6'])
+        fooModule.exportDefinition = createExportDefinition(['foo6'])
 
         schema.modules.push(fooModule)
 

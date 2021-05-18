@@ -59,7 +59,7 @@ describe('normalize', () => {
     const module = schema.modules[0]
 
     it('TypeDeclaration', () => {
-      const typeDeclaration = module.typeDefinations[0]
+      const typeDeclaration = module.typeDefinitions[0]
       expect(typeDeclaration).toMatchObject({
         name: 'foo1',
         type: {
@@ -69,7 +69,7 @@ describe('normalize', () => {
     })
 
     it('DeriveDeclaration', () => {
-      const deriveDeclaration = module.deriveDefinations[0]
+      const deriveDeclaration = module.deriveDefinitions[0]
       expect(deriveDeclaration).toMatchObject({
         name: 'int',
         type: {
@@ -79,7 +79,7 @@ describe('normalize', () => {
     })
 
     it('ExportStatement', () => {
-      const exportStatement = module.exportDefination
+      const exportStatement = module.exportDefinition
       expect(exportStatement).toMatchObject({
         names: [
           'foo1',
@@ -106,28 +106,28 @@ describe('normalize', () => {
 
     describe('Type', () => {
       it('PrimitiveType', () => {
-        expect(module.typeDefinations[0]).toMatchObject({
+        expect(module.typeDefinitions[0]).toMatchObject({
           name: 'foo1',
           type: {
             type: 'number',
           },
         })
 
-        expect(module.typeDefinations[1]).toMatchObject({
+        expect(module.typeDefinitions[1]).toMatchObject({
           name: 'foo2',
           type: {
             type: 'boolean',
           },
         })
 
-        expect(module.typeDefinations[2]).toMatchObject({
+        expect(module.typeDefinitions[2]).toMatchObject({
           name: 'foo3',
           type: {
             type: 'null',
           },
         })
 
-        expect(module.typeDefinations[3]).toMatchObject({
+        expect(module.typeDefinitions[3]).toMatchObject({
           name: 'foo4',
           type: {
             type: 'string',
@@ -136,14 +136,14 @@ describe('normalize', () => {
       })
 
       it('SpecialType', () => {
-        expect(module.typeDefinations[8]).toMatchObject({
+        expect(module.typeDefinitions[8]).toMatchObject({
           name: 'foo9',
           type: {
             type: 'any',
           },
         })
 
-        expect(module.typeDefinations[9]).toMatchObject({
+        expect(module.typeDefinitions[9]).toMatchObject({
           name: 'foo10',
           type: {
             type: 'none',
@@ -152,28 +152,28 @@ describe('normalize', () => {
       })
 
       it('LiteralType', () => {
-        expect(module.typeDefinations[12]).toMatchObject({
+        expect(module.typeDefinitions[12]).toMatchObject({
           name: 'foo13',
           type: {
             value: 'foo13',
           },
         })
 
-        expect(module.typeDefinations[13]).toMatchObject({
+        expect(module.typeDefinitions[13]).toMatchObject({
           name: 'foo14',
           type: {
             value: 0,
           },
         })
 
-        expect(module.typeDefinations[14]).toMatchObject({
+        expect(module.typeDefinitions[14]).toMatchObject({
           name: 'foo15',
           type: {
             value: true,
           },
         })
 
-        expect(module.typeDefinations[15]).toMatchObject({
+        expect(module.typeDefinitions[15]).toMatchObject({
           name: 'foo16',
           type: {
             value: false,
@@ -182,7 +182,7 @@ describe('normalize', () => {
       })
 
       it('ListType', () => {
-        expect(module.typeDefinations[4]).toMatchObject({
+        expect(module.typeDefinitions[4]).toMatchObject({
           name: 'foo5',
           type: {
             type: {
@@ -193,7 +193,7 @@ describe('normalize', () => {
       })
 
       it('ObjectType', () => {
-        expect(module.typeDefinations[5]).toMatchObject({
+        expect(module.typeDefinitions[5]).toMatchObject({
           name: 'foo6',
           type: {
             fields: [
@@ -209,7 +209,7 @@ describe('normalize', () => {
       })
 
       it('TupleType', () => {
-        expect(module.typeDefinations[6]).toMatchObject({
+        expect(module.typeDefinitions[6]).toMatchObject({
           name: 'foo7',
           type: {
             types: [
@@ -225,7 +225,7 @@ describe('normalize', () => {
       })
 
       it('RecordType', () => {
-        expect(module.typeDefinations[7]).toMatchObject({
+        expect(module.typeDefinitions[7]).toMatchObject({
           name: 'foo8',
           type: {
             type: {
@@ -236,7 +236,7 @@ describe('normalize', () => {
       })
 
       it('UnionType', () => {
-        expect(module.typeDefinations[10]).toMatchObject({
+        expect(module.typeDefinitions[10]).toMatchObject({
           name: 'foo11',
           type: {
             types: [
@@ -252,7 +252,7 @@ describe('normalize', () => {
       })
 
       it('IntersectType', () => {
-        expect(module.typeDefinations[11]).toMatchObject({
+        expect(module.typeDefinitions[11]).toMatchObject({
           name: 'foo12',
           type: {
             types: [
@@ -326,38 +326,38 @@ describe('normalize', () => {
     it('module', () => {
       const module1 = schema.modules[0]
       expect(module1.id).toMatch('foo')
-      expect(module1.linkDefinations.length).toBe(0)
-      expect(module1.typeDefinations.length).toBe(16)
-      expect(module1.callDefinations.length).toBe(0)
-      expect(module1.deriveDefinations.length).toBe(2)
-      expect(module1.exportDefination?.names.length).toBe(18)
+      expect(module1.linkDefinitions.length).toBe(0)
+      expect(module1.typeDefinitions.length).toBe(16)
+      expect(module1.callDefinitions.length).toBe(0)
+      expect(module1.deriveDefinitions.length).toBe(2)
+      expect(module1.exportDefinition?.names.length).toBe(18)
 
       const module2 = schema.modules[1]
       expect(module2.id).toMatch('bar')
-      expect(module2.linkDefinations.length).toBe(1)
-      expect(module2.typeDefinations.length).toBe(2)
-      expect(module2.callDefinations.length).toBe(0)
-      expect(module2.deriveDefinations.length).toBe(0)
-      expect(module2.exportDefination?.names.length).toBe(2)
+      expect(module2.linkDefinitions.length).toBe(1)
+      expect(module2.typeDefinitions.length).toBe(2)
+      expect(module2.callDefinitions.length).toBe(0)
+      expect(module2.deriveDefinitions.length).toBe(0)
+      expect(module2.exportDefinition?.names.length).toBe(2)
 
       const module0 = schema.modules[2]
       expect(module0.id).toMatch('baz')
-      expect(module0.linkDefinations.length).toBe(2)
-      expect(module0.typeDefinations.length).toBe(3)
-      expect(module0.callDefinations.length).toBe(3)
-      expect(module0.deriveDefinations.length).toBe(0)
-      expect(module0.exportDefination?.names.length).toBe(6)
+      expect(module0.linkDefinitions.length).toBe(2)
+      expect(module0.typeDefinitions.length).toBe(3)
+      expect(module0.callDefinitions.length).toBe(3)
+      expect(module0.deriveDefinitions.length).toBe(0)
+      expect(module0.exportDefinition?.names.length).toBe(6)
     })
 
     it('ImportStatement', () => {
-      expect(schema.modules[2].linkDefinations[0]).toMatchObject({
+      expect(schema.modules[2].linkDefinitions[0]).toMatchObject({
         from: 'foo',
         links: [['foo6', 'foo']],
       })
     })
 
     it('CallDeclaration', () => {
-      const callDeclaration = schema.modules[2].callDefinations[0]
+      const callDeclaration = schema.modules[2].callDefinitions[0]
       expect(callDeclaration).toMatchObject({
         name: 'bazCall',
         input: {

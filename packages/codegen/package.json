@@ -8,13 +8,13 @@
   "author": "Ma Tianqi <mtq1997@126.com>",
   "license": "MIT",
   "peerDependencies": {
-    "jc-schema": "0.0.1",
     "jc-builder": "0.0.1",
     "jc-client": "0.0.1",
+    "jc-schema": "0.0.1",
     "jc-server": "0.0.1"
   },
   "dependencies": {
-    "prettier": "^2.2.1",
-    "@types/prettier": "^2.2.3"
+    "@types/prettier": "^2.2.3",
+    "prettier": "^2.2.1"
   }
 }

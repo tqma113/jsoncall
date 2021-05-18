@@ -1,10 +1,10 @@
 import {
   Schema,
   SchemaModule,
-  DeriveDefination,
-  TypeDefination,
-  LinkDefination,
-  CallDefination,
+  DeriveDefinition,
+  TypeDefinition,
+  LinkDefinition,
+  CallDefinition,
   Type,
   PrimitiveType,
   SpecialType,
@@ -63,9 +63,12 @@ export const builderCodegenSchema = (schema: Schema): SchemaCodegen => {
   }
 
   for (const module of schema.modules) {
-    const { code, derives, buildIn, calls: moduleCalls } = builderCodegenModule(
-      module
-    )
+    const {
+      code,
+      derives,
+      buildIn,
+      calls: moduleCalls,
+    } = builderCodegenModule(module)
     modules[module.id] = code
     importItems.push(...buildIn)
     generics.push(...Object.values(derives))
@@ -117,37 +120,37 @@ export const builderCodegenModule = (module: SchemaModule): ModuleCodegen => {
   const links: Record<string, string> = {}
   const types: Record<string, string> = {}
   const derives: Record<string, string> = {}
-  const exports = module.exportDefination?.names || []
+  const exports = module.exportDefinition?.names || []
   const calls: Record<string, string> = {}
 
-  const codegenLinkDefination = (linkDefination: LinkDefination) => {
-    const moduleName = `${linkDefination.from}Module`
-    linkDefination.links.forEach(([from, to]) => {
+  const codegenLinkDefinition = (linkDefinition: LinkDefinition) => {
+    const moduleName = `${linkDefinition.from}Module`
+    linkDefinition.links.forEach(([from, to]) => {
       buildIn.push('Naming')
       links[to] = `const ${to} = Naming('${to}', ${moduleName}.exports.${from})`
     })
   }
 
-  const codegenTypeDefination = (typeDefination: TypeDefination) => {
+  const codegenTypeDefinition = (typeDefinition: TypeDefinition) => {
     buildIn.push('Naming')
-    types[typeDefination.name] = `const ${typeDefination.name} = Naming('${
-      typeDefination.name
-    }', ${codegenType(typeDefination.type)}, '${
-      typeDefination.description ? typeDefination.description : ''
+    types[typeDefinition.name] = `const ${typeDefinition.name} = Naming('${
+      typeDefinition.name
+    }', ${codegenType(typeDefinition.type)}, '${
+      typeDefinition.description ? typeDefinition.description : ''
     }')`
   }
 
-  const codegenDeriveDefination = (deriveDefination: DeriveDefination) => {
-    derives[deriveDefination.name] = `${deriveDefination.name.toUpperCase()}I`
+  const codegenDeriveDefinition = (deriveDefinition: DeriveDefinition) => {
+    derives[deriveDefinition.name] = `${deriveDefinition.name.toUpperCase()}I`
   }
 
-  const codegenCallDefination = (callDefination: CallDefination) => {
+  const codegenCallDefinition = (callDefinition: CallDefinition) => {
     buildIn.push('createJSONCallType')
-    calls[callDefination.name] = `const ${
-      callDefination.name
-    } = createJSONCallType('${callDefination.name}', ${codegenType(
-      callDefination.input
-    )}, ${codegenType(callDefination.output)})`
+    calls[callDefinition.name] = `const ${
+      callDefinition.name
+    } = createJSONCallType('${callDefinition.name}', ${codegenType(
+      callDefinition.input
+    )}, ${codegenType(callDefinition.output)})`
   }
 
   const codegenType = (type: Type): string => {
@@ -266,20 +269,20 @@ export const builderCodegenModule = (module: SchemaModule): ModuleCodegen => {
     }
   }
 
-  for (const linkDefination of module.linkDefinations) {
-    codegenLinkDefination(linkDefination)
+  for (const linkDefinition of module.linkDefinitions) {
+    codegenLinkDefinition(linkDefinition)
   }
 
-  for (const typeDefination of module.typeDefinations) {
-    codegenTypeDefination(typeDefination)
+  for (const typeDefinition of module.typeDefinitions) {
+    codegenTypeDefinition(typeDefinition)
   }
 
-  for (const deriveDefination of module.deriveDefinations) {
-    codegenDeriveDefination(deriveDefination)
+  for (const deriveDefinition of module.deriveDefinitions) {
+    codegenDeriveDefinition(deriveDefinition)
   }
 
-  for (const callDefination of module.callDefinations) {
-    codegenCallDefination(callDefination)
+  for (const callDefinition of module.callDefinitions) {
+    codegenCallDefinition(callDefinition)
   }
 
   const getGenerics = (): string => {
@@ -320,11 +323,11 @@ export const builderCodegenModule = (module: SchemaModule): ModuleCodegen => {
     return {
       id: '${module.id}',
       links: [
-        ${module.linkDefinations
-          .map((linkDefination) => {
+        ${module.linkDefinitions
+          .map((linkDefinition) => {
             return `{
             types: [
-              ${linkDefination.links
+              ${linkDefinition.links
                 .map(([from, to]) => {
                   return `{
                   type: '${from}',
@@ -333,7 +336,7 @@ export const builderCodegenModule = (module: SchemaModule): ModuleCodegen => {
                 })
                 .join('\n')}
             ],
-            module: '${linkDefination.from}'
+            module: '${linkDefinition.from}'
           },`
           })
           .join('\n')}

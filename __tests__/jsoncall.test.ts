@@ -36,9 +36,9 @@ describe('jsoncall', () => {
       })
     )
 
-    expect(
-      (await client.fooCall({ foo: 123, baz: true })).value
-    ).toMatchObject({ foo: 123 })
+    expect((await client.fooCall({ foo: 123, baz: true })).value).toMatchObject(
+      { foo: 123 }
+    )
     expect(
       (await client.barCall({ foo: 123, bar: 'bar' })).value
     ).toMatchObject({ bar: 'bar' })

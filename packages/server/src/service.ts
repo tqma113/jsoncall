@@ -163,74 +163,77 @@ export type Resolvers<
   [K in keyof CS]: Resolver<ResolverI<CS[K]>, ResolverO<CS[K]>>
 }
 
-export const createService = <
-  CS extends Record<
-    string,
-    JSONCallType<string, any, any, string, any, any, string>
-  >
->(
-  schema: BuilderSchema<CS>,
-  serialize: Serialize<object>,
-  deserialize: Deserialize<object>
-) => (resolvers: Resolvers<CS>) => (input: string): string => {
-  const calls = getKeys(schema.calls).reduce((cur, key) => {
-    cur[key] = createJSONCall(
-      schema.calls[key],
-      resolvers[key],
-      serialize,
-      deserialize
-    )
-    return cur
-  }, {} as Record<keyof CS, JSONCall<string>>)
-  const api = createApi(calls)
-  try {
-    const inputObject = deserialize(input)
-    const inputValidateResult = validate(CallingType, inputObject)
+export const createService =
+  <
+    CS extends Record<
+      string,
+      JSONCallType<string, any, any, string, any, any, string>
+    >
+  >(
+    schema: BuilderSchema<CS>,
+    serialize: Serialize<object>,
+    deserialize: Deserialize<object>
+  ) =>
+  (resolvers: Resolvers<CS>) =>
+  (input: string): string => {
+    const calls = getKeys(schema.calls).reduce((cur, key) => {
+      cur[key] = createJSONCall(
+        schema.calls[key],
+        resolvers[key],
+        serialize,
+        deserialize
+      )
+      return cur
+    }, {} as Record<keyof CS, JSONCall<string>>)
+    const api = createApi(calls)
+    try {
+      const inputObject = deserialize(input)
+      const inputValidateResult = validate(CallingType, inputObject)
 
-    if (inputValidateResult === true) {
-      try {
-        const input = convert(CallingType, inputObject)
-        const handleCalling = (
-          name: string,
-          input: string
-        ): SingleCallOutput => {
-          const result = api(name, input)
-          if (result.isOk) {
-            return CallingSuccess(result.value)
-          } else {
-            return CallingFailed(result.value)
+      if (inputValidateResult === true) {
+        try {
+          const input = convert(CallingType, inputObject)
+          const handleCalling = (
+            name: string,
+            input: string
+          ): SingleCallOutput => {
+            const result = api(name, input)
+            if (result.isOk) {
+              return CallingSuccess(result.value)
+            } else {
+              return CallingFailed(result.value)
+            }
           }
-        }
-        switch (input.kind) {
-          case 'Introspection': {
-            // TODO: Introspection
-            return serialize(IntrospectionCallingOutput(normalize(schema)))
-          }
-          case 'Single': {
-            return serialize(handleCalling(input.name, input.input))
-          }
-          case 'Batch': {
-            return serialize(
-              BatchOutput(
-                input.callings.map((input) =>
-                  handleCalling(input.name, input.input)
+          switch (input.kind) {
+            case 'Introspection': {
+              // TODO: Introspection
+              return serialize(IntrospectionCallingOutput(normalize(schema)))
+            }
+            case 'Single': {
+              return serialize(handleCalling(input.name, input.input))
+            }
+            case 'Batch': {
+              return serialize(
+                BatchOutput(
+                  input.callings.map((input) =>
+                    handleCalling(input.name, input.input)
+                  )
                 )
               )
-            )
+            }
           }
+        } catch (err) {
+          return serialize(
+            CallingFailed(new ConvertError(err.message, name(CallingType)))
+          )
         }
-      } catch (err) {
-        return serialize(
-          CallingFailed(new ConvertError(err.message, name(CallingType)))
-        )
+      } else {
+        return serialize(CallingFailed(inputValidateResult))
       }
-    } else {
-      return serialize(CallingFailed(inputValidateResult))
+    } catch (err) {
+      return serialize(CallingFailed(new SerializationError(err, input)))
     }
-  } catch (err) {
-    return serialize(CallingFailed(new SerializationError(err, input)))
   }
-}
 
 function getKeys<T extends {}>(o: T): Array<keyof T> {
   return Object.keys(o) as Array<keyof T>

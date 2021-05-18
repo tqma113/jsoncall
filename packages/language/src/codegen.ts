@@ -1,11 +1,11 @@
 import type {
   Schema,
   SchemaModule,
-  LinkDefination,
-  DeriveDefination,
-  CallDefination,
-  ExportDefination,
-  TypeDefination,
+  LinkDefinition,
+  DeriveDefinition,
+  CallDefinition,
+  ExportDefinition,
+  TypeDefinition,
   Type,
   LiteralType,
   ListType,
@@ -30,35 +30,35 @@ export const codegen = (schema: Schema): Map<string, string> => {
 export const codegenModule = (module: SchemaModule): string => {
   const blocks: string[] = []
 
-  if (module.linkDefinations.length > 0) {
-    blocks.push(module.linkDefinations.map(codegenLinkDefination).join('\n'))
+  if (module.linkDefinitions.length > 0) {
+    blocks.push(module.linkDefinitions.map(codegenLinkDefinition).join('\n'))
   }
 
-  if (module.typeDefinations.length > 0) {
-    blocks.push(module.typeDefinations.map(codegenTypeDefination).join('\n\n'))
+  if (module.typeDefinitions.length > 0) {
+    blocks.push(module.typeDefinitions.map(codegenTypeDefinition).join('\n\n'))
   }
 
-  if (module.deriveDefinations.length > 0) {
+  if (module.deriveDefinitions.length > 0) {
     blocks.push(
-      module.deriveDefinations.map(codegenDeriveDefination).join('\n\n')
+      module.deriveDefinitions.map(codegenDeriveDefinition).join('\n\n')
     )
   }
 
-  if (module.exportDefination !== null) {
-    blocks.push(codegenExportDefination(module.exportDefination))
+  if (module.exportDefinition !== null) {
+    blocks.push(codegenExportDefinition(module.exportDefinition))
   }
 
-  if (module.callDefinations.length > 0) {
-    blocks.push(module.callDefinations.map(codegenCallDefination).join('\n\n'))
+  if (module.callDefinitions.length > 0) {
+    blocks.push(module.callDefinitions.map(codegenCallDefinition).join('\n\n'))
   }
 
   return blocks.join('\n\n\n')
 }
 
-export const codegenLinkDefination = (
-  linkDefination: LinkDefination
+export const codegenLinkDefinition = (
+  linkDefinition: LinkDefinition
 ): string => {
-  const items = linkDefination.links
+  const items = linkDefinition.links
     .map(([from, to]) => {
       if (from === to) {
         return from
@@ -67,59 +67,59 @@ export const codegenLinkDefination = (
       }
     })
     .join(', ')
-  return `import { ${items} } from "${linkDefination.from}"`
+  return `import { ${items} } from "${linkDefinition.from}"`
 }
 
-export const codegenDeriveDefination = (
-  deriveDefination: DeriveDefination
+export const codegenDeriveDefinition = (
+  deriveDefinition: DeriveDefinition
 ): string => {
   const comments =
-    deriveDefination.description !== null
-      ? `${deriveDefination.description
+    deriveDefinition.description !== null
+      ? `${deriveDefinition.description
           .split('\n')
           .map((comment) => `#${comment}`)
           .join('\n')}\n`
       : ''
-  return `${comments}derive ${deriveDefination.name} from ${codegenType(
-    deriveDefination.type
+  return `${comments}derive ${deriveDefinition.name} from ${codegenType(
+    deriveDefinition.type
   )}`
 }
 
-export const codegenCallDefination = (
-  callDefination: CallDefination
+export const codegenCallDefinition = (
+  callDefinition: CallDefinition
 ): string => {
   const comments =
-    callDefination.description !== null
-      ? `${callDefination.description
+    callDefinition.description !== null
+      ? `${callDefinition.description
           .split('\n')
           .map((comment) => `#${comment}`)
           .join('\n')}\n`
       : ''
-  return `${comments}call ${callDefination.name}: ${codegenType(
-    callDefination.input
-  )} => ${codegenType(callDefination.output)}`
+  return `${comments}call ${callDefinition.name}: ${codegenType(
+    callDefinition.input
+  )} => ${codegenType(callDefinition.output)}`
 }
 
-export const codegenExportDefination = (
-  exportDefination: ExportDefination
+export const codegenExportDefinition = (
+  exportDefinition: ExportDefinition
 ): string => {
-  const items = exportDefination.names.map((name) => `  ${name},`).join('\n')
+  const items = exportDefinition.names.map((name) => `  ${name},`).join('\n')
   return `export {\n${items}\n}`
 }
 
-export const codegenTypeDefination = (
-  typeDefination: TypeDefination
+export const codegenTypeDefinition = (
+  typeDefinition: TypeDefinition
 ): string => {
   const comments =
-    typeDefination.description !== null
-      ? `${typeDefination.description
+    typeDefinition.description !== null
+      ? `${typeDefinition.description
           .split('\n')
           .map((comment) => `#${comment}`)
           .join('\n')}\n`
       : ''
 
-  return `${comments}type ${typeDefination.name} = ${codegenType(
-    typeDefination.type
+  return `${comments}type ${typeDefinition.name} = ${codegenType(
+    typeDefinition.type
   )}`
 }
 

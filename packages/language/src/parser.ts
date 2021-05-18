@@ -107,7 +107,7 @@ export const createParser = (source: Source): Parser => {
     const token = lexer.token
     if (token.kind === kind) {
       lexer.next()
-      return (token as any) as T
+      return token as any as T
     }
 
     throw new SyntaxError(
@@ -123,7 +123,7 @@ export const createParser = (source: Source): Parser => {
     const token = lexer.token
     if (token.kind === kind) {
       lexer.next()
-      return (token as any) as T
+      return token as any as T
     }
     return null
   }

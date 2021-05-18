@@ -16,42 +16,44 @@ export type CallSender<N extends string> = (
   input: string
 ) => Promise<string>
 
-export const createSender = <N extends string>(
-  send: Sender,
-  serialize: Serialize<object>,
-  deserialize: Deserialize<object>
-): CallSender<N> => async (name: N, input: string) => {
-  const callingInput = serialize(SingleCalling(name, input))
+export const createSender =
+  <N extends string>(
+    send: Sender,
+    serialize: Serialize<object>,
+    deserialize: Deserialize<object>
+  ): CallSender<N> =>
+  async (name: N, input: string) => {
+    const callingInput = serialize(SingleCalling(name, input))
 
-  try {
-    const output = await send(callingInput)
     try {
-      const outputObject = deserialize(output)
-      const validateResult = validate(SingleCallOutputType, outputObject)
-      if (validateResult === true) {
-        try {
-          const output = convert(SingleCallOutputType, outputObject)
-          switch (output.kind) {
-            case 'CallingSuccess': {
-              return output.output
+      const output = await send(callingInput)
+      try {
+        const outputObject = deserialize(output)
+        const validateResult = validate(SingleCallOutputType, outputObject)
+        if (validateResult === true) {
+          try {
+            const output = convert(SingleCallOutputType, outputObject)
+            switch (output.kind) {
+              case 'CallingSuccess': {
+                return output.output
+              }
+              case 'CallingFailed': {
+                throw new Error(output.message)
+              }
             }
-            case 'CallingFailed': {
-              throw new Error(output.message)
-            }
+          } catch (err) {
+            throw new ConvertError(err, getName(SingleCallOutputType))
           }
-        } catch (err) {
-          throw new ConvertError(err, getName(SingleCallOutputType))
+        } else {
+          throw validateResult
         }
-      } else {
-        throw validateResult
+      } catch (err) {
+        throw new SerializationError(err, output)
       }
     } catch (err) {
-      throw new SerializationError(err, output)
+      throw new SendError(err)
     }
-  } catch (err) {
-    throw new SendError(err)
   }
-}
 
 export const createBatchSender = <N extends string>(
   send: Sender,
@@ -107,39 +109,41 @@ export type SyncCallSender<N extends string> = (
   input: string
 ) => string
 
-export const createSyncSender = <N extends string>(
-  send: SyncSender,
-  serialize: Serialize<object>,
-  deserialize: Deserialize<object>
-): SyncCallSender<N> => (name: N, input: string) => {
-  const callingInput = serialize(SingleCalling(name, input))
+export const createSyncSender =
+  <N extends string>(
+    send: SyncSender,
+    serialize: Serialize<object>,
+    deserialize: Deserialize<object>
+  ): SyncCallSender<N> =>
+  (name: N, input: string) => {
+    const callingInput = serialize(SingleCalling(name, input))
 
-  try {
-    const output = send(callingInput)
     try {
-      const outputObject = deserialize(output)
-      const validateResult = validate(SingleCallOutputType, outputObject)
-      if (validateResult === true) {
-        try {
-          const output = convert(SingleCallOutputType, outputObject)
-          switch (output.kind) {
-            case 'CallingSuccess': {
-              return output.output
+      const output = send(callingInput)
+      try {
+        const outputObject = deserialize(output)
+        const validateResult = validate(SingleCallOutputType, outputObject)
+        if (validateResult === true) {
+          try {
+            const output = convert(SingleCallOutputType, outputObject)
+            switch (output.kind) {
+              case 'CallingSuccess': {
+                return output.output
+              }
+              case 'CallingFailed': {
+                throw new Error(output.message)
+              }
             }
-            case 'CallingFailed': {
-              throw new Error(output.message)
-            }
+          } catch (err) {
+            throw new ConvertError(err, getName(SingleCallOutputType))
           }
-        } catch (err) {
-          throw new ConvertError(err, getName(SingleCallOutputType))
+        } else {
+          throw validateResult
         }
-      } else {
-        throw validateResult
+      } catch (err) {
+        throw new SerializationError(err, output)
       }
     } catch (err) {
-      throw new SerializationError(err, output)
+      throw new SendError(err)
     }
-  } catch (err) {
-    throw new SendError(err)
   }
-}

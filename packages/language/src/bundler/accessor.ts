@@ -1,5 +1,5 @@
 import { parse } from '../parser'
-import { format } from '../formater'
+import { format } from '../formatter'
 import {
   SchemaModule,
   Link,
@@ -15,9 +15,9 @@ import {
   IntersectType,
   NameType,
   createSchemaModule,
-  createExportDefination,
-  createLinkDefination,
-  createCallDefination,
+  createExportDefinition,
+  createLinkDefinition,
+  createCallDefinition,
   createPrimitiveType,
   createSpecialType,
   createLiteralType,
@@ -28,8 +28,8 @@ import {
   createUnionType,
   createIntersectType,
   createNameType,
-  createTypeDefination,
-  createDeriveDefination,
+  createTypeDefinition,
+  createDeriveDefinition,
   RecordType,
   createRecordType,
 } from 'jc-schema'
@@ -254,23 +254,23 @@ export const createModuleAccessor = (
 
     const isTypeExist = (name: string): boolean => {
       if (
-        schemaModule.linkDefinations.some((linkDefination) =>
-          linkDefination.links.some((link) => link[1] === name)
+        schemaModule.linkDefinitions.some((linkDefinition) =>
+          linkDefinition.links.some((link) => link[1] === name)
         )
       ) {
         return true
       }
 
       if (
-        schemaModule.typeDefinations.some(
-          (typeDefination) => typeDefination.name === name
+        schemaModule.typeDefinitions.some(
+          (typeDefinition) => typeDefinition.name === name
         )
       ) {
         return true
       }
 
-      return schemaModule.deriveDefinations.some(
-        (deriveDefination) => deriveDefination.name === name
+      return schemaModule.deriveDefinitions.some(
+        (deriveDefinition) => deriveDefinition.name === name
       )
     }
 
@@ -284,8 +284,8 @@ export const createModuleAccessor = (
         )
       } else {
         const type = accessTypeNode(typeDeclaration.type)
-        schemaModule.typeDefinations.push(
-          createTypeDefination(
+        schemaModule.typeDefinitions.push(
+          createTypeDefinition(
             name,
             type,
             accessCommentBlock(typeDeclaration.comment)
@@ -298,8 +298,8 @@ export const createModuleAccessor = (
       const name = deriveDeclaration.name.name.word
       const type = accessTypeNode(deriveDeclaration.type)
 
-      schemaModule.deriveDefinations.push(
-        createDeriveDefination(
+      schemaModule.deriveDefinitions.push(
+        createDeriveDefinition(
           name,
           type,
           accessCommentBlock(deriveDeclaration.comment)
@@ -312,8 +312,8 @@ export const createModuleAccessor = (
       const input = accessTypeNode(callDeclaration.input)
       const output = accessTypeNode(callDeclaration.output)
 
-      schemaModule.callDefinations.push(
-        createCallDefination(
+      schemaModule.callDefinitions.push(
+        createCallDefinition(
           name,
           input,
           output,
@@ -329,13 +329,13 @@ export const createModuleAccessor = (
         const [_, nextSchemaModule] = result
         const isExported = (name: string): boolean => {
           return (
-            nextSchemaModule.exportDefination?.names.includes(name) || false
+            nextSchemaModule.exportDefinition?.names.includes(name) || false
           )
         }
 
         const isExist = (name: string): boolean => {
-          return schemaModule.linkDefinations.some((linkDefination) =>
-            linkDefination.links.some(([from, to]) => to === name)
+          return schemaModule.linkDefinitions.some((linkDefinition) =>
+            linkDefinition.links.some(([from, to]) => to === name)
           )
         }
 
@@ -360,8 +360,8 @@ export const createModuleAccessor = (
             }
           })
 
-        schemaModule.linkDefinations.push(
-          createLinkDefination(
+        schemaModule.linkDefinitions.push(
+          createLinkDefinition(
             moduleResolver.resolve(from, module.source.moduleId),
             links
           )
@@ -370,7 +370,7 @@ export const createModuleAccessor = (
     }
 
     const accessExportStatement = (exportStatement: ExportStatement) => {
-      schemaModule.exportDefination = createExportDefination(
+      schemaModule.exportDefinition = createExportDefinition(
         exportStatement.names.map((name) => name.name.word)
       )
     }

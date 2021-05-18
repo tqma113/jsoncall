@@ -136,36 +136,40 @@ export const origin = <I, T, K extends string>(
 
 const identify = (input: any) => input
 
-export const Naming = <I, T, K extends string>(
-  name: K,
-  type: () => BaseJSONType<I, T, K>,
-  description?: string
-): (() => BaseJSONType<I, T, K>) => () => {
-  return createJSONType(
-    name,
-    () => createNameType(name),
-    type()[VALIDATE],
-    type()[CONVERT],
-    type()[CONTROVERT],
-    () => description || desc(type),
-    type
-  )
-}
-export const NamingWithoutType = <I, T, K extends string>(
-  name: K,
-  type: () => BaseJSONType<I, T, K>,
-  description?: string
-): (() => BaseJSONType<I, T, K>) => () => {
-  return createJSONType(
-    name,
-    type()[TYPE],
-    type()[VALIDATE],
-    type()[CONVERT],
-    type()[CONTROVERT],
-    () => description || desc(type),
-    type
-  )
-}
+export const Naming =
+  <I, T, K extends string>(
+    name: K,
+    type: () => BaseJSONType<I, T, K>,
+    description?: string
+  ): (() => BaseJSONType<I, T, K>) =>
+  () => {
+    return createJSONType(
+      name,
+      () => createNameType(name),
+      type()[VALIDATE],
+      type()[CONVERT],
+      type()[CONTROVERT],
+      () => description || desc(type),
+      type
+    )
+  }
+export const NamingWithoutType =
+  <I, T, K extends string>(
+    name: K,
+    type: () => BaseJSONType<I, T, K>,
+    description?: string
+  ): (() => BaseJSONType<I, T, K>) =>
+  () => {
+    return createJSONType(
+      name,
+      type()[TYPE],
+      type()[VALIDATE],
+      type()[CONVERT],
+      type()[CONTROVERT],
+      () => description || desc(type),
+      type
+    )
+  }
 
 export const StringType = () =>
   createJSONType(
@@ -272,28 +276,26 @@ export const NoneType = () =>
     () => 'none'
   )
 
-export const createLiteral = <T extends boolean | number | string>(
-  to: T,
-  description?: string
-) => () =>
-  createJSONType(
-    `` as const,
-    () => createLiteralType(to),
-    (input) => {
-      return input === to
-        ? true
-        : new ValidateError(JSON.stringify(to), JSON.stringify(input))
-    },
-    identify as Converter<any, T>,
-    identify,
-    () => (description ? description : JSON.stringify(to))
-  )
+export const createLiteral =
+  <T extends boolean | number | string>(to: T, description?: string) =>
+  () =>
+    createJSONType(
+      `` as const,
+      () => createLiteralType(to),
+      (input) => {
+        return input === to
+          ? true
+          : new ValidateError(JSON.stringify(to), JSON.stringify(input))
+      },
+      identify as Converter<any, T>,
+      identify,
+      () => (description ? description : JSON.stringify(to))
+    )
 
 export const Literal = createLiteral
 
-export type InputType<
-  J extends JSONType<any, any, string>
-> = J extends JSONType<infer I, any, string> ? I : never
+export type InputType<J extends JSONType<any, any, string>> =
+  J extends JSONType<infer I, any, string> ? I : never
 export type ToType<J extends JSONType<any, any, string>> = J extends JSONType<
   any,
   infer T,
@@ -397,16 +399,13 @@ type UnionToIntersection<U> = (
   ? V
   : never
 
-export type TypeFomToObjectType<
-  T extends ToObjectType<any>
-> = T extends ToObjectType<infer O> ? O : never
+export type TypeFomToObjectType<T extends ToObjectType<any>> =
+  T extends ToObjectType<infer O> ? O : never
 
-export type InputIntersectionType<
-  TS extends JSONType<any, any, string>[]
-> = UnionToIntersection<InputType<TS[number]>>
-export type ToIntersectionType<
-  TS extends JSONType<any, any, string>[]
-> = ToObjectType<UnionToIntersection<TypeFomToObjectType<ToType<TS[number]>>>>
+export type InputIntersectionType<TS extends JSONType<any, any, string>[]> =
+  UnionToIntersection<InputType<TS[number]>>
+export type ToIntersectionType<TS extends JSONType<any, any, string>[]> =
+  ToObjectType<UnionToIntersection<TypeFomToObjectType<ToType<TS[number]>>>>
 
 export const createIntersection = <
   TS extends JSONType<any, any, string>[],
@@ -468,73 +467,70 @@ export const createIntersection = <
 
 export const Intersection = createIntersection
 
-export const createDeriveType = <FI, FT, FK extends string>(
-  from: JSONType<FI, FT, FK>
-) => <T, CK extends string>(
-  name: CK,
-  type: () => Type,
-  curValidate: Validator<FT>,
-  curConvert: Converter<FT, T>,
-  curReverseConverter: Converter<T, FT>,
-  description: () => string
-): BaseJSONType<FI, T, CK> => {
-  const v: Validator<FI> = (input) => {
-    const result = validate(from, input)
-    if (result !== true) {
-      return result
-    } else {
-      return curValidate(convert(from, input))
+export const createDeriveType =
+  <FI, FT, FK extends string>(from: JSONType<FI, FT, FK>) =>
+  <T, CK extends string>(
+    name: CK,
+    type: () => Type,
+    curValidate: Validator<FT>,
+    curConvert: Converter<FT, T>,
+    curReverseConverter: Converter<T, FT>,
+    description: () => string
+  ): BaseJSONType<FI, T, CK> => {
+    const v: Validator<FI> = (input) => {
+      const result = validate(from, input)
+      if (result !== true) {
+        return result
+      } else {
+        return curValidate(convert(from, input))
+      }
     }
-  }
 
-  const c: Converter<FI, T> = (input) => {
-    return curConvert(convert(from, input))
-  }
+    const c: Converter<FI, T> = (input) => {
+      return curConvert(convert(from, input))
+    }
 
-  const cv: Converter<T, FI> = (input) => {
-    return controvert(from, curReverseConverter(input))
-  }
+    const cv: Converter<T, FI> = (input) => {
+      return controvert(from, curReverseConverter(input))
+    }
 
-  return createJSONType(name, type, v, c, cv, description)
-}
+    return createJSONType(name, type, v, c, cv, description)
+  }
 
 const createTypeFromAnyList = createDeriveType(AnyListType)
 
-export const createList = <
-  Type extends JSONType<any, any, string>,
-  FT = ToType<Type>
->(
-  item: Type
-) => () => {
-  const v: Validator = (input: any[]) => {
-    let result: true | ValidateError = true
-    for (let value of input) {
-      result = validate(item, value)
-      if (result !== true) {
-        result.message += ` in ${name}`
-        return result
+export const createList =
+  <Type extends JSONType<any, any, string>, FT = ToType<Type>>(item: Type) =>
+  () => {
+    const v: Validator = (input: any[]) => {
+      let result: true | ValidateError = true
+      for (let value of input) {
+        result = validate(item, value)
+        if (result !== true) {
+          result.message += ` in ${name}`
+          return result
+        }
       }
+      return true
     }
-    return true
-  }
 
-  const c: Converter<any[], FT[]> = (input) => {
-    return input.map((i) => convert(item, i))
-  }
+    const c: Converter<any[], FT[]> = (input) => {
+      return input.map((i) => convert(item, i))
+    }
 
-  const cv: Converter<FT[], any[]> = (input) => {
-    return input.map((i) => controvert(item, i))
-  }
+    const cv: Converter<FT[], any[]> = (input) => {
+      return input.map((i) => controvert(item, i))
+    }
 
-  return createTypeFromAnyList(
-    '',
-    () => createListType(type(item)),
-    v,
-    c,
-    cv,
-    () => `[${desc(item)}]`
-  )
-}
+    return createTypeFromAnyList(
+      '',
+      () => createListType(type(item)),
+      v,
+      c,
+      cv,
+      () => `[${desc(item)}]`
+    )
+  }
 
 export const ListType = createList
 
@@ -549,179 +545,180 @@ export type ToTupleType<TS extends JSONType<any, any, string>[]> = TS extends [
     : []
   : []
 
-export const createTuple = <TS extends JSONType<any, any, string>[]>(
-  ...tupleTypes: TS
-) => () => {
-  const v: Validator = (input: any[]) => {
-    if (input.length !== tupleTypes.length) {
-      return new ValidateError(description(), JSON.stringify(input))
-    } else {
-      for (let index = 0; index < tupleTypes.length; index++) {
-        const result = validate(tupleTypes[index], input[index])
-        if (result !== true) {
-          return new ValidateError(description(), JSON.stringify(input))
+export const createTuple =
+  <TS extends JSONType<any, any, string>[]>(...tupleTypes: TS) =>
+  () => {
+    const v: Validator = (input: any[]) => {
+      if (input.length !== tupleTypes.length) {
+        return new ValidateError(description(), JSON.stringify(input))
+      } else {
+        for (let index = 0; index < tupleTypes.length; index++) {
+          const result = validate(tupleTypes[index], input[index])
+          if (result !== true) {
+            return new ValidateError(description(), JSON.stringify(input))
+          }
         }
+        return true
       }
-      return true
     }
-  }
 
-  const c: Converter<any[], ToTupleType<TS>> = (input) => {
-    let result: ToTupleType<TS> = ([] as any) as ToTupleType<TS>
-    for (let index = 0; index < tupleTypes.length; index++) {
-      // @ts-ignore
-      result[index] = convert(tupleTypes[index], input[index])
+    const c: Converter<any[], ToTupleType<TS>> = (input) => {
+      let result: ToTupleType<TS> = [] as any as ToTupleType<TS>
+      for (let index = 0; index < tupleTypes.length; index++) {
+        // @ts-ignore
+        result[index] = convert(tupleTypes[index], input[index])
+      }
+      return result
     }
-    return result
-  }
 
-  const cv: Converter<ToTupleType<TS>, any[]> = (input) => {
-    let result: any[] = []
-    for (let index = 0; index < tupleTypes.length; index++) {
-      result[index] = controvert(tupleTypes[index], input[index])
+    const cv: Converter<ToTupleType<TS>, any[]> = (input) => {
+      let result: any[] = []
+      for (let index = 0; index < tupleTypes.length; index++) {
+        result[index] = controvert(tupleTypes[index], input[index])
+      }
+      return result
     }
-    return result
+
+    const description = () =>
+      `(${tupleTypes.map((tupleType) => desc(tupleType)).join(', ')})`
+
+    return createTypeFromAnyList(
+      '',
+      () => createTupleType([...tupleTypes.map(type)]),
+      v,
+      c,
+      cv,
+      description
+    )
   }
-
-  const description = () =>
-    `(${tupleTypes.map((tupleType) => desc(tupleType)).join(', ')})`
-
-  return createTypeFromAnyList(
-    '',
-    () => createTupleType([...tupleTypes.map(type)]),
-    v,
-    c,
-    cv,
-    description
-  )
-}
 
 export const Tuple = createTuple
 
 export const createTypeFromAnyObject = createDeriveType(AnyObjectType)
 
-export const createObject = <
-  Obj extends object,
-  T extends object = ToObjectType<Obj>
->(
-  objectType: Obj
-): (() => BaseJSONType<any, T, string>) => () => {
-  type I = object
+export const createObject =
+  <Obj extends object, T extends object = ToObjectType<Obj>>(
+    objectType: Obj
+  ): (() => BaseJSONType<any, T, string>) =>
+  () => {
+    type I = object
 
-  const description = () =>
-    `{${getKeys(objectType)
-      .map((key) => `${key}: ${desc(objectType[key] as any)}`)
-      .join(',')}}` as const
+    const description = () =>
+      `{${getKeys(objectType)
+        .map((key) => `${key}: ${desc(objectType[key] as any)}`)
+        .join(',')}}` as const
 
-  const v: Validator = <I extends object>(input: I) => {
-    let result: true | ValidateError = true
-    for (let key in objectType) {
-      const field = objectType[key]
-      const jsonType = getInstance(field as any)
-      if (isBaseJSONType(jsonType)) {
-        // @ts-ignore
-        result = validate(field, input[key])
-        if (result !== true) {
-          result.message += ` in object.${key}`
-          return result
-        }
-      }
-    }
-    return true
-  }
-
-  const c: Converter<I, T> = (input) => {
-    let result: T = {} as T
-    for (let key in objectType) {
-      // @ts-ignore
-      result[key] = convert(objectType[key], input[key])
-    }
-    return result
-  }
-
-  const cv: Converter<T, I> = (input) => {
-    let result: I = {} as I
-    for (let key of getKeys(objectType)) {
-      // @ts-ignore
-      result[key] = controvert(objectType[key], input[key])
-    }
-    return result
-  }
-
-  return createTypeFromAnyObject(
-    '',
-    () => {
-      const fileds: ObjectTypeFiled[] = []
-      for (const key of getKeys(objectType)) {
+    const v: Validator = <I extends object>(input: I) => {
+      let result: true | ValidateError = true
+      for (let key in objectType) {
         const field = objectType[key]
-        if (field instanceof Function) {
-          fileds.push(
-            createObjectTypeFiled(
-              key as string,
-              type(field as any),
-              desc(field as any)
-            )
-          )
+        const jsonType = getInstance(field as any)
+        if (isBaseJSONType(jsonType)) {
+          // @ts-ignore
+          result = validate(field, input[key])
+          if (result !== true) {
+            result.message += ` in object.${key}`
+            return result
+          }
         }
       }
-      return createObjectType(fileds)
-    },
-    v,
-    c,
-    cv,
-    description
-  )
-}
+      return true
+    }
+
+    const c: Converter<I, T> = (input) => {
+      let result: T = {} as T
+      for (let key in objectType) {
+        // @ts-ignore
+        result[key] = convert(objectType[key], input[key])
+      }
+      return result
+    }
+
+    const cv: Converter<T, I> = (input) => {
+      let result: I = {} as I
+      for (let key of getKeys(objectType)) {
+        // @ts-ignore
+        result[key] = controvert(objectType[key], input[key])
+      }
+      return result
+    }
+
+    return createTypeFromAnyObject(
+      '',
+      () => {
+        const fileds: ObjectTypeFiled[] = []
+        for (const key of getKeys(objectType)) {
+          const field = objectType[key]
+          if (field instanceof Function) {
+            fileds.push(
+              createObjectTypeFiled(
+                key as string,
+                type(field as any),
+                desc(field as any)
+              )
+            )
+          }
+        }
+        return createObjectType(fileds)
+      },
+      v,
+      c,
+      cv,
+      description
+    )
+  }
 
 export const ObjectType = createObject
 
-export const createRecord = <
-  Type extends JSONType<any, any, string>,
-  FT = ToType<Type>,
-  T = Record<string, FT>
->(
-  item: Type
-) => () => {
-  type I = object
-  const description = () => `<${desc(item)}>`
-  const v: Validator = <I extends object>(input: I) => {
-    let result: true | ValidateError = true
-    for (let key in input) {
-      result = validate(item, input[key])
-      if (typeof result === 'string') {
-        return result
+export const createRecord =
+  <
+    Type extends JSONType<any, any, string>,
+    FT = ToType<Type>,
+    T = Record<string, FT>
+  >(
+    item: Type
+  ) =>
+  () => {
+    type I = object
+    const description = () => `<${desc(item)}>`
+    const v: Validator = <I extends object>(input: I) => {
+      let result: true | ValidateError = true
+      for (let key in input) {
+        result = validate(item, input[key])
+        if (typeof result === 'string') {
+          return result
+        }
       }
+      return true
     }
-    return true
-  }
 
-  const c: Converter<I, T> = (input) => {
-    let result: T = {} as T
-    for (let key of getKeys(input)) {
-      // @ts-ignore
-      result[key] = convert(item, input[key])
+    const c: Converter<I, T> = (input) => {
+      let result: T = {} as T
+      for (let key of getKeys(input)) {
+        // @ts-ignore
+        result[key] = convert(item, input[key])
+      }
+      return result
     }
-    return result
-  }
 
-  const cv: Converter<T, I> = (input) => {
-    let result: I = {}
-    for (let key in input) {
-      // @ts-ignore
-      result[key] = controvert(item, input[key])
+    const cv: Converter<T, I> = (input) => {
+      let result: I = {}
+      for (let key in input) {
+        // @ts-ignore
+        result[key] = controvert(item, input[key])
+      }
+      return result
     }
-    return result
-  }
 
-  return createTypeFromAnyObject(
-    '',
-    () => createRecordType(type(item)),
-    v,
-    c,
-    cv,
-    description
-  )
-}
+    return createTypeFromAnyObject(
+      '',
+      () => createRecordType(type(item)),
+      v,
+      c,
+      cv,
+      description
+    )
+  }
 
 export const RecordType = createRecord
 

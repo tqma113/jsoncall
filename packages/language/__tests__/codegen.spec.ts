@@ -3,12 +3,12 @@ import path from 'path'
 import {
   PrimitiveTypeEnum,
   SpecialTypeEnum,
-  createLinkDefination,
-  createDeriveDefination,
+  createLinkDefinition,
+  createDeriveDefinition,
   createPrimitiveType,
-  createCallDefination,
-  createExportDefination,
-  createTypeDefination,
+  createCallDefinition,
+  createExportDefinition,
+  createTypeDefinition,
   createSpecialType,
   createLiteralType,
   createListType,
@@ -23,11 +23,11 @@ import {
 import {
   bundle,
   codegen,
-  codegenLinkDefination,
-  codegenDeriveDefination,
-  codegenCallDefination,
-  codegenExportDefination,
-  codegenTypeDefination,
+  codegenLinkDefinition,
+  codegenDeriveDefinition,
+  codegenCallDefinition,
+  codegenExportDefinition,
+  codegenTypeDefinition,
   codegenType,
 } from '../src'
 import { nodeModuleResolver } from './node'
@@ -51,23 +51,23 @@ describe('codegen', () => {
     expect(map.get(moduleId)).toBe(content)
   })
 
-  describe('LinkDefination', () => {
+  describe('LinkDefinition', () => {
     it('sample', () => {
       expect(
-        codegenLinkDefination(createLinkDefination('foo', [['foo1', 'foo1']]))
+        codegenLinkDefinition(createLinkDefinition('foo', [['foo1', 'foo1']]))
       ).toBe('import { foo1 } from "foo"')
     })
 
     it('rename', () => {
       expect(
-        codegenLinkDefination(createLinkDefination('foo', [['foo1', 'foo2']]))
+        codegenLinkDefinition(createLinkDefinition('foo', [['foo1', 'foo2']]))
       ).toBe('import { foo1 as foo2 } from "foo"')
     })
 
     it('mutiple', () => {
       expect(
-        codegenLinkDefination(
-          createLinkDefination('foo', [
+        codegenLinkDefinition(
+          createLinkDefinition('foo', [
             ['foo1', 'foo1'],
             ['foo2', 'foo3'],
           ])
@@ -76,11 +76,11 @@ describe('codegen', () => {
     })
   })
 
-  describe('DeriveDefination', () => {
+  describe('DeriveDefinition', () => {
     it('sample', () => {
       expect(
-        codegenDeriveDefination(
-          createDeriveDefination(
+        codegenDeriveDefinition(
+          createDeriveDefinition(
             'BigInt',
             createPrimitiveType(PrimitiveTypeEnum.String),
             null
@@ -91,8 +91,8 @@ describe('codegen', () => {
 
     it('with comment', () => {
       expect(
-        codegenDeriveDefination(
-          createDeriveDefination(
+        codegenDeriveDefinition(
+          createDeriveDefinition(
             'BigInt',
             createPrimitiveType(PrimitiveTypeEnum.String),
             'foo'
@@ -102,11 +102,11 @@ describe('codegen', () => {
     })
   })
 
-  describe('CallDefination', () => {
+  describe('CallDefinition', () => {
     it('sample', () => {
       expect(
-        codegenCallDefination(
-          createCallDefination(
+        codegenCallDefinition(
+          createCallDefinition(
             'fooCall',
             createPrimitiveType(PrimitiveTypeEnum.String),
             createPrimitiveType(PrimitiveTypeEnum.String),
@@ -118,8 +118,8 @@ describe('codegen', () => {
 
     it('with comment', () => {
       expect(
-        codegenCallDefination(
-          createCallDefination(
+        codegenCallDefinition(
+          createCallDefinition(
             'fooCall',
             createPrimitiveType(PrimitiveTypeEnum.String),
             createPrimitiveType(PrimitiveTypeEnum.String),
@@ -130,17 +130,17 @@ describe('codegen', () => {
     })
   })
 
-  it('ExportDefination', () => {
+  it('ExportDefinition', () => {
     expect(
-      codegenExportDefination(createExportDefination(['foo1', 'foo2']))
+      codegenExportDefinition(createExportDefinition(['foo1', 'foo2']))
     ).toBe('export {\n  foo1,\n  foo2,\n}')
   })
 
-  describe('TypeDefination', () => {
+  describe('TypeDefinition', () => {
     it('sample', () => {
       expect(
-        codegenTypeDefination(
-          createTypeDefination(
+        codegenTypeDefinition(
+          createTypeDefinition(
             'foo',
             createPrimitiveType(PrimitiveTypeEnum.String),
             null
@@ -151,8 +151,8 @@ describe('codegen', () => {
 
     it('with comment', () => {
       expect(
-        codegenTypeDefination(
-          createTypeDefination(
+        codegenTypeDefinition(
+          createTypeDefinition(
             'foo',
             createPrimitiveType(PrimitiveTypeEnum.String),
             'foo'

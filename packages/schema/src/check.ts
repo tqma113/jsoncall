@@ -2,11 +2,11 @@ import { SchemaError } from './error'
 import {
   Schema,
   SchemaModule,
-  TypeDefination,
-  DeriveDefination,
-  LinkDefination,
-  ExportDefination,
-  CallDefination,
+  TypeDefinition,
+  DeriveDefinition,
+  LinkDefinition,
+  ExportDefinition,
+  CallDefinition,
   Type,
   PrimitiveType,
   SpecialType,
@@ -32,13 +32,13 @@ export const check = (schema: Schema): SchemaError | null => {
     }
 
     const checkLinkDefination = (
-      linkDefination: LinkDefination
+      linkDefination: LinkDefinition
     ): SchemaError | null => {
       const fromModule = schema.modules.find(
         (module) => module.id === linkDefination.from
       )
       if (fromModule) {
-        const exports = fromModule.exportDefination?.names || []
+        const exports = fromModule.exportDefinition?.names || []
         for (const [from, to] of linkDefination.links) {
           if (!exports.includes(from)) {
             return new SchemaError(
@@ -62,7 +62,7 @@ export const check = (schema: Schema): SchemaError | null => {
     }
 
     const checkTypeDefination = (
-      typeDefination: TypeDefination
+      typeDefination: TypeDefinition
     ): SchemaError | null => {
       if (names.includes(typeDefination.name)) {
         return new SchemaError(
@@ -77,7 +77,7 @@ export const check = (schema: Schema): SchemaError | null => {
     }
 
     const checkDeriveDefination = (
-      deriveDefination: DeriveDefination
+      deriveDefination: DeriveDefinition
     ): SchemaError | null => {
       if (names.includes(deriveDefination.name)) {
         return new SchemaError(
@@ -92,7 +92,7 @@ export const check = (schema: Schema): SchemaError | null => {
     }
 
     const checkExportDefination = (
-      exportDefination: ExportDefination
+      exportDefination: ExportDefinition
     ): SchemaError | null => {
       const repeatItem = findRepeated(exportDefination.names)
       if (repeatItem) {
@@ -111,7 +111,7 @@ export const check = (schema: Schema): SchemaError | null => {
     }
 
     const checkCallDefination = (
-      callDefination: CallDefination
+      callDefination: CallDefinition
     ): SchemaError | null => {
       if (names.includes(callDefination.name)) {
         return new SchemaError(
@@ -280,34 +280,34 @@ export const check = (schema: Schema): SchemaError | null => {
 
     const names: string[] = []
 
-    for (const linkDefination of module.linkDefinations) {
+    for (const linkDefination of module.linkDefinitions) {
       const result = checkLinkDefination(linkDefination)
 
       if (result !== null) return result
     }
 
-    for (const typeDefination of module.typeDefinations) {
+    for (const typeDefination of module.typeDefinitions) {
       const result = checkTypeDefination(typeDefination)
 
       if (result !== null) return result
     }
 
-    for (const deriveDefination of module.deriveDefinations) {
+    for (const deriveDefination of module.deriveDefinitions) {
       const result = checkDeriveDefination(deriveDefination)
 
       if (result !== null) return result
     }
 
-    if (module.exportDefination !== null) {
-      const result = checkExportDefination(module.exportDefination)
+    if (module.exportDefinition !== null) {
+      const result = checkExportDefination(module.exportDefinition)
 
       if (result !== null) return result
     }
 
-    const exportNames = module.exportDefination?.names || []
+    const exportNames = module.exportDefinition?.names || []
 
     // check type
-    for (const typeDefination of module.typeDefinations) {
+    for (const typeDefination of module.typeDefinitions) {
       const result = checkType(
         typeDefination.type,
         names.filter((name) => name !== typeDefination.name)
@@ -316,7 +316,7 @@ export const check = (schema: Schema): SchemaError | null => {
       if (result !== null) return result
     }
 
-    for (const deriveDefination of module.deriveDefinations) {
+    for (const deriveDefination of module.deriveDefinitions) {
       const result = checkType(
         deriveDefination.type,
         names.filter((name) => name !== deriveDefination.name)
@@ -326,7 +326,7 @@ export const check = (schema: Schema): SchemaError | null => {
     }
 
     // call
-    for (const callDefination of module.callDefinations) {
+    for (const callDefination of module.callDefinitions) {
       const result = checkCallDefination(callDefination)
 
       if (result !== null) return result

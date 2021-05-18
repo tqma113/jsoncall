@@ -17,11 +17,11 @@ export const rename = (prev: Schema, getName: Namer): Schema => {
 
     // clone module
     const newModule = createSchemaModule(module.id)
-    newModule.typeDefinations = [...module.typeDefinations]
-    newModule.deriveDefinations = [...module.deriveDefinations]
-    newModule.callDefinations = [...module.callDefinations]
-    newModule.exportDefination = module.exportDefination
-    newModule.linkDefinations = [...module.linkDefinations]
+    newModule.typeDefinitions = [...module.typeDefinitions]
+    newModule.deriveDefinitions = [...module.deriveDefinitions]
+    newModule.callDefinitions = [...module.callDefinitions]
+    newModule.exportDefinition = module.exportDefinition
+    newModule.linkDefinitions = [...module.linkDefinitions]
 
     schema.modules.push(newModule)
   })
@@ -36,7 +36,7 @@ export const rename = (prev: Schema, getName: Namer): Schema => {
         module.id = current
       }
 
-      module.linkDefinations.forEach((linkDefination) => {
+      module.linkDefinitions.forEach((linkDefination) => {
         if (linkDefination.from === prev) {
           linkDefination.from = current
         }

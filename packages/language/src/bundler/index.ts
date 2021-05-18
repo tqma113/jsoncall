@@ -1,5 +1,5 @@
 import { parse } from '../parser'
-import { format } from '../formater'
+import { format } from '../formatter'
 import { Schema, createSchema, check } from 'jc-schema'
 import { BundleError } from '../error'
 import { access } from './accessor'

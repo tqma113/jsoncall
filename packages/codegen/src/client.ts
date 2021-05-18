@@ -12,9 +12,8 @@ import {
 import type { Sender, SyncSender } from 'jc-client'
 
 export const clientCodegen = (schema: Schema, options?: Options): string => {
-  const { importItems, code, generics, props, calls } = builderCodegenSchema(
-    schema
-  )
+  const { importItems, code, generics, props, calls } =
+    builderCodegenSchema(schema)
 
   let propsStr = genProps(props)
   if (propsStr) {

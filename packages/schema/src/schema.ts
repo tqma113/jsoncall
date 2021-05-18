@@ -7,42 +7,42 @@ export type Schema = {
 export type SchemaModule = {
   kind: 'SchemaModule'
   id: string
-  typeDefinations: TypeDefination[]
-  deriveDefinations: DeriveDefination[]
-  linkDefinations: LinkDefination[]
-  exportDefination: ExportDefination | null
-  callDefinations: CallDefination[]
+  typeDefinitions: TypeDefinition[]
+  deriveDefinitions: DeriveDefinition[]
+  linkDefinitions: LinkDefinition[]
+  exportDefinition: ExportDefinition | null
+  callDefinitions: CallDefinition[]
 }
 
-export type TypeDefination = {
-  kind: 'TypeDefination'
+export type TypeDefinition = {
+  kind: 'TypeDefinition'
   name: string
   type: Type
   description: string | null
 }
 
-export type LinkDefination = {
-  kind: 'LinkDefination'
+export type LinkDefinition = {
+  kind: 'LinkDefinition'
   from: string
   links: Link[]
 }
 
 export type Link = [string, string]
 
-export type ExportDefination = {
-  kind: 'ExportDefination'
+export type ExportDefinition = {
+  kind: 'ExportDefinition'
   names: string[]
 }
 
-export type DeriveDefination = {
-  kind: 'DeriveDefination'
+export type DeriveDefinition = {
+  kind: 'DeriveDefinition'
   name: string
   type: Type
   description: string | null
 }
 
-export type CallDefination = {
-  kind: 'CallDefination'
+export type CallDefinition = {
+  kind: 'CallDefinition'
   name: string
   input: Type
   output: Type
@@ -145,67 +145,67 @@ export const createSchema = (entry: string): Schema => {
 export const createSchemaModule = (id: string): SchemaModule => {
   return {
     kind: 'SchemaModule',
-    typeDefinations: [],
-    linkDefinations: [],
-    exportDefination: null,
-    deriveDefinations: [],
-    callDefinations: [],
+    typeDefinitions: [],
+    linkDefinitions: [],
+    exportDefinition: null,
+    deriveDefinitions: [],
+    callDefinitions: [],
     id,
   }
 }
 
-export const createTypeDefination = (
+export const createTypeDefinition = (
   name: string,
   type: Type,
   description: string | null
-): TypeDefination => {
+): TypeDefinition => {
   return {
-    kind: 'TypeDefination',
+    kind: 'TypeDefinition',
     name,
     type,
     description,
   }
 }
 
-export const createExportDefination = (names: string[]): ExportDefination => {
+export const createExportDefinition = (names: string[]): ExportDefinition => {
   return {
-    kind: 'ExportDefination',
+    kind: 'ExportDefinition',
     names,
   }
 }
 
-export const createLinkDefination = (
+export const createLinkDefinition = (
   from: string,
   links: Link[]
-): LinkDefination => {
+): LinkDefinition => {
   return {
-    kind: 'LinkDefination',
+    kind: 'LinkDefinition',
     from,
     links,
   }
 }
 
-export const createDeriveDefination = (
+export const createDeriveDefinition = (
   name: string,
   type: Type,
   description: string | null
-): DeriveDefination => {
+): DeriveDefinition => {
   return {
-    kind: 'DeriveDefination',
+    kind: 'DeriveDefinition',
     name,
     type,
     description,
   }
 }
 
-export const createCallDefination = (
+export const createCallDefinition = (
   name: string,
   input: Type,
   output: Type,
   description: string | null
-): CallDefination => {
+): CallDefinition => {
   return {
-    kind: 'CallDefination',
+    kind: 'CallDefinition',
     name,
     input,
     output,
