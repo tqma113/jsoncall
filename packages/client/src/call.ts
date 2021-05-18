@@ -5,7 +5,7 @@ import {
   name,
   validate,
   convert,
-  contraverte,
+  controvert,
 } from 'jc-builder'
 import { SendError, ServerError } from './error'
 import { Result, Ok, Err } from './result'
@@ -32,7 +32,7 @@ export const createJSONCall = <
 ): JSONCall<IT, Result<OT, CallError>> => {
   return async (input) => {
     try {
-      const rcResult = contraverte(type.input, input)
+      const rcResult = controvert(type.input, input)
       const inputValidateResult = validate(type.input, rcResult)
       if (inputValidateResult === true) {
         try {
@@ -79,7 +79,7 @@ export const createSyncJSONCall = <
 ): SyncJSONCall<IT, Result<OT, CallError>> => {
   return (input) => {
     try {
-      const rcResult = contraverte(type.input, input)
+      const rcResult = controvert(type.input, input)
       const inputValidateResult = validate(type.input, rcResult)
       if (inputValidateResult === true) {
         try {

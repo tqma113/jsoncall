@@ -17,7 +17,7 @@ import {
   StructType,
   validate,
   convert,
-  contraverte,
+  controvert,
   createJSONType,
   ValidateError,
 } from '../src/index'
@@ -73,8 +73,8 @@ describe('type', () => {
     })
 
     expect(convert(NumberString, '123')).toBe(123)
-    expect(contraverte(NumberString, 123)).toBe('123')
-    expect(contraverte(NumberString, convert(NumberString, '123'))).toBe('123')
+    expect(controvert(NumberString, 123)).toBe('123')
+    expect(controvert(NumberString, convert(NumberString, '123'))).toBe('123')
   })
 
   describe('primitive', () => {

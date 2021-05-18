@@ -24,7 +24,7 @@ export type Converter<I, T> = (input: I) => T
 export const JSON_TYPE_SYMBOL = Symbol('JSON_TYPE_SYMBOL')
 export const VALIDATE = Symbol('VALIDATE')
 export const CONVERT = Symbol('CONVERT')
-export const CONTRAVERTE = Symbol('CONTRAVERTE')
+export const CONTROVERT = Symbol('CONTROVERT')
 export const NAME = Symbol('NAME')
 export const DESCRIPTION = Symbol('DESCRIPTION')
 export const TYPE = Symbol('TYPE')
@@ -45,7 +45,7 @@ export type BaseJSONType<I, T, K extends string> = {
   [DESCRIPTION]: () => string
   [VALIDATE]: Validator
   [CONVERT]: Converter<I, T>
-  [CONTRAVERTE]: Converter<T, I>
+  [CONTROVERT]: Converter<T, I>
   [ORIGIN]: JSONType<I, T, K> | null
 }
 
@@ -66,7 +66,7 @@ export const createJSONType = <I, T, K extends string>(
   type: () => Type,
   validate: Validator,
   convert: Converter<I, T>,
-  contraverte: Converter<T, I>,
+  controvert: Converter<T, I>,
   description: () => string,
   origin: JSONType<I, T, K> | null = null
 ): BaseJSONType<I, T, K> => {
@@ -76,7 +76,7 @@ export const createJSONType = <I, T, K extends string>(
     [TYPE]: type,
     [VALIDATE]: validate,
     [CONVERT]: convert,
-    [CONTRAVERTE]: contraverte,
+    [CONTROVERT]: controvert,
     [DESCRIPTION]: description,
     [ORIGIN]: origin,
   }
@@ -90,11 +90,8 @@ export const convert = <I, T>(type: JSONType<I, T, string>, input: I): T => {
   return getInstance(type)[CONVERT](input)
 }
 
-export const contraverte = <I, T>(
-  type: JSONType<I, T, string>,
-  input: T
-): I => {
-  return getInstance(type)[CONTRAVERTE](input)
+export const controvert = <I, T>(type: JSONType<I, T, string>, input: T): I => {
+  return getInstance(type)[CONTROVERT](input)
 }
 
 export const name = <K extends string>(type: JSONType<any, any, K>): K => {
@@ -149,7 +146,7 @@ export const Naming = <I, T, K extends string>(
     () => createNameType(name),
     type()[VALIDATE],
     type()[CONVERT],
-    type()[CONTRAVERTE],
+    type()[CONTROVERT],
     () => description || desc(type),
     type
   )
@@ -164,7 +161,7 @@ export const NamingWithoutType = <I, T, K extends string>(
     type()[TYPE],
     type()[VALIDATE],
     type()[CONVERT],
-    type()[CONTRAVERTE],
+    type()[CONTROVERT],
     () => description || desc(type),
     type
   )
@@ -371,7 +368,7 @@ export const createUnion = <
     const cv: Converter<T, I> = (input) => {
       for (let unionType of unionTypes.slice().reverse()) {
         try {
-          return contraverte(unionType, input)
+          return controvert(unionType, input)
         } catch {
           continue
         }
@@ -448,7 +445,7 @@ export const createIntersection = <
       return intersectionTypes.reduce((cur, intersectionType) => {
         return {
           ...cur,
-          ...contraverte(intersectionType, input),
+          ...controvert(intersectionType, input),
         }
       }, {} as I)
     }
@@ -495,7 +492,7 @@ export const createDeriveType = <FI, FT, FK extends string>(
   }
 
   const cv: Converter<T, FI> = (input) => {
-    return contraverte(from, curReverseConverter(input))
+    return controvert(from, curReverseConverter(input))
   }
 
   return createJSONType(name, type, v, c, cv, description)
@@ -526,7 +523,7 @@ export const createList = <
   }
 
   const cv: Converter<FT[], any[]> = (input) => {
-    return input.map((i) => contraverte(item, i))
+    return input.map((i) => controvert(item, i))
   }
 
   return createTypeFromAnyList(
@@ -581,7 +578,7 @@ export const createTuple = <TS extends JSONType<any, any, string>[]>(
   const cv: Converter<ToTupleType<TS>, any[]> = (input) => {
     let result: any[] = []
     for (let index = 0; index < tupleTypes.length; index++) {
-      result[index] = contraverte(tupleTypes[index], input[index])
+      result[index] = controvert(tupleTypes[index], input[index])
     }
     return result
   }
@@ -646,7 +643,7 @@ export const createObject = <
     let result: I = {} as I
     for (let key of getKeys(objectType)) {
       // @ts-ignore
-      result[key] = contraverte(objectType[key], input[key])
+      result[key] = controvert(objectType[key], input[key])
     }
     return result
   }
@@ -711,7 +708,7 @@ export const createRecord = <
     let result: I = {}
     for (let key in input) {
       // @ts-ignore
-      result[key] = contraverte(item, input[key])
+      result[key] = controvert(item, input[key])
     }
     return result
   }
@@ -738,7 +735,7 @@ export class StructType implements BaseJSONType<object, any, string> {
   [DESCRIPTION]: () => string;
   [VALIDATE]: Validator<object>;
   [CONVERT]: Converter<object, any>;
-  [CONTRAVERTE]: Converter<any, object>;
+  [CONTROVERT]: Converter<any, object>;
   [STRUCT_TYPE] = STRUCT_TYPE;
 
   [NAME] = 'Struct';
@@ -754,7 +751,7 @@ export class StructType implements BaseJSONType<object, any, string> {
     return input
   };
 
-  [CONTRAVERTE] = (input: any): object => {
+  [CONTROVERT] = (input: any): object => {
     return input
   }
 
@@ -824,7 +821,7 @@ function getKeys<T extends {}>(o: T): Array<keyof T> {
 
 // const convert: Converter<string, Date> = (input) => {}
 
-// const contraverte: Converter<Date, string> = (input) => {}
+// const controvert: Converter<Date, string> = (input) => {}
 
 // const createTypeFromString = createDeriveType(StringType)
 
@@ -832,7 +829,7 @@ function getKeys<T extends {}>(o: T): Array<keyof T> {
 //   `Date` as const,
 //   validate,
 //   convert,
-//   contraverte
+//   controvert
 // )
 
 // const createTypeFromDateType = createDeriveType(DateType)
