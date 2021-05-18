@@ -2,9 +2,6 @@
 
 A schema for description of json call.
 
-JSONCall
-https://github.com/tqma113/jsoncall
-
 |          |Express/Koa等传统的 Web 框架 |GraphQL|Farrow|gRpc|JSONCall|
 |----------|---------------------------|-------|------|----|--------|
 | 类型安全   | ❌|❌|✅|❌|✅|
