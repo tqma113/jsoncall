@@ -33,3 +33,30 @@ export type LinkType = {
   type: string
   as: string
 }
+
+export const createBuilderSchema = <
+  TS extends Record<string, JSONType<any, any, string>>,
+  CS extends Record<
+    string,
+    JSONCallType<string, any, any, string, any, any, string>
+  >
+>(
+  types: TS,
+  calls: CS,
+  namespace: string = 'jsoncall'
+): BuilderSchema<CS> => {
+  return {
+    entry: namespace,
+    modules: [
+      {
+        id: namespace,
+        links: [],
+        types,
+        derives: {},
+        exports: {},
+        calls,
+      },
+    ],
+    calls,
+  }
+}

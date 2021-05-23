@@ -40,3 +40,5 @@ export const createJSONCallType = <
     description,
   }
 }
+
+export const JSONCallType = createJSONCallType
