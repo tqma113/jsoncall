@@ -1,6 +1,6 @@
 {
   "name": "jc-serialization",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Serialization for json call client and server.",
   "main": "index.js",
   "module": "dist/index.js",
