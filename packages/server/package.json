@@ -7,6 +7,10 @@
   "types": "dist/index.d.ts",
   "author": "Ma Tianqi",
   "license": "MIT",
+  "files": [
+    "src",
+    "dist"
+  ],
   "peerDependencies": {
     "jc-builder": "0.0.1",
     "jc-serialization": "0.0.1"
