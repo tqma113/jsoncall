@@ -96,7 +96,7 @@ export const clientCodegen = (schema: Schema, options?: Options): string => {
 }
 
 export const introspectionClientCodegen = async (
-  send: Sender | SyncSender,
+  send: Sender,
   options?: Options
 ): Promise<string> => {
   const output = await send(JSON.stringify(IntrospectionCalling()))

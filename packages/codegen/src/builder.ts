@@ -202,7 +202,7 @@ export const builderCodegenModule = (module: SchemaModule): ModuleCodegen => {
       buildIn.push('ObjectType')
       return `ObjectType({${objectType.fields.map(
         (field) => `${field.name}: ${codegenType(field.type)},`
-      )}})`
+      ).join('')}})`
     }
 
     const codegenTupleType = (tupleType: TupleType): string => {
