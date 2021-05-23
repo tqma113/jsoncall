@@ -19,7 +19,7 @@ import {
   ValidateError,
   type,
 } from 'jc-builder'
-import { createJSONCall, Sender, createSender } from '../../../src'
+import { createJSONCall, AsyncSender, createSender } from '../../../src'
 import type { Serialize, Deserialize } from 'jc-serialization'
 
 const createBuilderSchema = <I, II>(fooDerives: {
@@ -247,7 +247,7 @@ export const createCalls = <I, II>(
   },
   serialize: Serialize<any>,
   deserialize: Deserialize<any>,
-  send: Sender
+  send: AsyncSender
 ) => {
   const builderSchema = createBuilderSchema(fooDerives)
   return {

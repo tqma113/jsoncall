@@ -10,7 +10,9 @@ import {
 import { Serialize, Deserialize, SerializationError } from 'jc-serialization'
 import { SendError } from './error'
 
-export type Sender = (input: string) => Promise<string>
+export type Sender = AsyncSender | SyncSender
+
+export type AsyncSender = (input: string) => Promise<string>
 export type CallSender<N extends string> = (
   name: N,
   input: string
@@ -18,7 +20,7 @@ export type CallSender<N extends string> = (
 
 export const createSender =
   <N extends string>(
-    send: Sender,
+    send: AsyncSender,
     serialize: Serialize<object>,
     deserialize: Deserialize<object>
   ): CallSender<N> =>
@@ -56,7 +58,7 @@ export const createSender =
   }
 
 export const createBatchSender = <N extends string>(
-  send: Sender,
+  send: AsyncSender,
   serialize: Serialize<object>,
   deserialize: Deserialize<object>
 ): CallSender<N> => {

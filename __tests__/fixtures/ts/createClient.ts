@@ -19,7 +19,7 @@ import {
 import {
   createJSONCall,
   createSyncJSONCall,
-  Sender,
+  AsyncSender,
   SyncSender,
   createSender,
   createBatchSender,
@@ -233,7 +233,7 @@ export const createClient = <INTI, DATEI>(
     int: JSONType<any, INTI, string>
     Date: JSONType<any, DATEI, string>
   },
-  send: Sender
+  send: AsyncSender
 ) => {
   const builderSchema = createBuilderSchema(fooDerives)
   const callSender = createSender(send, JSON.stringify, JSON.parse)
@@ -265,7 +265,7 @@ export const createBatchClient = <INTI, DATEI>(
     int: JSONType<any, INTI, string>
     Date: JSONType<any, DATEI, string>
   },
-  send: Sender
+  send: AsyncSender
 ) => {
   const builderSchema = createBuilderSchema(fooDerives)
   const callSender = createBatchSender(send, JSON.stringify, JSON.parse)
