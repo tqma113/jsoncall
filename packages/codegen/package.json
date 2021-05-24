@@ -1,6 +1,6 @@
 {
   "name": "jc-codegen",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Code generation to json call in typescript.",
   "main": "index.js",
   "module": "dist/index.js",
