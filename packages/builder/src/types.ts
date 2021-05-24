@@ -256,9 +256,11 @@ export const AnyObjectType = () =>
     },
     identify as Converter<any, object>,
     (input) => {
-      if (typeof input === 'object' &&
-      input !== null &&
-      !Array.isArray(input)) {
+      if (
+        typeof input === 'object' &&
+        input !== null &&
+        !Array.isArray(input)
+      ) {
         return input as any
       }
       throw new ConvertError(JSON.stringify(input), 'object')

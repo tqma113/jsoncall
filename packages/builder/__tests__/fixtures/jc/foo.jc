@@ -36,32 +36,32 @@ type foo15 = true
 
 type foo16 = false
 
+type foo = foo6
+
+# bar
+type bar = {
+  bar: string
+}
+
+# foo and bar
+type fooAndBar = foo & bar
+
+# baz
+type baz = {
+  baz: boolean
+}
+
+# foo and baz
+type fooAndBaz = foo & baz
+
+# foo, bar and baz
+type fooAndBarAndBaz = foo & bar & baz
 
 derive int from number
 
 derive Date from string
 
-
-export {
-  foo1,
-  foo2,
-  foo3,
-  foo4,
-  foo5,
-  foo6,
-  foo7,
-  foo8,
-  foo9,
-  foo10,
-  foo11,
-  foo12,
-  foo13,
-  foo14,
-  foo15,
-  int,
-  Date,
-}
-
-
 # some comments
-call fooCall: number => string
+call bazCall: fooAndBarAndBaz => baz
+call barCall: fooAndBar => bar
+call fooCall: fooAndBaz => foo

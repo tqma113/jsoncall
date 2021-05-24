@@ -11,7 +11,7 @@ export const serverCodegen = (schema: Schema, options?: Options): string => {
   const {
     importItems: builderImport,
     generics,
-    props,
+    derives,
     code,
   } = builderCodegenSchema(schema)
 
@@ -23,10 +23,10 @@ export const serverCodegen = (schema: Schema, options?: Options): string => {
 
   ${code}
   
-  export const createServerService = ${genGenerics(generics)}(${genProps(
-      props
+  export const createServerService = ${genGenerics(generics)}(derives: ${genProps(
+      derives
     )}) => {
-    const builderSchema = createBuilderSchema(${genPropsNames(props)})
+    const builderSchema = createBS(derives)
     return createService(builderSchema, JSON.stringify, JSON.parse)
   }`,
     { parser: 'typescript', ...options }

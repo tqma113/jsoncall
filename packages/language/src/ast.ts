@@ -27,7 +27,6 @@ export enum ASTNodeKind {
   BooleanLiteralNode    = 'boolean literal node',
 
   NameNode              = 'name node',
-  PathNode              = 'path node',
 
   UnionNode             = 'union type',
   IntersectionNode      = 'intersection type',
@@ -35,9 +34,6 @@ export enum ASTNodeKind {
   TypeDeclaration       = 'type declaration',
   DeriveDeclaration     = 'derive declaration',
   CallDeclaration       = 'call declaration',
-
-  ImportStatement       = 'import statement',
-  ExportStatement       = 'export statement',
 
   CommentBlock          = 'comment block',
 
@@ -116,11 +112,6 @@ export type NameNode = BaseNode & {
   name: Name
 }
 
-export type PathNode = BaseNode & {
-  kind: ASTNodeKind.PathNode
-  path: StringLiteral
-}
-
 export type CommentBlock = {
   kind: ASTNodeKind.CommentBlock
   location: Location | null
@@ -167,23 +158,7 @@ export type CallDeclaration = BaseNode &
     output: TypeNode
   }
 
-export type ImportStatement = BaseNode & {
-  kind: ASTNodeKind.ImportStatement
-  names: [NameNode, NameNode][]
-  path: PathNode
-}
-
-export type ExportStatement = BaseNode & {
-  kind: ASTNodeKind.ExportStatement
-  names: NameNode[]
-}
-
-export type Statement =
-  | TypeDeclaration
-  | DeriveDeclaration
-  | CallDeclaration
-  | ImportStatement
-  | ExportStatement
+export type Statement = TypeDeclaration | DeriveDeclaration | CallDeclaration
 
 export type Document = BaseNode & {
   kind: ASTNodeKind.Document
@@ -336,17 +311,6 @@ export const createNameNode = (name: Name, location: Location): NameNode => {
   }
 }
 
-export const createPathNode = (
-  path: StringLiteral,
-  location: Location
-): PathNode => {
-  return {
-    kind: ASTNodeKind.PathNode,
-    path,
-    location,
-  }
-}
-
 export const createCommentBlock = (
   comments: Comment[] = [],
   location: Location | null = null
@@ -402,30 +366,6 @@ export const createCallDeclaration = (
     output,
     location,
     comment,
-  }
-}
-
-export const createImportStatement = (
-  names: [NameNode, NameNode][],
-  path: PathNode,
-  location: Location
-): ImportStatement => {
-  return {
-    kind: ASTNodeKind.ImportStatement,
-    names,
-    path,
-    location,
-  }
-}
-
-export const createExportStatement = (
-  names: NameNode[],
-  location: Location
-): ExportStatement => {
-  return {
-    kind: ASTNodeKind.ExportStatement,
-    names,
-    location,
   }
 }
 

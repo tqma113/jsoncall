@@ -7,18 +7,14 @@ import {
   builderCodegenSchema,
   genGenerics,
   genProps,
-  genPropsNames,
 } from './builder'
-import type { Sender, SyncSender } from 'jc-client'
+import type { Sender } from 'jc-client'
 
 export const clientCodegen = (schema: Schema, options?: Options): string => {
-  const { importItems, code, generics, props, calls } =
+  const { importItems, code, generics, derives, calls } =
     builderCodegenSchema(schema)
 
-  let propsStr = genProps(props)
-  if (propsStr) {
-    propsStr += ','
-  }
+  const propsStr = genProps(derives)
 
   return format(
     `import {
@@ -29,10 +25,10 @@ export const clientCodegen = (schema: Schema, options?: Options): string => {
   ${code}
 
   export const createClient = ${genGenerics(generics)}(
-    ${propsStr}
+    ${propsStr && `derives: ${propsStr},`}
     send: AsyncSender
   ) => {
-    const builderSchema = createBuilderSchema(${genPropsNames(props)})
+    const builderSchema = createBS(derives)
     const callSender = createSender(send, JSON.stringify, JSON.parse)
 
     return {
@@ -50,10 +46,10 @@ export const clientCodegen = (schema: Schema, options?: Options): string => {
   }
 
   export const createBatchClient = ${genGenerics(generics)}(
-    ${propsStr}
+    ${propsStr && `derives: ${propsStr},`}
     send: AsyncSender
   ) => {
-    const builderSchema = createBuilderSchema(${genPropsNames(props)})
+    const builderSchema = createBS(derives)
     const callSender = createBatchSender(send, JSON.stringify, JSON.parse)
 
     return {
@@ -71,10 +67,10 @@ export const clientCodegen = (schema: Schema, options?: Options): string => {
   }
 
   export const createSyncClient = ${genGenerics(generics)}(
-    ${propsStr}
+    ${propsStr && `derives: ${propsStr},`}
     send: SyncSender
   ) => {
-    const builderSchema = createBuilderSchema(${genPropsNames(props)})
+    const builderSchema = createBS(derives)
     const callSender = createSyncSender(send, JSON.stringify, JSON.parse)
 
     return {

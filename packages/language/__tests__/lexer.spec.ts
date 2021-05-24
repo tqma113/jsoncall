@@ -122,18 +122,6 @@ describe('lexer', () => {
       word: 'from',
       kind: 'keyword',
     })
-    expect(lexer.next()).toMatchObject({
-      word: 'import',
-      kind: 'keyword',
-    })
-    expect(lexer.next()).toMatchObject({
-      word: 'export',
-      kind: 'keyword',
-    })
-    expect(lexer.next()).toMatchObject({
-      word: 'as',
-      kind: 'keyword',
-    })
   })
 
   it('primitive type', () => {
@@ -467,13 +455,6 @@ describe('lexer', () => {
       kind: 'primitive type',
     })
 
-    expect(lexer.next()).toMatchObject({ word: 'import', kind: 'keyword' })
-    expect(lexer.next()).toMatchObject({ word: '{', kind: 'operator' })
-    expect(lexer.next()).toMatchObject({ word: 'bar', kind: 'name' })
-    expect(lexer.next()).toMatchObject({ word: '}', kind: 'operator' })
-    expect(lexer.next()).toMatchObject({ word: 'from', kind: 'keyword' })
-    expect(lexer.next()).toMatchObject({ word: './bar.jc', kind: 'string' })
-
     expect(lexer.next()).toMatchObject({ word: 'derive', kind: 'keyword' })
     expect(lexer.next()).toMatchObject({ word: 'int', kind: 'name' })
     expect(lexer.next()).toMatchObject({ word: 'from', kind: 'keyword' })
@@ -489,45 +470,6 @@ describe('lexer', () => {
       word: 'string',
       kind: 'primitive type',
     })
-
-    expect(lexer.next()).toMatchObject({ word: 'export', kind: 'keyword' })
-    expect(lexer.next()).toMatchObject({ word: '{', kind: 'operator' })
-    expect(lexer.next()).toMatchObject({ word: 'foo1', kind: 'name' })
-    expect(lexer.next()).toMatchObject({ word: ',', kind: 'operator' })
-    expect(lexer.next()).toMatchObject({ word: 'foo2', kind: 'name' })
-    expect(lexer.next()).toMatchObject({ word: ',', kind: 'operator' })
-    expect(lexer.next()).toMatchObject({ word: 'foo3', kind: 'name' })
-    expect(lexer.next()).toMatchObject({ word: ',', kind: 'operator' })
-    expect(lexer.next()).toMatchObject({ word: 'foo4', kind: 'name' })
-    expect(lexer.next()).toMatchObject({ word: ',', kind: 'operator' })
-    expect(lexer.next()).toMatchObject({ word: 'foo5', kind: 'name' })
-    expect(lexer.next()).toMatchObject({ word: ',', kind: 'operator' })
-    expect(lexer.next()).toMatchObject({ word: 'foo6', kind: 'name' })
-    expect(lexer.next()).toMatchObject({ word: ',', kind: 'operator' })
-    expect(lexer.next()).toMatchObject({ word: 'foo7', kind: 'name' })
-    expect(lexer.next()).toMatchObject({ word: ',', kind: 'operator' })
-    expect(lexer.next()).toMatchObject({ word: 'foo8', kind: 'name' })
-    expect(lexer.next()).toMatchObject({ word: ',', kind: 'operator' })
-    expect(lexer.next()).toMatchObject({ word: 'foo9', kind: 'name' })
-    expect(lexer.next()).toMatchObject({ word: ',', kind: 'operator' })
-    expect(lexer.next()).toMatchObject({ word: 'foo10', kind: 'name' })
-    expect(lexer.next()).toMatchObject({ word: ',', kind: 'operator' })
-    expect(lexer.next()).toMatchObject({ word: 'foo11', kind: 'name' })
-    expect(lexer.next()).toMatchObject({ word: ',', kind: 'operator' })
-    expect(lexer.next()).toMatchObject({ word: 'foo12', kind: 'name' })
-    expect(lexer.next()).toMatchObject({ word: ',', kind: 'operator' })
-    expect(lexer.next()).toMatchObject({ word: 'foo13', kind: 'name' })
-    expect(lexer.next()).toMatchObject({ word: ',', kind: 'operator' })
-    expect(lexer.next()).toMatchObject({ word: 'foo14', kind: 'name' })
-    expect(lexer.next()).toMatchObject({ word: ',', kind: 'operator' })
-    expect(lexer.next()).toMatchObject({ word: 'foo15', kind: 'name' })
-    expect(lexer.next()).toMatchObject({ word: ',', kind: 'operator' })
-    expect(lexer.next()).toMatchObject({ word: 'bar', kind: 'name' })
-    expect(lexer.next()).toMatchObject({ word: ',', kind: 'operator' })
-    expect(lexer.next()).toMatchObject({ word: 'int', kind: 'name' })
-    expect(lexer.next()).toMatchObject({ word: ',', kind: 'operator' })
-    expect(lexer.next()).toMatchObject({ word: 'Date', kind: 'name' })
-    expect(lexer.next()).toMatchObject({ word: '}', kind: 'operator' })
 
     expect(lexer.next()).toMatchObject({ word: void 0, kind: '<EOF>' })
   })

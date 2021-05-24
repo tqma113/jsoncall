@@ -45,7 +45,7 @@ export class SemanticError extends Error {
   }
 }
 
-export class BundleError extends Error {
+export class LoadError extends Error {
   kind = 'Error' as const
 
   constructor(message: string, entry: string) {

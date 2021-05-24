@@ -1,21 +1,16 @@
 import fs from 'fs'
 import path from 'path'
-import { check, rename } from 'jc-schema'
-import { bundle } from 'jc-lang'
+import { check } from 'jc-schema'
+import { load } from 'jc-lang'
 import { introspection } from 'jc-client'
 import { serverCodegen, clientCodegen } from 'jc-codegen'
-import { nodeModuleResolver } from './node'
+import { read } from './node'
 import { client, batchClient, syncClient, app } from './fixtures/helpers'
 
 describe('jsoncall', () => {
   it('async', async () => {
-    const moduleId = path.resolve(__dirname, './fixtures/jc/baz.jc')
-    const schema = rename(
-      bundle(moduleId, nodeModuleResolver),
-      (id, isExist) => {
-        return path.basename(id).replace('.jc', '')
-      }
-    )
+    const moduleId = path.resolve(__dirname, './fixtures/jc/foo.jc')
+    const schema = load(moduleId, read)
 
     expect(check(schema)).toBe(null)
 
@@ -48,13 +43,8 @@ describe('jsoncall', () => {
   })
 
   it('batch', async () => {
-    const moduleId = path.resolve(__dirname, './fixtures/jc/baz.jc')
-    const schema = rename(
-      bundle(moduleId, nodeModuleResolver),
-      (id, isExist) => {
-        return path.basename(id).replace('.jc', '')
-      }
-    )
+    const moduleId = path.resolve(__dirname, './fixtures/jc/foo.jc')
+    const schema = load(moduleId, read)
 
     expect(check(schema)).toBe(null)
 
@@ -87,13 +77,8 @@ describe('jsoncall', () => {
   })
 
   it('sync', async () => {
-    const moduleId = path.resolve(__dirname, './fixtures/jc/baz.jc')
-    const schema = rename(
-      bundle(moduleId, nodeModuleResolver),
-      (id, isExist) => {
-        return path.basename(id).replace('.jc', '')
-      }
-    )
+    const moduleId = path.resolve(__dirname, './fixtures/jc/foo.jc')
+    const schema = load(moduleId, read)
 
     expect(check(schema)).toBe(null)
 

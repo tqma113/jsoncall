@@ -1,16 +1,7 @@
 export type Schema = {
   kind: 'Schema'
-  entry: string
-  modules: SchemaModule[]
-}
-
-export type SchemaModule = {
-  kind: 'SchemaModule'
-  id: string
   typeDefinitions: TypeDefinition[]
   deriveDefinitions: DeriveDefinition[]
-  linkDefinitions: LinkDefinition[]
-  exportDefinition: ExportDefinition | null
   callDefinitions: CallDefinition[]
 }
 
@@ -19,19 +10,6 @@ export type TypeDefinition = {
   name: string
   type: Type
   description: string | null
-}
-
-export type LinkDefinition = {
-  kind: 'LinkDefinition'
-  from: string
-  links: Link[]
-}
-
-export type Link = [string, string]
-
-export type ExportDefinition = {
-  kind: 'ExportDefinition'
-  names: string[]
 }
 
 export type DeriveDefinition = {
@@ -134,23 +112,12 @@ export type NameType = {
   name: string
 }
 
-export const createSchema = (entry: string): Schema => {
+export const createSchema = (): Schema => {
   return {
     kind: 'Schema',
-    entry,
-    modules: [],
-  }
-}
-
-export const createSchemaModule = (id: string): SchemaModule => {
-  return {
-    kind: 'SchemaModule',
     typeDefinitions: [],
-    linkDefinitions: [],
-    exportDefinition: null,
     deriveDefinitions: [],
     callDefinitions: [],
-    id,
   }
 }
 
@@ -164,24 +131,6 @@ export const createTypeDefinition = (
     name,
     type,
     description,
-  }
-}
-
-export const createExportDefinition = (names: string[]): ExportDefinition => {
-  return {
-    kind: 'ExportDefinition',
-    names,
-  }
-}
-
-export const createLinkDefinition = (
-  from: string,
-  links: Link[]
-): LinkDefinition => {
-  return {
-    kind: 'LinkDefinition',
-    from,
-    links,
   }
 }
 

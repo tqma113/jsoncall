@@ -1,9 +1,7 @@
 import {
   Schema,
-  SchemaModule,
   DeriveDefinition,
   TypeDefinition,
-  LinkDefinition,
   CallDefinition,
   Type,
   PrimitiveType,
@@ -24,12 +22,14 @@ import { format, Options } from 'prettier'
 export const builderCodegen = (schema: Schema, options?: Options): string => {
   const { importItems, code } = builderCodegenSchema(schema)
 
-  return format(
-    `import {
+  const endCode = `import {
     ${importItems.map((item) => `${item},`).join('\n')}
   } from 'jc-builder'
   
-  export ${code}`,
+  export ${code}`
+
+  return format(
+    endCode,
     { parser: 'typescript', ...options }
   )
 }
@@ -37,102 +37,19 @@ export const builderCodegen = (schema: Schema, options?: Options): string => {
 export type SchemaCodegen = {
   importItems: string[]
   generics: string[]
-  props: Record<string, string>
-  code: string
-  calls: string[]
-}
-
-export const builderCodegenSchema = (schema: Schema): SchemaCodegen => {
-  let importItems: string[] = []
-  let generics: string[] = []
-  let props: Record<string, string> = {}
-  let modules: Record<string, string> = {}
-  let calls: string[] = []
-
-  const getModuleProps = (derives: Record<string, string>): string => {
-    const keys = getKeys(derives)
-    if (keys.length === 0) return ''
-
-    importItems.push('JSONType')
-
-    return `{
-      ${keys
-        .map((key) => `${key}: JSONType<any, ${derives[key]}, string>`)
-        .join('\n')}
-    }`
-  }
-
-  for (const module of schema.modules) {
-    const {
-      code,
-      derives,
-      buildIn,
-      calls: moduleCalls,
-    } = builderCodegenModule(module)
-    modules[module.id] = code
-    importItems.push(...buildIn)
-    generics.push(...Object.values(derives))
-    const ps = getModuleProps(derives)
-    if (ps) {
-      props[module.id] = ps
-    }
-    if (module.id === schema.entry) {
-      calls = moduleCalls
-    }
-  }
-
-  importItems = Array.from(new Set(importItems))
-
-  const code = `const createBuilderSchema = ${genGenerics(generics)}(${genProps(
-    props
-  )}) => {
-    ${Object.values(modules).join('\n\n')}
-
-    return {
-      entry: '${schema.entry}',
-      modules: [
-        ${getKeys(modules)
-          .map((key) => `${key}Module,`)
-          .join('\n')}
-      ],
-      calls: ${schema.entry}Module.calls
-    }
-  }`
-
-  return {
-    importItems,
-    generics,
-    props,
-    code,
-    calls,
-  }
-}
-
-export type ModuleCodegen = {
-  buildIn: string[]
-  code: string
   derives: Record<string, string>
+  code: string
   calls: string[]
 }
 
-export const builderCodegenModule = (module: SchemaModule): ModuleCodegen => {
-  const buildIn: string[] = []
-  const links: Record<string, string> = {}
+export const builderCodegenSchema = (schema: Schema, options?: Options): SchemaCodegen => {
+  const importItems: string[] = []
   const types: Record<string, string> = {}
   const derives: Record<string, string> = {}
-  const exports = module.exportDefinition?.names || []
   const calls: Record<string, string> = {}
 
-  const codegenLinkDefinition = (linkDefinition: LinkDefinition) => {
-    const moduleName = `${linkDefinition.from}Module`
-    linkDefinition.links.forEach(([from, to]) => {
-      buildIn.push('Naming')
-      links[to] = `const ${to} = Naming('${to}', ${moduleName}.exports.${from})`
-    })
-  }
-
   const codegenTypeDefinition = (typeDefinition: TypeDefinition) => {
-    buildIn.push('Naming')
+    importItems.push('Naming')
     types[typeDefinition.name] = `const ${typeDefinition.name} = Naming('${
       typeDefinition.name
     }', ${codegenType(typeDefinition.type)}, '${
@@ -145,7 +62,7 @@ export const builderCodegenModule = (module: SchemaModule): ModuleCodegen => {
   }
 
   const codegenCallDefinition = (callDefinition: CallDefinition) => {
-    buildIn.push('createJSONCallType')
+    importItems.push('createJSONCallType')
     calls[callDefinition.name] = `const ${
       callDefinition.name
     } = createJSONCallType('${callDefinition.name}', ${codegenType(
@@ -157,19 +74,19 @@ export const builderCodegenModule = (module: SchemaModule): ModuleCodegen => {
     const codegenPrimitiveType = (primitiveType: PrimitiveType): string => {
       switch (primitiveType.type) {
         case PrimitiveTypeEnum.Boolean: {
-          buildIn.push('BooleanType')
+          importItems.push('BooleanType')
           return 'BooleanType'
         }
         case PrimitiveTypeEnum.Null: {
-          buildIn.push('NullType')
+          importItems.push('NullType')
           return 'NullType'
         }
         case PrimitiveTypeEnum.Number: {
-          buildIn.push('NumberType')
+          importItems.push('NumberType')
           return 'NumberType'
         }
         case PrimitiveTypeEnum.String: {
-          buildIn.push('StringType')
+          importItems.push('StringType')
           return 'StringType'
         }
       }
@@ -178,54 +95,54 @@ export const builderCodegenModule = (module: SchemaModule): ModuleCodegen => {
     const codegenSpecialType = (specialType: SpecialType): string => {
       switch (specialType.type) {
         case SpecialTypeEnum.Any: {
-          buildIn.push('AnyType')
+          importItems.push('AnyType')
           return 'AnyType'
         }
         case SpecialTypeEnum.None: {
-          buildIn.push('NoneType')
+          importItems.push('NoneType')
           return 'NoneType'
         }
       }
     }
 
     const codegenLiteral = (literal: LiteralType): string => {
-      buildIn.push('Literal')
+      importItems.push('Literal')
       return `Literal(${JSON.stringify(literal.value)})`
     }
 
     const codegenListType = (listType: ListType): string => {
-      buildIn.push('ListType')
+      importItems.push('ListType')
       return `ListType(${codegenType(listType.type)})`
     }
 
     const codegenObjectType = (objectType: ObjectType): string => {
-      buildIn.push('ObjectType')
-      return `ObjectType({${objectType.fields.map(
-        (field) => `${field.name}: ${codegenType(field.type)},`
-      ).join('')}})`
+      importItems.push('ObjectType')
+      return `ObjectType({${objectType.fields
+        .map((field) => `${field.name}: ${codegenType(field.type)},`)
+        .join('')}})`
     }
 
     const codegenTupleType = (tupleType: TupleType): string => {
-      buildIn.push('Tuple')
+      importItems.push('Tuple')
       return `Tuple(${tupleType.types
         .map((type) => codegenType(type))
         .join(', ')})`
     }
 
     const codegenRecordType = (recordType: RecordType): string => {
-      buildIn.push('RecordType')
+      importItems.push('RecordType')
       return `RecordType(${codegenType(recordType.type)})`
     }
 
     const codegenUnionType = (unionType: UnionType): string => {
-      buildIn.push('Union')
+      importItems.push('Union')
       return `Union(${unionType.types
         .map((type) => codegenType(type))
         .join(', ')})`
     }
 
     const codegenIntersectType = (intersectType: IntersectType): string => {
-      buildIn.push('Intersection')
+      importItems.push('Intersection')
       return `Intersection(${intersectType.types
         .map((type) => codegenType(type))
         .join(', ')})`
@@ -269,19 +186,15 @@ export const builderCodegenModule = (module: SchemaModule): ModuleCodegen => {
     }
   }
 
-  for (const linkDefinition of module.linkDefinitions) {
-    codegenLinkDefinition(linkDefinition)
-  }
-
-  for (const typeDefinition of module.typeDefinitions) {
+  for (const typeDefinition of schema.typeDefinitions) {
     codegenTypeDefinition(typeDefinition)
   }
 
-  for (const deriveDefinition of module.deriveDefinitions) {
+  for (const deriveDefinition of schema.deriveDefinitions) {
     codegenDeriveDefinition(deriveDefinition)
   }
 
-  for (const callDefinition of module.callDefinitions) {
+  for (const callDefinition of schema.callDefinitions) {
     codegenCallDefinition(callDefinition)
   }
 
@@ -296,7 +209,8 @@ export const builderCodegenModule = (module: SchemaModule): ModuleCodegen => {
     const keys = getKeys(derives)
     if (keys.length === 0) return ''
 
-    buildIn.push('JSONType')
+    importItems.push('JSONType')
+    
 
     return `{ ${keys.join(', ')} }: {
       ${keys
@@ -305,84 +219,46 @@ export const builderCodegenModule = (module: SchemaModule): ModuleCodegen => {
     }`
   }
 
-  const getModuleProps = (): string => {
-    const keys = getKeys(derives)
-    if (keys.length === 0) return ''
-    return `${module.id}Derives`
-  }
+  importItems.push('createBuilderSchema')
 
-  const code = `const get${titleCase(
-    module.id
-  )}Module = ${getGenerics()}(${getProps()}) => {
-    ${Object.values(links).join('\n')}
-
+  const code = `const createBS = ${getGenerics()}(${getProps()}) => {
     ${Object.values(types).join('\n')}
 
     ${Object.values(calls).join('\n')}
 
-    return {
-      id: '${module.id}',
-      links: [
-        ${module.linkDefinitions
-          .map((linkDefinition) => {
-            return `{
-            types: [
-              ${linkDefinition.links
-                .map(([from, to]) => {
-                  return `{
-                  type: '${from}',
-                  as: '${to}'
-                },`
-                })
-                .join('\n')}
-            ],
-            module: '${linkDefinition.from}'
-          },`
-          })
-          .join('\n')}
-      ],
-      types: {
+    return createBuilderSchema(
+      {
         ${Object.keys(types)
           .map((type) => `${type},`)
           .join('\n')}
       },
-      derives: {
+      {
         ${Object.keys(derives)
           .map((type) => `${type},`)
           .join('\n')}
       },
-      exports: {
-        ${exports.map((type) => `${type},`).join('\n')}
-      },
-      calls: {
+      {
         ${Object.keys(calls)
           .map((type) => `${type},`)
           .join('\n')}
       },
-    }
-  }
-  const ${module.id}Module = get${titleCase(
-    module.id
-  )}Module(${getModuleProps()})`
+    )
+  }`
+
+  const generics = Object.values(derives)
 
   return {
-    code,
-    buildIn,
-    derives,
+    importItems: Array.from(new Set(importItems)),
     calls: Object.keys(calls),
+    code,
+    generics,
+    derives
   }
 }
 
 export const genGenerics = (generics: string[]): string => {
   if (generics.length === 0) return ''
   return `<${generics.join(', ')}>`
-}
-
-export const genProps = (props: Record<string, string>): string => {
-  if (Object.keys(props).length === 0) return ''
-  return Object.entries(props)
-    .map(([key, value]) => `${key}Derives: ${value}`)
-    .join('\n')
 }
 
 export const genPropsNames = (props: Record<string, string>): string => {
@@ -392,10 +268,17 @@ export const genPropsNames = (props: Record<string, string>): string => {
     .join(', ')
 }
 
-function titleCase(input: string) {
-  return input.slice(0, 1).toUpperCase() + input.slice(1)
+export const genProps = (derives: Record<string, string>): string => {
+  const keys = getKeys(derives)
+  if (keys.length === 0) return ''
+
+  return `{
+    ${keys
+      .map((key) => `${key}: JSONType<any, ${derives[key]}, string>`)
+      .join('\n')}
+  }`
 }
 
-function getKeys<T extends {}>(o: T): Array<keyof T> {
+export function getKeys<T extends {}>(o: T): Array<keyof T> {
   return Object.keys(o) as Array<keyof T>
 }

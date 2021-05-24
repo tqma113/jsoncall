@@ -60,6 +60,8 @@ describe('clientCodegen', () => {
       printWidth: 80,
     })
 
+    fs.writeFileSync(path.resolve(__dirname, './fixtures/ts/createClient.ts'), code, 'utf-8')
+
     expect(code).toBe(
       fs.readFileSync(
         path.resolve(__dirname, './fixtures/ts/createClient.ts'),

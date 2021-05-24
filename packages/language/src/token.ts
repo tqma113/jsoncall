@@ -23,9 +23,6 @@ export enum KeywordEnum {
   Call                  =         'call',
   Derive                =         'derive',
   From                  =         'from',
-  Import                =         'import',
-  Export                =         'export',
-  As                    =         'as',
 }
 
 // prettier-ignore

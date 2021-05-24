@@ -9,10 +9,7 @@ import {
   TypeDeclaration,
   DeriveDeclaration,
   CallDeclaration,
-  ImportStatement,
-  ExportStatement,
   TypeNode,
-  PathNode,
   ListTypeNode,
   ObjectTypeNode,
   TupleTypeNode,
@@ -25,8 +22,6 @@ import {
   createTypeDeclaration,
   createDeriveDeclaration,
   createCallDeclaration,
-  createImportStatement,
-  createExportStatement,
   createUnionNode,
   createIntersectionNode,
   createListTypeNode,
@@ -39,7 +34,6 @@ import {
   createBooleanLiteralNode,
   createObjectTypeNode,
   createObjectFieldNode,
-  createPathNode,
   ObjectFieldNode,
   CommentBlock,
   createCommentBlock,
@@ -69,8 +63,6 @@ export type Parser = {
   parseTypeDeclaration: (comment?: CommentBlock) => TypeDeclaration
   parseDeriveDeclaration: (comment?: CommentBlock) => DeriveDeclaration
   parseCallDeclaration: (comment?: CommentBlock) => CallDeclaration
-  parseImportStatement: () => ImportStatement
-  parseExportStatement: () => ExportStatement
   parseNameNode: () => NameNode
   parseTypeNode: () => TypeNode
   parseSimpleTypeNode: () => TypeNode | null
@@ -257,10 +249,6 @@ export const createParser = (source: Source): Parser => {
           return parseDeriveDeclaration(comment)
         case KeywordEnum.Call:
           return parseCallDeclaration(comment)
-        case KeywordEnum.Import:
-          return parseImportStatement()
-        case KeywordEnum.Export:
-          return parseExportStatement()
       }
     }
 
@@ -313,53 +301,6 @@ export const createParser = (source: Source): Parser => {
       input,
       parseTypeNode(),
       comment,
-      loc(start)
-    )
-  }
-
-  const parseImportStatement = (): ImportStatement => {
-    const start = lexer.token
-
-    expectKeyword(KeywordEnum.Import)
-
-    const names = any(
-      shouldOperator(OperatorEnum.OpenBrace),
-      parseImportName,
-      shouldOptionalOperator(OperatorEnum.CloseBrace)
-    )
-
-    expectKeyword(KeywordEnum.From)
-    return createImportStatement(names, parsePathNode(), loc(start))
-  }
-
-  const parsePathNode = (): PathNode => {
-    const token = expectToken(TokenKind.STRING)
-    return createPathNode(token, loc(token))
-  }
-
-  const parseImportName = (): [NameNode, NameNode] => {
-    expectOptionalOperator(OperatorEnum.Comma)
-
-    const name = parseNameNode()
-    if (expectOptionalKeyword(KeywordEnum.As)) {
-      const asName = expectToken(TokenKind.NAME)
-      return [name, createNameNode(asName, loc(asName))]
-    } else {
-      return [name, name]
-    }
-  }
-
-  const parseExportStatement = (): ExportStatement => {
-    const start = lexer.token
-
-    expectKeyword(KeywordEnum.Export)
-
-    return createExportStatement(
-      any(
-        shouldOperator(OperatorEnum.OpenBrace),
-        parseExportField,
-        shouldOptionalOperator(OperatorEnum.CloseBrace)
-      ),
       loc(start)
     )
   }
@@ -576,8 +517,6 @@ export const createParser = (source: Source): Parser => {
     parseTypeDeclaration,
     parseDeriveDeclaration,
     parseCallDeclaration,
-    parseImportStatement,
-    parseExportStatement,
     parseNameNode,
     parseTypeNode,
     parseSimpleTypeNode,

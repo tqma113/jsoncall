@@ -9,7 +9,7 @@ describe('parser', () => {
 
     const document = parse({ moduleId, content })
 
-    expect(document.statements.length).toBe(21)
+    expect(document.statements.length).toBe(19)
   })
 
   describe('base', () => {
@@ -221,57 +221,6 @@ describe('parser', () => {
             primitiveType: { kind: 'primitive type', word: 'number' },
           },
         ],
-      })
-    })
-
-    it('parseExportStatement', () => {
-      const moduleId = 'parseExportStatement.jc'
-      const content = 'export { foo, bar }'
-
-      const parser = createParser({ moduleId, content })
-      parser.expectToken(TokenKind.SOF)
-
-      expect(parser.parseExportStatement()).toMatchObject({
-        names: [
-          {
-            name: { kind: 'name', word: 'foo' },
-          },
-          {
-            name: { kind: 'name', word: 'bar' },
-          },
-        ],
-      })
-    })
-
-    it('parseImportStatement', () => {
-      const moduleId = 'parseImportStatement.jc'
-      const content = 'import { foo, bar as baz } from "./sample.jc"'
-
-      const parser = createParser({ moduleId, content })
-      parser.expectToken(TokenKind.SOF)
-
-      expect(parser.parseImportStatement()).toMatchObject({
-        names: [
-          [
-            {
-              name: { kind: 'name', word: 'foo' },
-            },
-            {
-              name: { kind: 'name', word: 'foo' },
-            },
-          ],
-          [
-            {
-              name: { kind: 'name', word: 'bar' },
-            },
-            {
-              name: { kind: 'name', word: 'baz' },
-            },
-          ],
-        ],
-        path: {
-          path: { kind: 'string', word: './sample.jc' },
-        },
       })
     })
 

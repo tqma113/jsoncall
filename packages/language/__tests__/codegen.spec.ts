@@ -3,11 +3,9 @@ import path from 'path'
 import {
   PrimitiveTypeEnum,
   SpecialTypeEnum,
-  createLinkDefinition,
   createDeriveDefinition,
   createPrimitiveType,
   createCallDefinition,
-  createExportDefinition,
   createTypeDefinition,
   createSpecialType,
   createLiteralType,
@@ -21,59 +19,23 @@ import {
   createNameType,
 } from 'jc-schema'
 import {
-  bundle,
+  load,
   codegen,
-  codegenLinkDefinition,
   codegenDeriveDefinition,
   codegenCallDefinition,
-  codegenExportDefinition,
   codegenTypeDefinition,
   codegenType,
 } from '../src'
-import { nodeModuleResolver } from './node'
+import { read } from './node'
 
 describe('codegen', () => {
   it('Schema', () => {
-    const moduleId = path.resolve(__dirname, './fixtures/baz.jc')
-    const schema = bundle(moduleId, nodeModuleResolver)
-    const map = codegen(schema)
-
-    expect(map.size).toBe(3)
-  })
-
-  it('SchemaModule', () => {
     const moduleId = path.resolve(__dirname, './fixtures/foo.jc')
     const content = fs.readFileSync(moduleId, 'utf-8')
-    const schema = bundle(moduleId, nodeModuleResolver)
-    const map = codegen(schema)
+    const schema = load(moduleId, read)
+    const source = codegen(schema)
 
-    expect(map.size).toBe(1)
-    expect(map.get(moduleId)).toBe(content)
-  })
-
-  describe('LinkDefinition', () => {
-    it('sample', () => {
-      expect(
-        codegenLinkDefinition(createLinkDefinition('foo', [['foo1', 'foo1']]))
-      ).toBe('import { foo1 } from "foo"')
-    })
-
-    it('rename', () => {
-      expect(
-        codegenLinkDefinition(createLinkDefinition('foo', [['foo1', 'foo2']]))
-      ).toBe('import { foo1 as foo2 } from "foo"')
-    })
-
-    it('mutiple', () => {
-      expect(
-        codegenLinkDefinition(
-          createLinkDefinition('foo', [
-            ['foo1', 'foo1'],
-            ['foo2', 'foo3'],
-          ])
-        )
-      ).toBe('import { foo1, foo2 as foo3 } from "foo"')
-    })
+    expect(source).toBe(content)
   })
 
   describe('DeriveDefinition', () => {
@@ -128,12 +90,6 @@ describe('codegen', () => {
         )
       ).toBe('#foo\ncall fooCall: string => string')
     })
-  })
-
-  it('ExportDefinition', () => {
-    expect(
-      codegenExportDefinition(createExportDefinition(['foo1', 'foo2']))
-    ).toBe('export {\n  foo1,\n  foo2,\n}')
   })
 
   describe('TypeDefinition', () => {

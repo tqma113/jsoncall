@@ -8,13 +8,13 @@ import {
   normalize,
 } from 'jc-builder'
 import { check } from 'jc-schema'
-import { createBuilderSchema } from './fixtures/ts/createBuilderSchema'
+import { createBS } from './fixtures/ts/createBuilderSchema'
 import { createServerService } from './fixtures/ts/createServerService'
 import { createClient } from './fixtures/ts/createClient'
 
 describe('verification', () => {
   it('createBuilderSchema', () => {
-    const schema = normalize(createBuilderSchema({ int, Date: DateType }))
+    const schema = normalize(createBS({ int, Date: DateType }))
     expect(check(schema)).toBe(null)
   })
 

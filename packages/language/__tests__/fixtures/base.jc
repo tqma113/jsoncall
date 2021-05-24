@@ -29,29 +29,6 @@ type foo16 = false
 # some comments
 call fooCall: number => string
 
-import { bar } from "./bar.jc"
-
 derive int from number
 
 derive Date from string
-
-export {
-  foo1,
-  foo2,
-  foo3,
-  foo4,
-  foo5,
-  foo6,
-  foo7,
-  foo8,
-  foo9,
-  foo10,
-  foo11,
-  foo12,
-  foo13,
-  foo14,
-  foo15,
-  bar,
-  int,
-  Date
-}

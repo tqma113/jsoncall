@@ -1,67 +1,50 @@
+import path from 'path'
 import { check } from 'jc-schema'
-import {
-  normalize,
-  createDeriveType,
-  NumberType,
-  type,
-  ValidateError,
-  StringType,
-  Union,
-  StructType,
-  NullType,
-} from '../src'
-import createBuilderSchema from './fixtures/ts/foo'
+import { load } from '../src'
+import { read } from './node'
 
-describe('normalize', () => {
-  const int = () =>
-    createDeriveType(NumberType)(
-      '' as const,
-      () => type(NumberType),
-      (input) => {
-        if (Number.isInteger(input)) {
-          return true
-        } else {
-          return new ValidateError('int', JSON.stringify(input))
-        }
-      },
-      (input) => {
-        return input
-      },
-      (input) => {
-        return input
-      },
-      () => 'int'
-    )
-  const DateType = () =>
-    createDeriveType(Union(StringType, NumberType))(
-      '' as const,
-      () => type(Union(StringType, NumberType)),
-      (input) => {
-        const date = new Date(input)
-        if (isNaN(date.getTime())) {
-          return true
-        } else {
-          return new ValidateError('Date', JSON.stringify(input))
-        }
-      },
-      (input) => {
-        return new Date(input)
-      },
-      (input) => {
-        return input.getTime()
-      },
-      () => 'Date'
-    )
-  const builderSchema = createBuilderSchema({ int, Date: DateType })
-  const schema = normalize(builderSchema)
-
+describe('loader', () => {
   describe('base', () => {
+    const moduleId = path.resolve(__dirname, './fixtures/foo.jc')
+    const schema = load(moduleId, read)
+
+    it('schema', () => {
+      expect(check(schema)).toBe(null)
+
+      expect(schema.typeDefinitions.length).toBe(16)
+      expect(schema.callDefinitions.length).toBe(1)
+      expect(schema.deriveDefinitions.length).toBe(2)
+    })
+
+    it('TypeDeclaration', () => {
+      const typeDeclaration = schema.typeDefinitions[0]
+      expect(typeDeclaration).toMatchObject({
+        name: 'foo1',
+        type: {
+          type: 'number',
+        },
+      })
+    })
+
     it('DeriveDeclaration', () => {
       const deriveDeclaration = schema.deriveDefinitions[0]
       expect(deriveDeclaration).toMatchObject({
         name: 'int',
         type: {
           type: 'number',
+        },
+      })
+    })
+
+    it('CallDeclaration', () => {
+      const callDeclaration = schema.callDefinitions[0]
+      expect(callDeclaration).toMatchObject({
+        name: 'fooCall',
+        input: {
+          type: 'number',
+        },
+        output: {
+          type: 'string',
         },
       })
     })
@@ -242,42 +225,6 @@ describe('normalize', () => {
           },
         })
       })
-
-      it('Struct', () => {
-        class NestObj extends StructType {
-          next = Union(NestObj, NullType)
-
-          foo = NumberType
-        }
-
-        expect(type(NestObj)).toMatchObject({
-          fields: [
-            {
-              name: 'next',
-              type: {
-                types: [
-                  {
-                    name: 'NestObj',
-                  },
-                  {
-                    type: 'null',
-                  },
-                ],
-              },
-            },
-            {
-              name: 'foo',
-              type: {
-                type: 'number',
-              },
-            },
-          ],
-        })
-      })
     })
-  })
-
-  it('schema', () => {
-    expect(check(schema)).toBe(null)
   })
 })

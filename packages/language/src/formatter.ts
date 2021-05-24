@@ -5,22 +5,9 @@ import {
   TypeDeclaration,
   DeriveDeclaration,
   CallDeclaration,
-  ImportStatement,
-  ExportStatement,
 } from './ast'
 
 export const format = (document: Document) => {
-  const formatExportStatement = (
-    exportStatement: ExportStatement
-  ): ExportStatement => {
-    return exportStatement
-  }
-  const formatImportStatement = (
-    importStatement: ImportStatement
-  ): ImportStatement => {
-    return importStatement
-  }
-
   const formatCallDeclaration = (
     callDeclaration: CallDeclaration
   ): CallDeclaration => {
@@ -47,10 +34,6 @@ export const format = (document: Document) => {
         return formatDeriveDeclaration(statement)
       case ASTNodeKind.CallDeclaration:
         return formatCallDeclaration(statement)
-      case ASTNodeKind.ImportStatement:
-        return formatImportStatement(statement)
-      case ASTNodeKind.ExportStatement:
-        return formatExportStatement(statement)
     }
   }
 
@@ -70,10 +53,6 @@ function getStatementValue(statement: Statement) {
       return 2
     case ASTNodeKind.DeriveDeclaration:
       return 1
-    case ASTNodeKind.ExportStatement:
-      return -1
-    case ASTNodeKind.ImportStatement:
-      return 3
     case ASTNodeKind.CallDeclaration:
       return -2
   }
