@@ -15,7 +15,7 @@ import {
   createObjectTypeFiled,
   createNameType,
 } from 'jc-schema'
-import { ValidateError } from './error'
+import { ConvertError, ValidateError } from './error'
 
 export type Validator<I = any> = (input: I) => true | ValidateError
 
@@ -181,7 +181,12 @@ export const StringType = () =>
         : new ValidateError('string', JSON.stringify(input))
     },
     identify as Converter<any, string>,
-    identify,
+    (input) => {
+      if (typeof input === 'string') {
+        return input as any
+      }
+      throw new ConvertError(JSON.stringify(input), 'string')
+    },
     () => 'string'
   )
 export const NumberType = () =>
@@ -194,7 +199,12 @@ export const NumberType = () =>
         : new ValidateError('number', JSON.stringify(input))
     },
     identify as Converter<any, number>,
-    identify,
+    (input) => {
+      if (typeof input === 'number') {
+        return input as any
+      }
+      throw new ConvertError(JSON.stringify(input), 'number')
+    },
     () => 'number'
   )
 export const BooleanType = () =>
@@ -207,7 +217,12 @@ export const BooleanType = () =>
         : new ValidateError('boolean', JSON.stringify(input))
     },
     identify as Converter<any, boolean>,
-    identify,
+    (input) => {
+      if (typeof input === 'boolean') {
+        return input as any
+      }
+      throw new ConvertError(JSON.stringify(input), 'boolean')
+    },
     () => 'boolean'
   )
 export const NullType = () =>
@@ -220,7 +235,12 @@ export const NullType = () =>
         : new ValidateError('null', JSON.stringify(input))
     },
     identify as Converter<any, null>,
-    identify,
+    (input) => {
+      if (input === null) {
+        return input as any
+      }
+      throw new ConvertError(JSON.stringify(input), 'null')
+    },
     () => 'null'
   )
 export const AnyObjectType = () =>
@@ -235,7 +255,14 @@ export const AnyObjectType = () =>
         : new ValidateError('object', JSON.stringify(input))
     },
     identify as Converter<any, object>,
-    identify,
+    (input) => {
+      if (typeof input === 'object' &&
+      input !== null &&
+      !Array.isArray(input)) {
+        return input as any
+      }
+      throw new ConvertError(JSON.stringify(input), 'object')
+    },
     () => 'object'
   )
 export const AnyListType = () =>
@@ -248,7 +275,12 @@ export const AnyListType = () =>
         : new ValidateError('list', JSON.stringify(input))
     },
     identify as Converter<any, any[]>,
-    identify,
+    (input) => {
+      if (Array.isArray(input)) {
+        return input as any
+      }
+      throw new ConvertError(JSON.stringify(input), 'list')
+    },
     () => 'list'
   )
 export const AnyType = () =>
@@ -272,7 +304,12 @@ export const NoneType = () =>
         : new ValidateError('undefined', JSON.stringify(input))
     },
     identify as Converter<any, undefined>,
-    identify,
+    (input) => {
+      if (input === undefined) {
+        return input as any
+      }
+      throw new ConvertError(JSON.stringify(input), 'none')
+    },
     () => 'none'
   )
 
@@ -288,7 +325,12 @@ export const createLiteral =
           : new ValidateError(JSON.stringify(to), JSON.stringify(input))
       },
       identify as Converter<any, T>,
-      identify,
+      (input) => {
+        if (input === to) {
+          return input as any
+        }
+        throw new ConvertError(JSON.stringify(input), JSON.stringify(to))
+      },
       () => (description ? description : JSON.stringify(to))
     )
 
@@ -375,6 +417,7 @@ export const createUnion = <
           continue
         }
       }
+      throw new ConvertError(JSON.stringify(input), description())
     }
 
     const description = () =>
