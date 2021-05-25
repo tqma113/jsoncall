@@ -11,7 +11,8 @@
     "build": "tsc -b ./tsconfig.build.json",
     "clean": "shx rm -rf ./packages/*/*.tsbuildinfo && shx rm -rf ./packages/*/{dist,esm}",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "release": "lerna publish"
   },
   "devDependencies": {
     "@types/jest": "^26.0.20",
