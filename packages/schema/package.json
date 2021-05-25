@@ -1,6 +1,6 @@
 {
   "name": "jc-schema",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "A data structure for description of json call schema.",
   "main": "index.js",
   "module": "dist/index.js",
