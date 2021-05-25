@@ -13,6 +13,7 @@ import {
   AnyObjectType,
   BuilderSchema,
   JSONCallType,
+  JSONType,
   normalize,
 } from 'jc-builder'
 import { Serialize, Deserialize, SerializationError } from 'jc-serialization'
@@ -165,12 +166,14 @@ export type Resolvers<
 
 export const createService =
   <
-    CS extends Record<
-      string,
-      JSONCallType<string, any, any, string, any, any, string>
-    >
+  TS extends Record<string, JSONType<any, any, string>>,
+  DS extends Record<string, JSONType<any, any, string>>,
+  CS extends Record<
+    string,
+    JSONCallType<string, any, any, string, any, any, string>
+  >
   >(
-    schema: BuilderSchema<CS>,
+    schema: BuilderSchema<TS, DS, CS>,
     serialize: Serialize<object>,
     deserialize: Deserialize<object>
   ) =>
@@ -206,7 +209,6 @@ export const createService =
           }
           switch (input.kind) {
             case 'Introspection': {
-              // TODO: Introspection
               return serialize(IntrospectionCallingOutput(normalize(schema)))
             }
             case 'Single': {
