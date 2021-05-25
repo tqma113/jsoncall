@@ -3,11 +3,7 @@ import { name as getName, validate, convert, ConvertError } from 'jc-builder'
 import { IntrospectionCalling, IntrospectionCallingOutputType } from 'jc-server'
 import { SerializationError } from 'jc-serialization'
 import { format, Options } from 'prettier'
-import {
-  builderCodegenSchema,
-  genGenerics,
-  genProps,
-} from './builder'
+import { builderCodegenSchema, genGenerics, genProps } from './builder'
 import type { Sender } from 'jc-client'
 
 export const clientCodegen = (schema: Schema, options?: Options): string => {

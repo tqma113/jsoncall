@@ -28,10 +28,7 @@ export const builderCodegen = (schema: Schema, options?: Options): string => {
   
   export ${code}`
 
-  return format(
-    endCode,
-    { parser: 'typescript', ...options }
-  )
+  return format(endCode, { parser: 'typescript', ...options })
 }
 
 export type SchemaCodegen = {
@@ -42,7 +39,10 @@ export type SchemaCodegen = {
   calls: string[]
 }
 
-export const builderCodegenSchema = (schema: Schema, options?: Options): SchemaCodegen => {
+export const builderCodegenSchema = (
+  schema: Schema,
+  options?: Options
+): SchemaCodegen => {
   const importItems: string[] = []
   const types: Record<string, string> = {}
   const derives: Record<string, string> = {}
@@ -210,7 +210,6 @@ export const builderCodegenSchema = (schema: Schema, options?: Options): SchemaC
     if (keys.length === 0) return ''
 
     importItems.push('JSONType')
-    
 
     return `{ ${keys.join(', ')} }: {
       ${keys
@@ -252,7 +251,7 @@ export const builderCodegenSchema = (schema: Schema, options?: Options): SchemaC
     calls: Object.keys(calls),
     code,
     generics,
-    derives
+    derives,
   }
 }
 

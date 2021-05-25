@@ -23,9 +23,9 @@ export const serverCodegen = (schema: Schema, options?: Options): string => {
 
   ${code}
   
-  export const createServerService = ${genGenerics(generics)}(derives: ${genProps(
-      derives
-    )}) => {
+  export const createServerService = ${genGenerics(
+    generics
+  )}(derives: ${genProps(derives)}) => {
     const builderSchema = createBS(derives)
     return createService(builderSchema, JSON.stringify, JSON.parse)
   }`,
