@@ -17,21 +17,25 @@ describe('jsoncall', () => {
 
     fs.writeFileSync(
       path.resolve(__dirname, './fixtures/ts/createServerService.ts'),
-      serverCodegen(schema, (source) => format(source, {
-        parser: 'typescript',
-        semi: false,
-        singleQuote: true,
-        printWidth: 80,
-      }))
+      serverCodegen(schema, (source) =>
+        format(source, {
+          parser: 'typescript',
+          semi: false,
+          singleQuote: true,
+          printWidth: 80,
+        })
+      )
     )
     fs.writeFileSync(
       path.resolve(__dirname, './fixtures/ts/createClient.ts'),
-      clientCodegen(schema, (source) => format(source, {
-        parser: 'typescript',
-        semi: false,
-        singleQuote: true,
-        printWidth: 80,
-      }))
+      clientCodegen(schema, (source) =>
+        format(source, {
+          parser: 'typescript',
+          semi: false,
+          singleQuote: true,
+          printWidth: 80,
+        })
+      )
     )
 
     expect((await client.fooCall({ foo: 123, baz: true })).value).toMatchObject(
@@ -53,21 +57,25 @@ describe('jsoncall', () => {
 
     fs.writeFileSync(
       path.resolve(__dirname, './fixtures/ts/createServerService.ts'),
-      serverCodegen(schema, (source) => format(source, {
-        parser: 'typescript',
-        semi: false,
-        singleQuote: true,
-        printWidth: 80,
-      }))
+      serverCodegen(schema, (source) =>
+        format(source, {
+          parser: 'typescript',
+          semi: false,
+          singleQuote: true,
+          printWidth: 80,
+        })
+      )
     )
     fs.writeFileSync(
       path.resolve(__dirname, './fixtures/ts/createClient.ts'),
-      clientCodegen(schema, (source) => format(source, {
-        parser: 'typescript',
-        semi: false,
-        singleQuote: true,
-        printWidth: 80,
-      }))
+      clientCodegen(schema, (source) =>
+        format(source, {
+          parser: 'typescript',
+          semi: false,
+          singleQuote: true,
+          printWidth: 80,
+        })
+      )
     )
 
     const results = await Promise.all([
@@ -89,21 +97,25 @@ describe('jsoncall', () => {
 
     fs.writeFileSync(
       path.resolve(__dirname, './fixtures/ts/createServerService.ts'),
-      serverCodegen(schema, (source) => format(source, {
-        parser: 'typescript',
-        semi: false,
-        singleQuote: true,
-        printWidth: 80,
-      }))
+      serverCodegen(schema, (source) =>
+        format(source, {
+          parser: 'typescript',
+          semi: false,
+          singleQuote: true,
+          printWidth: 80,
+        })
+      )
     )
     fs.writeFileSync(
       path.resolve(__dirname, './fixtures/ts/createClient.ts'),
-      clientCodegen(schema, (source) => format(source, {
-        parser: 'typescript',
-        semi: false,
-        singleQuote: true,
-        printWidth: 80,
-      }))
+      clientCodegen(schema, (source) =>
+        format(source, {
+          parser: 'typescript',
+          semi: false,
+          singleQuote: true,
+          printWidth: 80,
+        })
+      )
     )
 
     expect(syncClient.fooCall({ foo: 123, baz: true }).value).toMatchObject({

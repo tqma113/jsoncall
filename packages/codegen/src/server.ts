@@ -1,15 +1,14 @@
 import { format, Options } from 'prettier'
-import {
-  builderCodegenSchema,
-  genGenerics,
-  genProps,
-} from './builder'
+import { builderCodegenSchema, genGenerics, genProps } from './builder'
 import type { Schema } from 'jc-schema'
 import type { Formatter } from './index'
 
 const identify = <I>(input: I) => input
 
-export const serverCodegen = (schema: Schema, format: Formatter = identify): string => {
+export const serverCodegen = (
+  schema: Schema,
+  format: Formatter = identify
+): string => {
   const {
     importItems: builderImport,
     generics,

@@ -55,12 +55,14 @@ describe('builderCodegen', () => {
         () => 'Date'
       )
     const builderSchema = createBuilderSchema({ int, Date: DateType })
-    const code = builderCodegen(normalize(builderSchema), (source) => format(source, {
-      parser: 'typescript',
-      semi: false,
-      singleQuote: true,
-      printWidth: 80,
-    }))
+    const code = builderCodegen(normalize(builderSchema), (source) =>
+      format(source, {
+        parser: 'typescript',
+        semi: false,
+        singleQuote: true,
+        printWidth: 80,
+      })
+    )
 
     expect(code).toBe(
       fs.readFileSync(

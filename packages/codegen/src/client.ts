@@ -9,7 +9,10 @@ import type { Formatter } from './index'
 
 const identify = <I>(input: I) => input
 
-export const clientCodegen = (schema: Schema, format: Formatter = identify): string => {
+export const clientCodegen = (
+  schema: Schema,
+  format: Formatter = identify
+): string => {
   const { importItems, code, generics, derives, calls } =
     builderCodegenSchema(schema)
 
@@ -85,7 +88,8 @@ export const clientCodegen = (schema: Schema, format: Formatter = identify): str
         .join('')}
     }
   }
-  `)
+  `
+  )
 }
 
 export const introspectionClientCodegen = async (

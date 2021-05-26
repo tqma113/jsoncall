@@ -21,7 +21,10 @@ import type { Formatter } from './index'
 
 const identify = <I>(input: I) => input
 
-export const builderCodegen = (schema: Schema, format: Formatter = identify): string => {
+export const builderCodegen = (
+  schema: Schema,
+  format: Formatter = identify
+): string => {
   const { importItems, code } = builderCodegenSchema(schema)
 
   const endCode = `import {
@@ -41,9 +44,7 @@ export type SchemaCodegen = {
   calls: string[]
 }
 
-export const builderCodegenSchema = (
-  schema: Schema
-): SchemaCodegen => {
+export const builderCodegenSchema = (schema: Schema): SchemaCodegen => {
   const importItems: string[] = []
   const types: Record<string, string> = {}
   const derives: Record<string, string> = {}
