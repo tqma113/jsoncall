@@ -21,10 +21,10 @@ export const clientCodegen = (schema: Schema, options?: Options): string => {
   ${code}
 
   export const createClient = ${genGenerics(generics)}(
-    ${propsStr && `derives: ${propsStr},`}
+    ${propsStr ? `derives: ${propsStr},` : ''}
     send: AsyncSender
   ) => {
-    const builderSchema = createBS(derives)
+    const builderSchema = createBS(${propsStr ? 'derives' : ''})
     const callSender = createSender(send, JSON.stringify, JSON.parse)
 
     return {
@@ -42,10 +42,10 @@ export const clientCodegen = (schema: Schema, options?: Options): string => {
   }
 
   export const createBatchClient = ${genGenerics(generics)}(
-    ${propsStr && `derives: ${propsStr},`}
+    ${propsStr ? `derives: ${propsStr},` : ''}
     send: AsyncSender
   ) => {
-    const builderSchema = createBS(derives)
+    const builderSchema = createBS(${propsStr ? 'derives' : ''})
     const callSender = createBatchSender(send, JSON.stringify, JSON.parse)
 
     return {
@@ -63,10 +63,10 @@ export const clientCodegen = (schema: Schema, options?: Options): string => {
   }
 
   export const createSyncClient = ${genGenerics(generics)}(
-    ${propsStr && `derives: ${propsStr},`}
+    ${propsStr ? `derives: ${propsStr},` : ''}
     send: SyncSender
   ) => {
-    const builderSchema = createBS(derives)
+    const builderSchema = createBS(${propsStr ? 'derives' : ''})
     const callSender = createSyncSender(send, JSON.stringify, JSON.parse)
 
     return {

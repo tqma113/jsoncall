@@ -40,8 +40,7 @@ export type SchemaCodegen = {
 }
 
 export const builderCodegenSchema = (
-  schema: Schema,
-  options?: Options
+  schema: Schema
 ): SchemaCodegen => {
   const importItems: string[] = []
   const types: Record<string, string> = {}
