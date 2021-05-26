@@ -1,6 +1,6 @@
 {
   "name": "jc-builder",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "A builder to construct json call schema in typescript.",
   "main": "index.js",
   "module": "dist/index.js",

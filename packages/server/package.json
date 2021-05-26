@@ -1,6 +1,6 @@
 {
   "name": "jc-server",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Infrastructure at server for json call.",
   "main": "index.js",
   "module": "dist/index.js",

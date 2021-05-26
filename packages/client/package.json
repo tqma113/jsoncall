@@ -1,6 +1,6 @@
 {
   "name": "jc-client",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Infrastructure at client for json call.",
   "main": "index.js",
   "module": "dist/index.js",
