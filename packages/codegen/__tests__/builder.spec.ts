@@ -60,12 +60,6 @@ describe('builderCodegen', () => {
       printWidth: 80,
     })
 
-    fs.writeFileSync(
-      path.resolve(__dirname, './fixtures/ts/createBuilderSchema.ts'),
-      code,
-      'utf-8'
-    )
-
     expect(code).toBe(
       fs.readFileSync(
         path.resolve(__dirname, './fixtures/ts/createBuilderSchema.ts'),

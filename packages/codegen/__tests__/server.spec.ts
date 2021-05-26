@@ -59,11 +59,6 @@ describe('serverCodegen', () => {
       singleQuote: true,
       printWidth: 80,
     })
-    fs.writeFileSync(
-      path.resolve(__dirname, './fixtures/ts/createServerService.ts'),
-      code,
-      'utf-8'
-    )
 
     expect(code).toBe(
       fs.readFileSync(
