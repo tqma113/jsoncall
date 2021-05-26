@@ -5,8 +5,11 @@ import { SerializationError } from 'jc-serialization'
 import { format, Options } from 'prettier'
 import { builderCodegenSchema, genGenerics, genProps } from './builder'
 import type { Sender } from 'jc-client'
+import type { Formatter } from './index'
 
-export const clientCodegen = (schema: Schema, options?: Options): string => {
+const identify = <I>(input: I) => input
+
+export const clientCodegen = (schema: Schema, format: Formatter = identify): string => {
   const { importItems, code, generics, derives, calls } =
     builderCodegenSchema(schema)
 
@@ -82,14 +85,12 @@ export const clientCodegen = (schema: Schema, options?: Options): string => {
         .join('')}
     }
   }
-  `,
-    { parser: 'typescript', ...options }
-  )
+  `)
 }
 
 export const introspectionClientCodegen = async (
   send: Sender,
-  options?: Options
+  format: Formatter = identify
 ): Promise<string> => {
   const output = await send(JSON.stringify(IntrospectionCalling()))
 
@@ -105,7 +106,7 @@ export const introspectionClientCodegen = async (
         const schema = output.output as Schema
         const result = check(schema)
         if (result === null) {
-          return clientCodegen(schema, options)
+          return clientCodegen(schema, format)
         } else {
           throw result
         }

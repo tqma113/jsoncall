@@ -3,11 +3,13 @@ import {
   builderCodegenSchema,
   genGenerics,
   genProps,
-  genPropsNames,
 } from './builder'
 import type { Schema } from 'jc-schema'
+import type { Formatter } from './index'
 
-export const serverCodegen = (schema: Schema, options?: Options): string => {
+const identify = <I>(input: I) => input
+
+export const serverCodegen = (schema: Schema, format: Formatter = identify): string => {
   const {
     importItems: builderImport,
     generics,
@@ -17,18 +19,17 @@ export const serverCodegen = (schema: Schema, options?: Options): string => {
 
   return format(
     `import {
-    ${builderImport.map((item) => `${item},`).join('\n')}
-  } from 'jc-builder'
-  import { createService } from 'jc-server'
+      ${builderImport.map((item) => `${item},`).join('\n')}
+    } from 'jc-builder'
+    import { createService } from 'jc-server'
 
-  ${code}
-  
-  export const createServerService = ${genGenerics(
-    generics
-  )}(derives: ${genProps(derives)}) => {
-    const builderSchema = createBS(derives)
-    return createService(builderSchema, JSON.stringify, JSON.parse)
-  }`,
-    { parser: 'typescript', ...options }
+    ${code}
+    
+    export const createServerService = ${genGenerics(
+      generics
+    )}(derives: ${genProps(derives)}) => {
+      const builderSchema = createBS(derives)
+      return createService(builderSchema, JSON.stringify, JSON.parse)
+    }`
   )
 }

@@ -17,9 +17,11 @@ import {
   PrimitiveTypeEnum,
   SpecialTypeEnum,
 } from 'jc-schema'
-import { format, Options } from 'prettier'
+import type { Formatter } from './index'
 
-export const builderCodegen = (schema: Schema, options?: Options): string => {
+const identify = <I>(input: I) => input
+
+export const builderCodegen = (schema: Schema, format: Formatter = identify): string => {
   const { importItems, code } = builderCodegenSchema(schema)
 
   const endCode = `import {
@@ -28,7 +30,7 @@ export const builderCodegen = (schema: Schema, options?: Options): string => {
   
   export ${code}`
 
-  return format(endCode, { parser: 'typescript', ...options })
+  return format(endCode)
 }
 
 export type SchemaCodegen = {

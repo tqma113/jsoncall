@@ -9,6 +9,7 @@ import {
   StringType,
   Union,
 } from 'jc-builder'
+import { format } from 'prettier'
 import { clientCodegen } from '../src'
 import createBuilderSchema from './fixtures/ts/foo'
 
@@ -54,11 +55,12 @@ describe('clientCodegen', () => {
         () => 'Date'
       )
     const builderSchema = createBuilderSchema({ int, Date: DateType })
-    const code = clientCodegen(normalize(builderSchema), {
+    const code = clientCodegen(normalize(builderSchema), (source) => format(source, {
+      parser: 'typescript',
       semi: false,
       singleQuote: true,
       printWidth: 80,
-    })
+    }))
 
     expect(code).toBe(
       fs.readFileSync(

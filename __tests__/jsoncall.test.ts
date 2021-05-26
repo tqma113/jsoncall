@@ -4,6 +4,7 @@ import { check } from 'jc-schema'
 import { load } from 'jc-lang'
 import { introspection } from 'jc-client'
 import { serverCodegen, clientCodegen } from 'jc-codegen'
+import { format } from 'prettier'
 import { read } from './node'
 import { client, batchClient, syncClient, app } from './fixtures/helpers'
 
@@ -16,19 +17,21 @@ describe('jsoncall', () => {
 
     fs.writeFileSync(
       path.resolve(__dirname, './fixtures/ts/createServerService.ts'),
-      serverCodegen(schema, {
+      serverCodegen(schema, (source) => format(source, {
+        parser: 'typescript',
         semi: false,
         singleQuote: true,
         printWidth: 80,
-      })
+      }))
     )
     fs.writeFileSync(
       path.resolve(__dirname, './fixtures/ts/createClient.ts'),
-      clientCodegen(schema, {
+      clientCodegen(schema, (source) => format(source, {
+        parser: 'typescript',
         semi: false,
         singleQuote: true,
         printWidth: 80,
-      })
+      }))
     )
 
     expect((await client.fooCall({ foo: 123, baz: true })).value).toMatchObject(
@@ -50,19 +53,21 @@ describe('jsoncall', () => {
 
     fs.writeFileSync(
       path.resolve(__dirname, './fixtures/ts/createServerService.ts'),
-      serverCodegen(schema, {
+      serverCodegen(schema, (source) => format(source, {
+        parser: 'typescript',
         semi: false,
         singleQuote: true,
         printWidth: 80,
-      })
+      }))
     )
     fs.writeFileSync(
       path.resolve(__dirname, './fixtures/ts/createClient.ts'),
-      clientCodegen(schema, {
+      clientCodegen(schema, (source) => format(source, {
+        parser: 'typescript',
         semi: false,
         singleQuote: true,
         printWidth: 80,
-      })
+      }))
     )
 
     const results = await Promise.all([
@@ -84,19 +89,21 @@ describe('jsoncall', () => {
 
     fs.writeFileSync(
       path.resolve(__dirname, './fixtures/ts/createServerService.ts'),
-      serverCodegen(schema, {
+      serverCodegen(schema, (source) => format(source, {
+        parser: 'typescript',
         semi: false,
         singleQuote: true,
         printWidth: 80,
-      })
+      }))
     )
     fs.writeFileSync(
       path.resolve(__dirname, './fixtures/ts/createClient.ts'),
-      clientCodegen(schema, {
+      clientCodegen(schema, (source) => format(source, {
+        parser: 'typescript',
         semi: false,
         singleQuote: true,
         printWidth: 80,
-      })
+      }))
     )
 
     expect(syncClient.fooCall({ foo: 123, baz: true }).value).toMatchObject({

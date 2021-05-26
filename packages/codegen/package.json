@@ -17,7 +17,7 @@
     "jc-schema": "0.0.1",
     "jc-server": "0.0.1"
   },
-  "dependencies": {
+  "devDependencies": {
     "@types/prettier": "^2.2.3",
     "prettier": "^2.2.1"
   }
