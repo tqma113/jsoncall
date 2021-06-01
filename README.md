@@ -18,3 +18,4 @@ A schema for description of json call.
 - Farrow 只支持 TS 相关的内容，没有 encode/decode
 - JSONCall 是底层实现无关的，可以是基于 HTTP 请求，可以是基于其他的 RPC 方案，甚至可以本地的函数调用，比如 TS 中调用 Rust 的函数
 - TS 中调用 Rust 的函数，目前已有的方案非常麻烦，要自己做做很多的 validation、format、encode、decode，这个在 Native 和 webview 数据交互的 bridge 中有很大的应用空间
+- 在序列化和反序列化的部分，因为我们有数据的 schema 所以可以通过 [fast-json-stringify](https://github.com/fastify/fast-json-stringify) 提升在序列化和反序列化的效率，也可以加入加密的部分
