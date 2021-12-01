@@ -43,20 +43,20 @@ export const createJSONCall = <
               try {
                 return Ok(convert(type.output, result))
               } catch (err) {
-                return Err(new ConvertError(err, name(type.output)))
+                return Err(new ConvertError(err instanceof Error ? err.message : JSON.stringify(err), name(type.output)))
               }
             } else {
               return Err(new ServerError('Server error', outputValidateResult))
             }
           })
         } catch (err) {
-          return Err(new SendError(err))
+          return Err(new SendError(err instanceof Error ? err.message : JSON.stringify(err)))
         }
       } else {
         return Err(inputValidateResult)
       }
     } catch (err) {
-      return Err(new ConvertError(err, name(type.input)))
+      return Err(new ConvertError(err instanceof Error ? err.message : JSON.stringify(err), name(type.input)))
     }
   }
 }
@@ -89,19 +89,19 @@ export const createSyncJSONCall = <
             try {
               return Ok(convert(type.output, result))
             } catch (err) {
-              return Err(new ConvertError(err, name(type.output)))
+              return Err(new ConvertError(err instanceof Error ? err.message : JSON.stringify(err), name(type.output)))
             }
           } else {
             return Err(new ServerError('Server error', outputValidateResult))
           }
         } catch (err) {
-          return Err(new SendError(err))
+          return Err(new SendError(err instanceof Error ? err.message : JSON.stringify(err)))
         }
       } else {
         return Err(inputValidateResult)
       }
     } catch (err) {
-      return Err(new ConvertError(err, name(type.input)))
+      return Err(new ConvertError(err instanceof Error ? err.message : JSON.stringify(err), name(type.input)))
     }
   }
 }

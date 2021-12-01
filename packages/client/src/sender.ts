@@ -44,16 +44,16 @@ export const createSender =
               }
             }
           } catch (err) {
-            throw new ConvertError(err, getName(SingleCallOutputType))
+            throw new ConvertError(err instanceof Error ? err.message : JSON.stringify(err), getName(SingleCallOutputType))
           }
         } else {
           throw validateResult
         }
       } catch (err) {
-        throw new SerializationError(err, output)
+        throw new SerializationError(err instanceof Error ? err : new Error(JSON.stringify(err)), output)
       }
     } catch (err) {
-      throw new SendError(err)
+      throw new SendError(err instanceof Error ? err.message : JSON.stringify(err))
     }
   }
 
@@ -85,16 +85,16 @@ export const createBatchSender = <N extends string>(
               }
             })
           } catch (err) {
-            throw new ConvertError(err, getName(SingleCallOutputType))
+            throw new ConvertError(err instanceof Error ? err.message : JSON.stringify(err), getName(SingleCallOutputType))
           }
         } else {
           throw validateResult
         }
       } catch (err) {
-        throw new SerializationError(err, outputStr)
+        throw new SerializationError(err instanceof Error ? err : new Error(JSON.stringify(err)), outputStr)
       }
     } catch (err) {
-      throw new SendError(err)
+      throw new SendError(err instanceof Error ? err.message : JSON.stringify(err))
     }
   }
 
@@ -137,15 +137,15 @@ export const createSyncSender =
               }
             }
           } catch (err) {
-            throw new ConvertError(err, getName(SingleCallOutputType))
+            throw new ConvertError(err instanceof Error ? err.message : JSON.stringify(err), getName(SingleCallOutputType))
           }
         } else {
           throw validateResult
         }
       } catch (err) {
-        throw new SerializationError(err, output)
+        throw new SerializationError(err instanceof Error ? err : new Error(JSON.stringify(err)), output)
       }
     } catch (err) {
-      throw new SendError(err)
+      throw new SendError(err instanceof Error ? err.message : JSON.stringify(err))
     }
   }

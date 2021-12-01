@@ -5,5 +5,22 @@
     "outDir": "./dist",
     "composite": true
   },
+  "references": [
+    {
+      "path": "../schema/tsconfig.json"
+    },
+    {
+      "path": "../builder/tsconfig.json"
+    },
+    {
+      "path": "../server/tsconfig.json"
+    },
+    {
+      "path": "../serialization/tsconfig.json"
+    },
+    {
+      "path": "../client/tsconfig.json"
+    }
+  ],
   "include": ["src"]
 }

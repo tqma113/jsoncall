@@ -60,16 +60,16 @@ export const createJSONCall = <
                 return Err(outputValidateResult)
               }
             } catch (err) {
-              throw Err(new ResolverError(err.message, type.name))
+              throw Err(new ResolverError(err instanceof Error ? err.message : JSON.stringify(err), type.name))
             }
           } catch (err) {
-            return Err(new ConvertError(err, name(type.input)))
+            return Err(new ConvertError(err instanceof Error ? err.message : JSON.stringify(err), name(type.input)))
           }
         } else {
           return Err(inputValidateResult)
         }
       } catch (err) {
-        return Err(new SerializationError(err, data))
+        return Err(new SerializationError(err instanceof Error ? err : new Error(JSON.stringify(err)), data))
       }
     },
   }

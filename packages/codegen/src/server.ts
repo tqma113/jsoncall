@@ -1,4 +1,3 @@
-import { format, Options } from 'prettier'
 import { builderCodegenSchema, genGenerics, genProps } from './builder'
 import type { Schema } from 'jc-schema'
 import type { Formatter } from './index'

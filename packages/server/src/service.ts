@@ -226,14 +226,14 @@ export const createService =
           }
         } catch (err) {
           return serialize(
-            CallingFailed(new ConvertError(err.message, name(CallingType)))
+            CallingFailed(new ConvertError(err instanceof Error ? err.message : JSON.stringify(err), name(CallingType)))
           )
         }
       } else {
         return serialize(CallingFailed(inputValidateResult))
       }
     } catch (err) {
-      return serialize(CallingFailed(new SerializationError(err, input)))
+      return serialize(CallingFailed(new SerializationError(err instanceof Error ? err : new Error(JSON.stringify(err)), input)))
     }
   }
 

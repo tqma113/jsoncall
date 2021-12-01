@@ -2,7 +2,6 @@ import { check, Schema } from 'jc-schema'
 import { name as getName, validate, convert, ConvertError } from 'jc-builder'
 import { IntrospectionCalling, IntrospectionCallingOutputType } from 'jc-server'
 import { SerializationError } from 'jc-serialization'
-import { format, Options } from 'prettier'
 import { builderCodegenSchema, genGenerics, genProps } from './builder'
 import type { Sender } from 'jc-client'
 import type { Formatter } from './index'
@@ -115,12 +114,12 @@ export const introspectionClientCodegen = async (
           throw result
         }
       } catch (err) {
-        throw new ConvertError(err, getName(IntrospectionCallingOutputType))
+        throw new ConvertError(err instanceof Error ? err.message : JSON.stringify(err), getName(IntrospectionCallingOutputType))
       }
     } else {
       throw validateResult
     }
   } catch (err) {
-    throw new SerializationError(err, output)
+    throw new SerializationError(err instanceof Error ? err : new Error(JSON.stringify(err)), output)
   }
 }

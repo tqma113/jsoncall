@@ -31,15 +31,15 @@ export const introspection = async (
             throw checkResult
           }
         } catch (err) {
-          throw new ConvertError(err, getName(IntrospectionCallingOutputType))
+          throw new ConvertError(err instanceof Error ? err.message : JSON.stringify(err), getName(IntrospectionCallingOutputType))
         }
       } else {
         throw validateResult
       }
     } catch (err) {
-      throw new SerializationError(err, output)
+      throw new SerializationError(err instanceof Error ? err : new Error(JSON.stringify(err)), output)
     }
   } catch (err) {
-    throw new SendError(err)
+    throw new SendError(err instanceof Error ? err.message : JSON.stringify(err))
   }
 }
